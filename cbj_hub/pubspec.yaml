@@ -1,13 +1,30 @@
 name: cbj_hub
 description: A simple command-line application.
 version: 1.0.0
-# homepage: https://www.example.com
+homepage: https://cybearjinni.com
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
-# dependencies:
-#   path: ^1.8.0
+dependencies:
+  # Allow returning more than one type of object
+  equatable: ^2.0.3
+  # Annotations for freezed
+  freezed_annotation: ^0.14.2
+  # For the injection, allow accessing an object from anywhere in an App
+  get_it: ^7.1.4
+  # Convenient code generator for get_it
+  injectable: ^1.4.1
+  # Collection of lint rules for Dart and Flutter projects
+  lint: ^1.5.3
 
 dev_dependencies:
-  pedantic: ^1.10.0
+  build_runner:
+  # A generator for injectable library
+  # Code generator for unions/pattern-matching/copy.
+  freezed: ^0.14.2
+  injectable_generator: ^1.4.1
+  # Library for mocks
+  mockito: ^5.0.10
+  pedantic: ^1.11.1
+  test: ^1.17.8
