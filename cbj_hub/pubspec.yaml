@@ -1,5 +1,5 @@
 name: cbj_hub
-description: A simple command-line application.
+description: Easy to use open source Hub to control your smart devices from one app.
 version: 1.0.0
 homepage: https://cybearjinni.com
 
@@ -7,6 +7,8 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
+  # Functional programming thingies, let you use multiple return types
+  dartz: ^0.10.0-nullsafety.2
   # Allow returning more than one type of object
   equatable: ^2.0.3
   # Annotations for freezed
@@ -16,9 +18,13 @@ dependencies:
   grpc: ^3.0.0
   # Convenient code generator for get_it
   injectable: ^1.4.1
+  # Port of Kotlin's Kotlin Standard library for Dart/Flutter projects
+  kt_dart: ^0.9.1
   # Collection of lint rules for Dart and Flutter projects
   lint: ^1.5.3
   protobuf: ^2.0.0
+  # Simple, fast generation of RFC4122 UUIDs.
+  uuid: ^3.0.4
 
 dev_dependencies:
   build_runner:

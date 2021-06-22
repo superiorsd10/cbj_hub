@@ -1,4 +1,4 @@
-import 'package:cbj_hub/domain/enums.dart';
+import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/infrastructure/system_commands/system_commands_manager_d.dart';
 
 ///  This class save all the configuration of the pins per device,
