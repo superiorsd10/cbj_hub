@@ -22,6 +22,8 @@ dependencies:
   kt_dart: ^0.9.1
   # Collection of lint rules for Dart and Flutter projects
   lint: ^1.5.3
+  # A server and browser based MQTT client for Dart.
+  mqtt_client: ^9.3.1
   protobuf: ^2.0.0
   # Simple, fast generation of RFC4122 UUIDs.
   uuid: ^3.0.4
