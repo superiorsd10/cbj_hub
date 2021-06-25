@@ -55,9 +55,9 @@ class EnumHelper {
   }
 
   ///  Convert string to deviceState
-  static DeviceStateGRPC? stringToDeviceState(String deviceDysyrString) {
+  static DeviceStateGRPC? stringToDeviceState(String deviceStateAsString) {
     for (final DeviceStateGRPC deviceState in DeviceStateGRPC.values) {
-      if (deviceStateToString(deviceState) == deviceDysyrString) {
+      if (deviceStateToString(deviceState) == deviceStateAsString) {
         return deviceState;
       }
     }

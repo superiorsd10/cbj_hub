@@ -7,6 +7,8 @@ environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
+  # Contains utility classes in the style of dart:async to work with asynchronous computations.
+  async: ^2.7.0
   # Functional programming thingies, let you use multiple return types
   dartz: ^0.10.0-nullsafety.2
   # Allow returning more than one type of object
