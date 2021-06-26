@@ -15,21 +15,18 @@ class ExampleDeviceRepository extends IExampleDeviceRepository {
   @override
   Stream<String> sendRequest() async* {
     final NumberCreator numberCreator = NumberCreator();
-    yield* numberCreator.stream.map((int event) => event.toString());
+    yield* numberCreator.stream;
   }
 }
 
 class NumberCreator {
   NumberCreator() {
     Timer.periodic(const Duration(seconds: 1), (t) {
-      _controller.sink.add(_count);
-      _count++;
+      _controller.sink.add('Turn lights on');
     });
   }
 
-  var _count = 1;
+  final _controller = StreamController<String>();
 
-  final _controller = StreamController<int>();
-
-  Stream<int> get stream => _controller.stream;
+  Stream<String> get stream => _controller.stream;
 }

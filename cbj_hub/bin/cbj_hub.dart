@@ -16,5 +16,7 @@ void main(List<String> arguments) async {
   //  Setting device model and checking if configuration for this model exist
   await DevicePinListManager().setPhysicalDeviceType();
 
-  BootUp();
+  print('');
+
+  await BootUp.setup();
 }

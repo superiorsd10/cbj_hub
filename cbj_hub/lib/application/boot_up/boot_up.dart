@@ -1,21 +1,15 @@
-import 'package:cbj_hub/application/conector/conector.dart';
-import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
-import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
-import 'package:cbj_hub/injection.dart';
-import 'package:mqtt_client/mqtt_client.dart';
+import 'package:cbj_hub/infrastructure/mqtt_server/mqtt_server_repository.dart';
 
 class BootUp {
   BootUp() {
     setup();
-    Conector.startConector();
   }
 
-  Future<void> setup() async {
-    getIt<IMqttServerRepository>().readingFromMqtt('StairsLights');
-
-    final Stream<MqttPublishMessage> subscriptionStream =
-        getIt<IMqttServerRepository>().streamOfAllSubscriptions();
-
-    getIt<IAppCommunicationRepository>().sendToApp(subscriptionStream);
+  static Future<void> setup() async {
+    final MqttServerRepository mqttServerRepository =
+        MqttServerRepository.clientName('LightClient');
+    await mqttServerRepository.connect();
+    mqttServerRepository.subscribeToTopic('Light');
+    mqttServerRepository.publishMessage('Light', 'Turn Light on');
   }
 }

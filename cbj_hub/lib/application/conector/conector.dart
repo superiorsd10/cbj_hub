@@ -21,7 +21,7 @@ class Conector {
           .addString('Hello old from mqtt_client number $event');
 
       // 'ExampleDevice', 'Hello Guy'
-      getIt<IMqttServerRepository>().publishMessage(mqttClientPayloadBuilder);
+      getIt<IMqttServerRepository>().publishMessage('Light', 'Turn light on');
       print('Stream listen $event');
     });
   }
