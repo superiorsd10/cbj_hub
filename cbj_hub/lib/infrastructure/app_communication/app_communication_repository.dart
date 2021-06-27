@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -19,12 +20,6 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   }
 
   @override
-  Stream<MqttPublishMessage> getFromApp() {
-    // TODO: implement getFromApp
-    throw UnimplementedError();
-  }
-
-  @override
   void sendToApp(Stream<MqttPublishMessage> dataToSend) {
     dataToSend.listen((MqttPublishMessage event) {
       AppClientStream.controller.sink.add(MapEntry(
@@ -34,6 +29,12 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       //     'change with massage '
       //     '"${String.fromCharCodes(event.payload.message!)}" to the app ');
     });
+  }
+
+  @override
+  Stream<MqttPublishMessage> getFromApp(
+      Stream<ClientStatusRequests> request) async* {
+    yield* request.map((event) => MqttPublishMessage());
   }
 }
 

@@ -1,4 +1,4 @@
-import 'package:cbj_hub/infrastructure/smart_device_server_and_client/protoc_as_dart/smart_connection.pbgrpc.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 
 ///  List of all physical devices types
 enum PhysicalDeviceType {
