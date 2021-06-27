@@ -1,4 +1,6 @@
-import 'package:cbj_hub/infrastructure/mqtt_server/mqtt_server_repository.dart';
+import 'package:cbj_hub/application/conector/conector.dart';
+import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
+import 'package:cbj_hub/injection.dart';
 
 class BootUp {
   BootUp() {
@@ -6,10 +8,8 @@ class BootUp {
   }
 
   static Future<void> setup() async {
-    final MqttServerRepository mqttServerRepository =
-        MqttServerRepository.clientName('LightClient');
-    await mqttServerRepository.connect();
-    mqttServerRepository.subscribeToTopic('Light');
-    mqttServerRepository.publishMessage('Light', 'Turn Light on');
+    await getIt<IMqttServerRepository>().connect();
+
+    Conector.startConector();
   }
 }

@@ -13,7 +13,7 @@ class ExampleDeviceRepository extends IExampleDeviceRepository {
   }
 
   @override
-  Stream<String> sendRequest() async* {
+  Stream<MapEntry<String, String>> sendRequest() async* {
     final NumberCreator numberCreator = NumberCreator();
     yield* numberCreator.stream;
   }
@@ -22,11 +22,13 @@ class ExampleDeviceRepository extends IExampleDeviceRepository {
 class NumberCreator {
   NumberCreator() {
     Timer.periodic(const Duration(seconds: 1), (t) {
-      _controller.sink.add('Turn lights on');
+      MapEntry<String, String> b =
+          MapEntry('LightA', 'Turn lights on ${t.tick}');
+      _controller.sink.add(b);
     });
   }
 
-  final _controller = StreamController<String>();
+  final _controller = StreamController<MapEntry<String, String>>();
 
-  Stream<String> get stream => _controller.stream;
+  Stream<MapEntry<String, String>> get stream => _controller.stream;
 }

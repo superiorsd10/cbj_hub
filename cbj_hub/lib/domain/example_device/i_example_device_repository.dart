@@ -5,5 +5,5 @@ abstract class IExampleDeviceRepository {
   Future<MqttPublishMessage> getRequest();
 
   /// Information that the device send to the hub
-  Stream<String> sendRequest();
+  Stream<MapEntry<String, String>> sendRequest();
 }

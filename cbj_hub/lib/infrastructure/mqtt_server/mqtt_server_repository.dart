@@ -12,16 +12,26 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 
 @LazySingleton(as: IMqttServerRepository)
 class MqttServerRepository extends IMqttServerRepository {
-  final MqttServerClient client;
-
-  MqttServerRepository(this.client);
-
-  factory MqttServerRepository.clientName(String clientName) {
-    return MqttServerRepository(MqttServerClient('127.0.0.1', clientName));
+  MqttServerRepository() {
+    connect();
   }
 
+  /// Static instance of connection to mqtt broker
+  static MqttServerClient client = MqttServerClient('127.0.0.1', 'CBJ_Hub');
+
+  /// Connect the client to mqtt if not in connecting or connected state already
   @override
   Future<MqttServerClient> connect() async {
+    if (client.connectionStatus!.state == MqttConnectionState.connected) {
+      return client;
+    } else if (client.connectionStatus!.state ==
+        MqttConnectionState.connecting) {
+      await Future.delayed(const Duration(seconds: 1));
+      return client;
+    } else {
+      client.disconnect();
+    }
+
     client.logging(on: false);
 
     client.onConnected = onConnected;
@@ -39,7 +49,7 @@ class MqttServerRepository extends IMqttServerRepository {
         .startClean()
         .withWillQos(MqttQos.atLeastOnce);
 
-    print('EMQ X Cloud client connecting');
+    print('Client connecting');
     client.connectionMessage = connMessage;
     try {
       await client.connect();
@@ -51,35 +61,22 @@ class MqttServerRepository extends IMqttServerRepository {
   }
 
   @override
-  Stream<MqttPublishMessage>? subscribeToTopic(String topic) async* {
-    client.subscribe(topic, MqttQos.atMostOnce);
-
-    client.published!.listen((MqttPublishMessage message) {
-      print(
-          'EXAMPLE::Published notification:: topic is ${message.variableHeader!.topicName}, with Qos ${message.header!.qos}');
-    });
-
-    yield* client.published!;
+  Future<void> subscribeToTopic(String topic) async {
+    await connect();
+    client.subscribe(topic, MqttQos.atLeastOnce);
   }
 
   @override
   Stream<MqttPublishMessage> streamOfAllSubscriptions() async* {
-    // yield* client.published!;
+    yield* client.published!;
   }
 
   @override
-  void publishMessage(String topic, String message) async {
+  Future<void> publishMessage(String topic, String message) async {
+    await connect();
     final builder = MqttClientPayloadBuilder();
     builder.addString(message);
     client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
-    print('Publish $topic: $message');
-    print('EXAMPLE::Sleeping....');
-  }
-
-  @override
-  Future<int> exampleFromGit() {
-    // TODO: implement exampleFromGit
-    throw UnimplementedError();
   }
 
   @override
@@ -88,33 +85,32 @@ class MqttServerRepository extends IMqttServerRepository {
     throw UnimplementedError();
   }
 
-// Callback function
-// connection succeeded
+  /// Callback function for connection succeeded
   void onConnected() {
     print('Connected');
   }
 
-// unconnected
+  /// Unconnected
   void onDisconnected() {
     print('Disconnected');
   }
 
-// subscribe to topic succeeded
+  /// subscribe to topic succeeded
   void onSubscribed(String topic) {
     print('Subscribed topic: $topic');
   }
 
-// subscribe to topic failed
+  /// subscribe to topic failed
   void onSubscribeFail(String topic) {
     print('Failed to subscribe $topic');
   }
 
-// unsubscribe succeeded
+  /// unsubscribe succeeded
   void onUnsubscribed(String? topic) {
     print('Unsubscribed topic: $topic');
   }
 
-// PING response received
+  /// PING response received
   void pong() {
     print('Ping response client callback invoked');
   }
