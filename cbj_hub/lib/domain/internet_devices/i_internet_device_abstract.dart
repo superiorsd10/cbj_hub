@@ -9,4 +9,7 @@ abstract class IInternetDeviceRepository {
 
   /// What mqtt topic will write to and get updated if value changed
   String topic;
+
+  /// Listen to send request from the device
+  Stream<MapEntry<String, String>> sendRequest();
 }

@@ -68,6 +68,8 @@ class MqttServerRepository extends IMqttServerRepository {
 
   @override
   Stream<MqttPublishMessage> streamOfAllSubscriptions() async* {
+    await connect();
+    client.subscribe('#', MqttQos.atLeastOnce);
     yield* client.published!;
   }
 
