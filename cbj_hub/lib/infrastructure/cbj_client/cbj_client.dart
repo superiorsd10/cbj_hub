@@ -12,10 +12,10 @@ class SmartClient {
     channel = await createSmartServerClient(addressToHub);
     stub = SmartServerClient(channel!);
     ResponseStream<ClientStatusRequests> response;
-    Stream<RequestsAndStatusFromHub> streamClientStatusRequests =
+    final Stream<RequestsAndStatusFromHub> streamClientStatusRequests =
         Stream.value(RequestsAndStatusFromHub());
     try {
-      NumberCreator n = NumberCreator();
+      final NumberCreator n = NumberCreator();
 
       response = stub!.registerHub(n.stream);
 
