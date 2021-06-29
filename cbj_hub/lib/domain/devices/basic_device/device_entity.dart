@@ -1,5 +1,5 @@
-import 'package:cbj_hub/domain/devices/devices_failures.dart';
-import 'package:cbj_hub/domain/devices/value_objects.dart';
+import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
+import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

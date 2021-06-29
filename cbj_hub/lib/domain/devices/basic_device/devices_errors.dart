@@ -1,4 +1,4 @@
-import 'package:cbj_hub/domain/devices/devices_failures.dart';
+import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
 
 class DevicesUnexpectedValueError extends Error {
   DevicesUnexpectedValueError(this.deviceValueFailure);

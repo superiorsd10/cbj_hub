@@ -1,5 +1,5 @@
 import 'package:cbj_hub/domain/cbj_comp/cbj_comp_failures.dart';
-import 'package:cbj_hub/domain/devices/device_entity.dart';
+import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:dartz/dartz.dart';
 import 'package:kt_dart/kt.dart';
 

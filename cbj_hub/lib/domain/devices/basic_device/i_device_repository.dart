@@ -1,5 +1,6 @@
-import 'package:cbj_hub/domain/devices/device_entity.dart';
-import 'package:cbj_hub/domain/devices/devices_failures.dart';
+import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
+import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
+import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:kt_dart/kt.dart';
 
@@ -13,6 +14,8 @@ abstract class IDeviceRepository {
   Future<void> initiateHubConnection();
 
   Future<Either<DevicesFailure, KtList<DeviceEntity?>>> getAllDevices();
+
+  Future<Either<DevicesFailure, KtList<DeviceDtos?>>> getAllDevicesAsDto();
 
   Stream<Either<DevicesFailure, KtList<DeviceEntity?>>> watchAll();
 

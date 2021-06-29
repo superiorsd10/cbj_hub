@@ -1,5 +1,5 @@
-import 'package:cbj_hub/domain/devices/device_entity.dart';
-import 'package:cbj_hub/domain/devices/value_objects.dart';
+import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
+import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pb.dart';
 import 'package:injectable/injectable.dart';
