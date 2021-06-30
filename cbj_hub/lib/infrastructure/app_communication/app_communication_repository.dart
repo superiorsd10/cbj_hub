@@ -4,7 +4,6 @@ import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
-import 'package:cbj_hub/infrastructure/devices/basic_device/grpc_device_helpers.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:grpc/grpc.dart';
@@ -38,8 +37,9 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   }
 
   @override
-  Stream<DeviceEntity> getFromApp(Stream<SmartDeviceInfo> request) async* {
-    yield* request.map((event) => event.toDeviceEntity());
+  Stream<DeviceEntity> getFromApp(Stream<ClientStatusRequests> request) async* {
+    print('Need To fix This');
+    // yield* request.map((event) => event.toDeviceEntity());
   }
 }
 

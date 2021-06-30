@@ -3,7 +3,7 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:mqtt_client/mqtt_client.dart';
 
 abstract class IAppCommunicationRepository {
-  Stream<DeviceEntity> getFromApp(Stream<SmartDeviceInfo> request);
+  Stream<DeviceEntity> getFromApp(Stream<ClientStatusRequests> request);
 
   void sendToApp(Stream<MqttPublishMessage> dataToSend);
 }

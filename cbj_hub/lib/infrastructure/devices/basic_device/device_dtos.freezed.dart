@@ -21,7 +21,7 @@ class _$DeviceDtosTearOff {
   const _$DeviceDtosTearOff();
 
   _DeviceDtos call(
-      {@JsonKey(ignore: true) String? id,
+      {String? id,
       required String? defaultName,
       required String? roomId,
       required String? roomName,
@@ -65,7 +65,7 @@ const $DeviceDtos = _$DeviceDtosTearOff();
 
 /// @nodoc
 mixin _$DeviceDtos {
-  @JsonKey(ignore: true)
+// @JsonKey(ignore: true)
   String? get id => throw _privateConstructorUsedError;
   String? get defaultName => throw _privateConstructorUsedError;
   String? get roomId => throw _privateConstructorUsedError;
@@ -94,7 +94,7 @@ abstract class $DeviceDtosCopyWith<$Res> {
           DeviceDtos value, $Res Function(DeviceDtos) then) =
       _$DeviceDtosCopyWithImpl<$Res>;
   $Res call(
-      {@JsonKey(ignore: true) String? id,
+      {String? id,
       String? defaultName,
       String? roomId,
       String? roomName,
@@ -209,7 +209,7 @@ abstract class _$DeviceDtosCopyWith<$Res> implements $DeviceDtosCopyWith<$Res> {
       __$DeviceDtosCopyWithImpl<$Res>;
   @override
   $Res call(
-      {@JsonKey(ignore: true) String? id,
+      {String? id,
       String? defaultName,
       String? roomId,
       String? roomName,
@@ -323,7 +323,7 @@ class __$DeviceDtosCopyWithImpl<$Res> extends _$DeviceDtosCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_DeviceDtos extends _DeviceDtos {
   const _$_DeviceDtos(
-      {@JsonKey(ignore: true) this.id,
+      {this.id,
       required this.defaultName,
       required this.roomId,
       required this.roomName,
@@ -343,8 +343,7 @@ class _$_DeviceDtos extends _DeviceDtos {
   factory _$_DeviceDtos.fromJson(Map<String, dynamic> json) =>
       _$_$_DeviceDtosFromJson(json);
 
-  @override
-  @JsonKey(ignore: true)
+  @override // @JsonKey(ignore: true)
   final String? id;
   @override
   final String? defaultName;
@@ -461,7 +460,7 @@ class _$_DeviceDtos extends _DeviceDtos {
 
 abstract class _DeviceDtos extends DeviceDtos {
   const factory _DeviceDtos(
-      {@JsonKey(ignore: true) String? id,
+      {String? id,
       required String? defaultName,
       required String? roomId,
       required String? roomName,
@@ -481,8 +480,7 @@ abstract class _DeviceDtos extends DeviceDtos {
   factory _DeviceDtos.fromJson(Map<String, dynamic> json) =
       _$_DeviceDtos.fromJson;
 
-  @override
-  @JsonKey(ignore: true)
+  @override // @JsonKey(ignore: true)
   String? get id => throw _privateConstructorUsedError;
   @override
   String? get defaultName => throw _privateConstructorUsedError;

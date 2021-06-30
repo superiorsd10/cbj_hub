@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
@@ -14,26 +16,28 @@ class HubAppServer extends CbjHubServiceBase {
   Stream<MapEntry<String, String>> streamOfChanges() async* {}
 
   @override
-  Stream<SmartDeviceInfo> clientTransferDevices(
-      ServiceCall call, Stream<SmartDeviceInfo> request) async* {
+  Stream<RequestsAndStatusFromHub> clientTransferDevices(
+      ServiceCall call, Stream<ClientStatusRequests> request) async* {
     print('Got new Client');
     getIt<IAppCommunicationRepository>().getFromApp(request);
+    final Iterable<String> allDevices =
+        getIt<ILocalDbRepository>().getSmartDevices().map((DeviceEntity e) {
+      return jsonEncode(DeviceDtos.fromDomain(e).toJson());
+    });
 
-    final Iterable<SmartDeviceInfo> allDevices = getIt<ILocalDbRepository>()
-        .getSmartDevices()
-        .map((DeviceEntity e) => DeviceDtos.fromDomain(e).toSmartDeviceInfo());
-
-    for (final SmartDeviceInfo responseToHub in allDevices) {
-      yield responseToHub;
+    for (final String responseToHub in allDevices) {
+      yield RequestsAndStatusFromHub(allRemoteCommands: responseToHub);
     }
 
     yield* AppClientStream.stream.map((DeviceEntity deviceEntity) =>
-        DeviceDtos.fromDomain(deviceEntity).toSmartDeviceInfo());
+        RequestsAndStatusFromHub(
+            allRemoteCommands:
+                jsonEncode(DeviceDtos.fromDomain(deviceEntity).toJson())));
   }
 
   @override
-  Stream<SmartDeviceInfo> hubTransferDevices(
-      ServiceCall call, Stream<SmartDeviceInfo> request) async* {
+  Stream<ClientStatusRequests> hubTransferDevices(
+      ServiceCall call, Stream<RequestsAndStatusFromHub> request) async* {
     // TODO: implement registerHub
     throw UnimplementedError();
   }
