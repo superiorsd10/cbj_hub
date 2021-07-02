@@ -25,10 +25,14 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   @override
   void sendToApp(Stream<MqttPublishMessage> dataToSend) {
     dataToSend.listen((MqttPublishMessage event) {
-      DeviceEntity deviceEntityToSend = getIt<ILocalDbRepository>()
-          .getSmartDevices()
-          .firstWhere((element) =>
-              element.id!.getOrCrash() == event.variableHeader?.topicName);
+      // final DeviceEntity deviceEntityToSend = getIt<ILocalDbRepository>()
+      //     .getSmartDevices()
+      //     .firstWhere((element) =>
+      //         element.id!.getOrCrash() == event.variableHeader?.topicName);
+
+      final DeviceEntity deviceEntityToSend =
+          getIt<ILocalDbRepository>().getSmartDevices().first;
+
       AppClientStream.controller.sink.add(deviceEntityToSend);
       // print('Will send the topic "${event.payload.variableHeader?.topicName}" '
       //     'change with massage '
