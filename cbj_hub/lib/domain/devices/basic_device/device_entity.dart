@@ -1,6 +1,8 @@
 import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
 import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/abstact_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -99,5 +101,28 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
     //           .fold(() => right(unit), (f) => left(f)),
     //     )
     //     .fold((f) => some(f), (_) => none());
+  }
+
+  @override
+  DeviceEntityDtoAbstract toInfrastructure() {
+    print('DeviceDtos.fromDomain');
+    return DeviceDtos(
+      id: this.id!.getOrCrash(),
+      defaultName: defaultName!.getOrCrash(),
+      roomId: roomId!.getOrCrash(),
+      roomName: roomName!.getOrCrash(),
+      deviceStateGRPC: deviceStateGRPC!.getOrCrash(),
+      stateMassage: stateMassage!.getOrCrash(),
+      senderDeviceOs: senderDeviceOs!.getOrCrash(),
+      senderDeviceModel: senderDeviceModel!.getOrCrash(),
+      senderId: senderId!.getOrCrash(),
+      deviceActions: deviceActions!.getOrCrash(),
+      deviceTypes: deviceTypes!.getOrCrash(),
+      compUuid: compUuid!.getOrCrash(),
+      deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
+      deviceMdnsName: deviceMdnsName!.getOrCrash(),
+      lastKnownIp: lastKnownIp!.getOrCrash(),
+      // serverTimeStamp: FieldValue.serverTimestamp(),
+    );
   }
 }

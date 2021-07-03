@@ -10,8 +10,9 @@ part 'device_dtos.g.dart';
 
 @freezed
 abstract class DeviceDtos implements _$DeviceDtos, DeviceEntityDtoAbstract {
-  const factory DeviceDtos({
+  factory DeviceDtos({
     // @JsonKey(ignore: true)
+    String? deviceDtoClass,
     String? id,
     required String? defaultName,
     required String? roomId,
@@ -31,12 +32,17 @@ abstract class DeviceDtos implements _$DeviceDtos, DeviceEntityDtoAbstract {
     // required ServerTimestampConverter() FieldValue serverTimeStamp,
   }) = _DeviceDtos;
 
-  const DeviceDtos._();
+  DeviceDtos._();
+
+  @override
+  final String deviceDtoClassInstance = (DeviceDtos).toString();
 
   @override
   factory DeviceDtos.fromDomain(DeviceEntity deviceEntity) {
     print('DeviceDtos.fromDomain');
+
     return DeviceDtos(
+      deviceDtoClass: (DeviceDtos).toString(),
       id: deviceEntity.id!.getOrCrash(),
       defaultName: deviceEntity.defaultName!.getOrCrash(),
       roomId: deviceEntity.roomId!.getOrCrash(),

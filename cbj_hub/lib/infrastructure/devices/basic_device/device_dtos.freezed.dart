@@ -21,7 +21,8 @@ class _$DeviceDtosTearOff {
   const _$DeviceDtosTearOff();
 
   _DeviceDtos call(
-      {String? id,
+      {String? deviceDtoClass,
+      String? id,
       required String? defaultName,
       required String? roomId,
       required String? roomName,
@@ -37,6 +38,7 @@ class _$DeviceDtosTearOff {
       String? deviceMdnsName,
       String? lastKnownIp}) {
     return _DeviceDtos(
+      deviceDtoClass: deviceDtoClass,
       id: id,
       defaultName: defaultName,
       roomId: roomId,
@@ -66,6 +68,7 @@ const $DeviceDtos = _$DeviceDtosTearOff();
 /// @nodoc
 mixin _$DeviceDtos {
 // @JsonKey(ignore: true)
+  String? get deviceDtoClass => throw _privateConstructorUsedError;
   String? get id => throw _privateConstructorUsedError;
   String? get defaultName => throw _privateConstructorUsedError;
   String? get roomId => throw _privateConstructorUsedError;
@@ -94,7 +97,8 @@ abstract class $DeviceDtosCopyWith<$Res> {
           DeviceDtos value, $Res Function(DeviceDtos) then) =
       _$DeviceDtosCopyWithImpl<$Res>;
   $Res call(
-      {String? id,
+      {String? deviceDtoClass,
+      String? id,
       String? defaultName,
       String? roomId,
       String? roomName,
@@ -121,6 +125,7 @@ class _$DeviceDtosCopyWithImpl<$Res> implements $DeviceDtosCopyWith<$Res> {
 
   @override
   $Res call({
+    Object? deviceDtoClass = freezed,
     Object? id = freezed,
     Object? defaultName = freezed,
     Object? roomId = freezed,
@@ -138,6 +143,10 @@ class _$DeviceDtosCopyWithImpl<$Res> implements $DeviceDtosCopyWith<$Res> {
     Object? lastKnownIp = freezed,
   }) {
     return _then(_value.copyWith(
+      deviceDtoClass: deviceDtoClass == freezed
+          ? _value.deviceDtoClass
+          : deviceDtoClass // ignore: cast_nullable_to_non_nullable
+              as String?,
       id: id == freezed
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -209,7 +218,8 @@ abstract class _$DeviceDtosCopyWith<$Res> implements $DeviceDtosCopyWith<$Res> {
       __$DeviceDtosCopyWithImpl<$Res>;
   @override
   $Res call(
-      {String? id,
+      {String? deviceDtoClass,
+      String? id,
       String? defaultName,
       String? roomId,
       String? roomName,
@@ -238,6 +248,7 @@ class __$DeviceDtosCopyWithImpl<$Res> extends _$DeviceDtosCopyWithImpl<$Res>
 
   @override
   $Res call({
+    Object? deviceDtoClass = freezed,
     Object? id = freezed,
     Object? defaultName = freezed,
     Object? roomId = freezed,
@@ -255,6 +266,10 @@ class __$DeviceDtosCopyWithImpl<$Res> extends _$DeviceDtosCopyWithImpl<$Res>
     Object? lastKnownIp = freezed,
   }) {
     return _then(_DeviceDtos(
+      deviceDtoClass: deviceDtoClass == freezed
+          ? _value.deviceDtoClass
+          : deviceDtoClass // ignore: cast_nullable_to_non_nullable
+              as String?,
       id: id == freezed
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -322,8 +337,9 @@ class __$DeviceDtosCopyWithImpl<$Res> extends _$DeviceDtosCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_DeviceDtos extends _DeviceDtos {
-  const _$_DeviceDtos(
-      {this.id,
+  _$_DeviceDtos(
+      {this.deviceDtoClass,
+      this.id,
       required this.defaultName,
       required this.roomId,
       required this.roomName,
@@ -344,6 +360,8 @@ class _$_DeviceDtos extends _DeviceDtos {
       _$_$_DeviceDtosFromJson(json);
 
   @override // @JsonKey(ignore: true)
+  final String? deviceDtoClass;
+  @override
   final String? id;
   @override
   final String? defaultName;
@@ -376,13 +394,16 @@ class _$_DeviceDtos extends _DeviceDtos {
 
   @override
   String toString() {
-    return 'DeviceDtos(id: $id, defaultName: $defaultName, roomId: $roomId, roomName: $roomName, deviceStateGRPC: $deviceStateGRPC, stateMassage: $stateMassage, senderDeviceOs: $senderDeviceOs, senderDeviceModel: $senderDeviceModel, senderId: $senderId, deviceActions: $deviceActions, deviceTypes: $deviceTypes, compUuid: $compUuid, deviceSecondWiFi: $deviceSecondWiFi, deviceMdnsName: $deviceMdnsName, lastKnownIp: $lastKnownIp)';
+    return 'DeviceDtos(deviceDtoClass: $deviceDtoClass, id: $id, defaultName: $defaultName, roomId: $roomId, roomName: $roomName, deviceStateGRPC: $deviceStateGRPC, stateMassage: $stateMassage, senderDeviceOs: $senderDeviceOs, senderDeviceModel: $senderDeviceModel, senderId: $senderId, deviceActions: $deviceActions, deviceTypes: $deviceTypes, compUuid: $compUuid, deviceSecondWiFi: $deviceSecondWiFi, deviceMdnsName: $deviceMdnsName, lastKnownIp: $lastKnownIp)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other is _DeviceDtos &&
+            (identical(other.deviceDtoClass, deviceDtoClass) ||
+                const DeepCollectionEquality()
+                    .equals(other.deviceDtoClass, deviceDtoClass)) &&
             (identical(other.id, id) ||
                 const DeepCollectionEquality().equals(other.id, id)) &&
             (identical(other.defaultName, defaultName) ||
@@ -431,6 +452,7 @@ class _$_DeviceDtos extends _DeviceDtos {
   @override
   int get hashCode =>
       runtimeType.hashCode ^
+      const DeepCollectionEquality().hash(deviceDtoClass) ^
       const DeepCollectionEquality().hash(id) ^
       const DeepCollectionEquality().hash(defaultName) ^
       const DeepCollectionEquality().hash(roomId) ^
@@ -459,8 +481,9 @@ class _$_DeviceDtos extends _DeviceDtos {
 }
 
 abstract class _DeviceDtos extends DeviceDtos {
-  const factory _DeviceDtos(
-      {String? id,
+  factory _DeviceDtos(
+      {String? deviceDtoClass,
+      String? id,
       required String? defaultName,
       required String? roomId,
       required String? roomName,
@@ -475,12 +498,14 @@ abstract class _DeviceDtos extends DeviceDtos {
       String? deviceSecondWiFi,
       String? deviceMdnsName,
       String? lastKnownIp}) = _$_DeviceDtos;
-  const _DeviceDtos._() : super._();
+  _DeviceDtos._() : super._();
 
   factory _DeviceDtos.fromJson(Map<String, dynamic> json) =
       _$_DeviceDtos.fromJson;
 
   @override // @JsonKey(ignore: true)
+  String? get deviceDtoClass => throw _privateConstructorUsedError;
+  @override
   String? get id => throw _privateConstructorUsedError;
   @override
   String? get defaultName => throw _privateConstructorUsedError;

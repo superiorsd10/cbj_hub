@@ -12,8 +12,9 @@ part 'sonoff_s20_dtos.g.dart';
 @freezed
 abstract class SonoffS20Dtos
     implements _$SonoffS20Dtos, DeviceEntityDtoAbstract {
-  const factory SonoffS20Dtos({
+  factory SonoffS20Dtos({
     // @JsonKey(ignore: true)
+    String? deviceDtoClass,
     String? id,
     required String? defaultName,
     required String? roomId,
@@ -33,10 +34,14 @@ abstract class SonoffS20Dtos
     // required ServerTimestampConverter() FieldValue serverTimeStamp,
   }) = _SonoffS20Dtos;
 
-  const SonoffS20Dtos._();
+  SonoffS20Dtos._();
+
+  @override
+  final String deviceDtoClassInstance = (SonoffS20Dtos).toString();
 
   factory SonoffS20Dtos.fromDomain(SonoffS20DE sonoffS20DE) {
     return SonoffS20Dtos(
+      deviceDtoClass: (SonoffS20Dtos).toString(),
       id: sonoffS20DE.id!.getOrCrash(),
       defaultName: sonoffS20DE.defaultName!.getOrCrash(),
       roomId: sonoffS20DE.roomId!.getOrCrash(),

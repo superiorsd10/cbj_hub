@@ -8,6 +8,7 @@ part of 'sonoff_s20_dtos.dart';
 
 _$_SonoffS20Dtos _$_$_SonoffS20DtosFromJson(Map<String, dynamic> json) {
   return _$_SonoffS20Dtos(
+    deviceDtoClass: json['deviceDtoClass'] as String?,
     id: json['id'] as String?,
     defaultName: json['defaultName'] as String?,
     roomId: json['roomId'] as String?,
@@ -28,6 +29,7 @@ _$_SonoffS20Dtos _$_$_SonoffS20DtosFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$_$_SonoffS20DtosToJson(_$_SonoffS20Dtos instance) =>
     <String, dynamic>{
+      'deviceDtoClass': instance.deviceDtoClass,
       'id': instance.id,
       'defaultName': instance.defaultName,
       'roomId': instance.roomId,

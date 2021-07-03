@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
+import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
@@ -30,7 +31,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       //     .firstWhere((element) =>
       //         element.id!.getOrCrash() == event.variableHeader?.topicName);
 
-      final dynamic deviceEntityToSend =
+      final DeviceEntityAbstract deviceEntityToSend =
           getIt<ILocalDbRepository>().getSmartDevices().first;
 
       AppClientStream.controller.sink.add(deviceEntityToSend);
@@ -50,7 +51,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class AppClientStream {
-  static StreamController<dynamic> controller = StreamController();
+  static StreamController<DeviceEntityAbstract> controller = StreamController();
 
-  static Stream<dynamic> get stream => controller.stream.asBroadcastStream();
+  static Stream<DeviceEntityAbstract> get stream =>
+      controller.stream.asBroadcastStream();
 }
