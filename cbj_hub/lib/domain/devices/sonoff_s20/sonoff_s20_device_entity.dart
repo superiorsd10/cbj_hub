@@ -1,3 +1,4 @@
+import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_failures.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
 import 'package:dartz/dartz.dart';
@@ -8,7 +9,7 @@ part 'sonoff_s20_device_entity.freezed.dart';
 /// Abstract smart sonoffS20 that exist inside a computer, the implementations will
 /// be actual sonoffS20 like blinds lights and more
 @freezed
-abstract class SonoffS20DE implements _$SonoffS20DE {
+abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
   /// All public field of sonoffS20 entity
   const factory SonoffS20DE({
     /// The smart sonoffS20 id

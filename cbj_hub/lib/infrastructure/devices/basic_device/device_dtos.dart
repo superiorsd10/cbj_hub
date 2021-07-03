@@ -1,6 +1,7 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/abstact_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -8,7 +9,7 @@ part 'device_dtos.freezed.dart';
 part 'device_dtos.g.dart';
 
 @freezed
-abstract class DeviceDtos implements _$DeviceDtos {
+abstract class DeviceDtos implements _$DeviceDtos, DeviceEntityDtoAbstract {
   const factory DeviceDtos({
     // @JsonKey(ignore: true)
     String? id,
@@ -32,7 +33,9 @@ abstract class DeviceDtos implements _$DeviceDtos {
 
   const DeviceDtos._();
 
+  @override
   factory DeviceDtos.fromDomain(DeviceEntity deviceEntity) {
+    print('DeviceDtos.fromDomain');
     return DeviceDtos(
       id: deviceEntity.id!.getOrCrash(),
       defaultName: deviceEntity.defaultName!.getOrCrash(),
@@ -57,6 +60,7 @@ abstract class DeviceDtos implements _$DeviceDtos {
       _$DeviceDtosFromJson(json);
 
   DeviceEntity toDomain() {
+    print('To Domain deviceEntity');
     return DeviceEntity(
       id: DeviceUniqueId.fromUniqueString(id),
       defaultName: DeviceDefaultName(defaultName),

@@ -1,7 +1,8 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
-import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
-import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
+import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
+import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/abstact_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -9,7 +10,8 @@ part 'sonoff_s20_dtos.freezed.dart';
 part 'sonoff_s20_dtos.g.dart';
 
 @freezed
-abstract class SonoffS20Dtos implements _$SonoffS20Dtos {
+abstract class SonoffS20Dtos
+    implements _$SonoffS20Dtos, DeviceEntityDtoAbstract {
   const factory SonoffS20Dtos({
     // @JsonKey(ignore: true)
     String? id,
@@ -57,23 +59,24 @@ abstract class SonoffS20Dtos implements _$SonoffS20Dtos {
   factory SonoffS20Dtos.fromJson(Map<String, dynamic> json) =>
       _$SonoffS20DtosFromJson(json);
 
-  DeviceEntity toDomain() {
-    return DeviceEntity(
-      id: DeviceUniqueId.fromUniqueString(id),
-      defaultName: DeviceDefaultName(defaultName),
-      roomId: DeviceUniqueId.fromUniqueString(roomId),
-      roomName: DeviceRoomName(roomName),
-      deviceStateGRPC: DeviceState(deviceStateGRPC),
-      stateMassage: DeviceStateMassage(stateMassage),
-      senderDeviceOs: DeviceSenderDeviceOs(senderDeviceOs),
-      senderDeviceModel: DeviceSenderDeviceModel(senderDeviceModel),
-      senderId: DeviceSenderId.fromUniqueString(senderId),
-      deviceActions: DeviceAction(deviceActions),
-      deviceTypes: DeviceType(deviceTypes),
-      compUuid: DeviceCompUuid(compUuid),
-      deviceSecondWiFi: DeviceSecondWiFiName(deviceSecondWiFi),
-      deviceMdnsName: DeviceMdnsName(deviceMdnsName),
-      lastKnownIp: DeviceLastKnownIp(lastKnownIp),
+  DeviceEntityAbstract toDomain() {
+    print('SonoffS2Dto to Domain');
+    return SonoffS20DE(
+      id: SonoffS20UniqueId.fromUniqueString(id),
+      defaultName: SonoffS20DefaultName(defaultName),
+      roomId: SonoffS20UniqueId.fromUniqueString(roomId),
+      roomName: SonoffS20RoomName(roomName),
+      deviceStateGRPC: SonoffS20State(deviceStateGRPC),
+      stateMassage: SonoffS20StateMassage(stateMassage),
+      senderDeviceOs: SonoffS20SenderDeviceOs(senderDeviceOs),
+      senderDeviceModel: SonoffS20SenderDeviceModel(senderDeviceModel),
+      senderId: SonoffS20SenderId.fromUniqueString(senderId),
+      deviceActions: SonoffS20Action(deviceActions),
+      deviceTypes: SonoffS20Type(deviceTypes),
+      compUuid: SonoffS20CompUuid(compUuid),
+      deviceSecondWiFi: SonoffS20SecondWiFiName(deviceSecondWiFi),
+      deviceMdnsName: SonoffS20MdnsName(deviceMdnsName),
+      lastKnownIp: SonoffS20LastKnownIp(lastKnownIp),
     );
   }
 

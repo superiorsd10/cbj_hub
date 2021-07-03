@@ -1,3 +1,4 @@
+import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
 import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
 import 'package:dartz/dartz.dart';
@@ -8,7 +9,7 @@ part 'device_entity.freezed.dart';
 /// Abstract smart device that exist inside a computer, the implementations will
 /// be actual device like blinds lights and more
 @freezed
-abstract class DeviceEntity implements _$DeviceEntity {
+abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
   /// All public field of device entity
   const factory DeviceEntity({
     /// The smart device id

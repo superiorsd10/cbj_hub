@@ -30,7 +30,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       //     .firstWhere((element) =>
       //         element.id!.getOrCrash() == event.variableHeader?.topicName);
 
-      final DeviceEntity deviceEntityToSend =
+      final dynamic deviceEntityToSend =
           getIt<ILocalDbRepository>().getSmartDevices().first;
 
       AppClientStream.controller.sink.add(deviceEntityToSend);
@@ -50,8 +50,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class AppClientStream {
-  static StreamController<DeviceEntity> controller = StreamController();
+  static StreamController<dynamic> controller = StreamController();
 
-  static Stream<DeviceEntity> get stream =>
-      controller.stream.asBroadcastStream();
+  static Stream<dynamic> get stream => controller.stream.asBroadcastStream();
 }

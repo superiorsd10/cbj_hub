@@ -1,3 +1,4 @@
+import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
@@ -9,7 +10,7 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: ILocalDbRepository)
 class LocalDbRepository extends ILocalDbRepository {
   @override
-  List<DeviceEntity> getSmartDevices() {
+  List<DeviceEntityAbstract> getSmartDevices() {
     final DeviceEntity deviceEntity = DeviceEntity(
       id: DeviceUniqueId(),
       defaultName: DeviceDefaultName('Ceiling'),
@@ -48,7 +49,7 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: SonoffS20SecondWiFiName('test'),
     );
 
-    return [deviceEntity];
+    return [deviceEntity, sonoffS20];
   }
 
   @override

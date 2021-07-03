@@ -1,12 +1,4 @@
-import 'dart:convert';
-
-import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
-import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
-import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
-import 'package:cbj_hub/infrastructure/app_communication/app_communication_repository.dart';
-import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
-import 'package:cbj_hub/injection.dart';
 import 'package:grpc/service_api.dart';
 
 /// Server to get and send information to the app
@@ -19,20 +11,21 @@ class HubAppServer extends CbjHubServiceBase {
   Stream<RequestsAndStatusFromHub> clientTransferDevices(
       ServiceCall call, Stream<ClientStatusRequests> request) async* {
     print('Got new Client');
-    getIt<IAppCommunicationRepository>().getFromApp(request);
-    final Iterable<String> allDevices =
-        getIt<ILocalDbRepository>().getSmartDevices().map((DeviceEntity e) {
-      return jsonEncode(DeviceDtos.fromDomain(e).toJson());
-    });
 
-    for (final String responseToHub in allDevices) {
-      yield RequestsAndStatusFromHub(allRemoteCommands: responseToHub);
-    }
-
-    yield* AppClientStream.stream.map((DeviceEntity deviceEntity) =>
-        RequestsAndStatusFromHub(
-            allRemoteCommands:
-                jsonEncode(DeviceDtos.fromDomain(deviceEntity).toJson())));
+    // getIt<IAppCommunicationRepository>().getFromApp(request);
+    // final Iterable<String> allDevices =
+    //     getIt<ILocalDbRepository>().getSmartDevices().map((dynamic e) {
+    //   return DeviceHelper.convertDomainToJson(e);
+    // });
+    //
+    // for (final String responseToHub in allDevices) {
+    //   yield RequestsAndStatusFromHub(allRemoteCommands: responseToHub);
+    // }
+    //
+    // yield* AppClientStream.stream.map((DeviceEntity deviceEntity) =>
+    //     RequestsAndStatusFromHub(
+    //         allRemoteCommands:
+    //             jsonEncode(DeviceDtos.fromDomain(deviceEntity).toJson())));
   }
 
   @override
