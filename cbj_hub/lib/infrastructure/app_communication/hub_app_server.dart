@@ -1,7 +1,8 @@
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
-import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/app_communication/app_communication_repository.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
@@ -26,14 +27,20 @@ class HubAppServer extends CbjHubServiceBase {
       return DeviceHelper.convertDomainToJsonString(e);
     });
 
+    /// Each first connection to the server send all saved devices
     for (final String responseToHub in allDevices) {
-      yield RequestsAndStatusFromHub(allRemoteCommands: responseToHub);
+      yield RequestsAndStatusFromHub(
+        sendingType: SendingType.deviceType,
+        allRemoteCommands: responseToHub,
+      );
     }
 
-    yield* AppClientStream.stream.map((DeviceEntityAbstract deviceEntity) =>
-        RequestsAndStatusFromHub(
-            allRemoteCommands:
-                DeviceHelper.convertDomainToJsonString(deviceEntity)));
+    yield* AppClientStream.stream.map(
+        (DeviceEntityDtoAbstract deviceEntityDto) => RequestsAndStatusFromHub(
+              sendingType: SendingType.deviceType,
+              allRemoteCommands:
+                  DeviceHelper.convertDtoToJsonString(deviceEntityDto),
+            ));
   }
 
   @override

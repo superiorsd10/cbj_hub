@@ -1,6 +1,6 @@
 // import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
 
-import 'package:cbj_hub/infrastructure/devices/abstact_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 
 class DeviceEntityAbstract {
   DeviceEntityDtoAbstract toInfrastructure() {

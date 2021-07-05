@@ -1,8 +1,8 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
-import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/abstact_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

@@ -1,7 +1,7 @@
-import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
 import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/abstact_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

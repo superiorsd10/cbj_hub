@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
-import 'package:cbj_hub/infrastructure/devices/abstact_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 
 class DeviceHelper {
   /// Dto to json
@@ -38,6 +38,11 @@ class DeviceHelper {
   }
 
   // Extras methods
+
+  static String convertDtoToJsonString(
+      DeviceEntityDtoAbstract deviceEntityDto) {
+    return convertJsonToJsonString(convertDtoToJson(deviceEntityDto));
+  }
 
   static DeviceEntityAbstract convertJsonStringToDomain(String jsonString) {
     return convertDtoToDomain(

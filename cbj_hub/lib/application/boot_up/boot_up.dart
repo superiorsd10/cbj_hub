@@ -11,10 +11,6 @@ class BootUp {
   static Future<void> setup() async {
     getIt<IMqttServerRepository>();
 
-    getIt<IMqttServerRepository>().streamOfAllSubscriptions().listen((event) {
-      print('Got event');
-    });
-
     final IAppCommunicationRepository appCommunication =
         getIt<IAppCommunicationRepository>();
     appCommunication

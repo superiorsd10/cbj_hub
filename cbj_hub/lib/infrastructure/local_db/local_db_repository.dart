@@ -1,10 +1,10 @@
-import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
-import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pb.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: ILocalDbRepository)
@@ -49,7 +49,26 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: SonoffS20SecondWiFiName('test'),
     );
 
-    return [deviceEntity, sonoffS20];
+    final DeviceEntity deviceEntityS = DeviceEntity(
+      id: DeviceUniqueId(),
+      defaultName: DeviceDefaultName('top'),
+      roomId: DeviceUniqueId(),
+      roomName: DeviceRoomName('Guy'),
+      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
+      stateMassage: DeviceStateMassage('Hello World'),
+      senderDeviceOs: DeviceSenderDeviceOs('Linux'),
+      senderDeviceModel: DeviceSenderDeviceModel('Computer'),
+      senderId: DeviceSenderId(),
+      deviceActions: DeviceAction(DeviceActions.on.toString()),
+      deviceTypes: DeviceType(DeviceTypes.light.toString()),
+      compUuid: DeviceCompUuid('Comp1'),
+      lastKnownIp: DeviceLastKnownIp('10.0.0.7'),
+      powerConsumption: DevicePowerConsumption('0'),
+      deviceMdnsName: DeviceMdnsName('CeilingGuy'),
+      deviceSecondWiFi: DeviceSecondWiFiName('test'),
+    );
+
+    return [deviceEntity, sonoffS20, deviceEntityS];
   }
 
   @override

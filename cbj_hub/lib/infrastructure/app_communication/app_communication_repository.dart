@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
-import 'package:cbj_hub/domain/devices/abstact_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:grpc/grpc.dart';
@@ -31,10 +33,14 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       //     .firstWhere((element) =>
       //         element.id!.getOrCrash() == event.variableHeader?.topicName);
 
-      final DeviceEntityAbstract deviceEntityToSend =
-          getIt<ILocalDbRepository>().getSmartDevices().first;
+      getIt<ILocalDbRepository>()
+          .getSmartDevices()
+          .forEach((deviceEntityToSend) {
+        final DeviceEntityDtoAbstract deviceDtoAbstract =
+            DeviceHelper.convertDomainToDto(deviceEntityToSend);
+        AppClientStream.controller.sink.add(deviceDtoAbstract);
+      });
 
-      AppClientStream.controller.sink.add(deviceEntityToSend);
       // print('Will send the topic "${event.payload.variableHeader?.topicName}" '
       //     'change with massage '
       //     '"${String.fromCharCodes(event.payload.message!)}" to the app ');
@@ -44,13 +50,29 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   @override
   Stream<DeviceEntity> getFromApp(Stream<ClientStatusRequests> request) async* {
     print('Need To fix This');
-    // yield* request.map((event) => event.toDeviceEntity());
+    request.map((event) {
+      if (event.sendingType == SendingType.deviceType) {
+        HubClientStream.controller.sink.add(
+            DeviceHelper.convertJsonStringToDomain(event.allRemoteCommands));
+      } else {
+        print('Request from app does not support this sending device type');
+      }
+    });
   }
 }
 
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class AppClientStream {
+  static StreamController<DeviceEntityDtoAbstract> controller =
+      StreamController();
+
+  static Stream<DeviceEntityDtoAbstract> get stream =>
+      controller.stream.asBroadcastStream();
+}
+
+/// Requests and responses from the app into the hub
+class HubClientStream {
   static StreamController<DeviceEntityAbstract> controller = StreamController();
 
   static Stream<DeviceEntityAbstract> get stream =>
