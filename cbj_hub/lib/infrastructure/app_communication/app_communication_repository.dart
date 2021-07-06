@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
@@ -28,6 +27,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   @override
   void sendToApp(Stream<MqttPublishMessage> dataToSend) {
     dataToSend.listen((MqttPublishMessage event) {
+      print('Got AppRequestsToHub');
+
       // final DeviceEntity deviceEntityToSend = getIt<ILocalDbRepository>()
       //     .getSmartDevices()
       //     .firstWhere((element) =>
@@ -48,9 +49,10 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   }
 
   @override
-  Stream<DeviceEntity> getFromApp(Stream<ClientStatusRequests> request) async* {
-    print('Need To fix This');
-    request.map((event) {
+  Future<void> getFromApp(Stream<ClientStatusRequests> request) async {
+    request.listen((event) {
+      print('Got From App');
+
       if (event.sendingType == SendingType.deviceType) {
         HubClientStream.controller.sink.add(
             DeviceHelper.convertJsonStringToDomain(event.allRemoteCommands));

@@ -11,10 +11,12 @@ import 'package:injectable/injectable.dart';
 class LocalDbRepository extends ILocalDbRepository {
   @override
   List<DeviceEntityAbstract> getSmartDevices() {
+    final String guyRoomId = SonoffS20UniqueId().getOrCrash()!;
+
     final DeviceEntity deviceEntity = DeviceEntity(
       id: DeviceUniqueId(),
       defaultName: DeviceDefaultName('Ceiling'),
-      roomId: DeviceUniqueId(),
+      roomId: DeviceUniqueId.fromUniqueString(guyRoomId),
       roomName: DeviceRoomName('Guy'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       stateMassage: DeviceStateMassage('Hello World'),
@@ -33,7 +35,7 @@ class LocalDbRepository extends ILocalDbRepository {
     final SonoffS20DE sonoffS20 = SonoffS20DE(
       id: SonoffS20UniqueId(),
       defaultName: SonoffS20DefaultName('Ceiling'),
-      roomId: SonoffS20UniqueId(),
+      roomId: SonoffS20UniqueId.fromUniqueString(guyRoomId),
       roomName: SonoffS20RoomName('Guy'),
       deviceStateGRPC: SonoffS20State(DeviceStateGRPC.ack.toString()),
       stateMassage: SonoffS20StateMassage('Hello World'),
@@ -53,7 +55,7 @@ class LocalDbRepository extends ILocalDbRepository {
       id: DeviceUniqueId(),
       defaultName: DeviceDefaultName('top'),
       roomId: DeviceUniqueId(),
-      roomName: DeviceRoomName('Guy'),
+      roomName: DeviceRoomName('Omer'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       stateMassage: DeviceStateMassage('Hello World'),
       senderDeviceOs: DeviceSenderDeviceOs('Linux'),
