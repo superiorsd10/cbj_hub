@@ -29,7 +29,7 @@ class LocalDbRepository extends ILocalDbRepository {
       lastKnownIp: DeviceLastKnownIp('10.0.0.7'),
       powerConsumption: DevicePowerConsumption('0'),
       deviceMdnsName: DeviceMdnsName('CeilingGuy'),
-      deviceSecondWiFi: DeviceSecondWiFiName('test'),
+      deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
     );
 
     final SonoffS20DE sonoffS20 = SonoffS20DE(
@@ -48,7 +48,7 @@ class LocalDbRepository extends ILocalDbRepository {
       lastKnownIp: SonoffS20LastKnownIp('10.0.0.7'),
       powerConsumption: SonoffS20PowerConsumption('0'),
       deviceMdnsName: SonoffS20MdnsName('CeilingGuy'),
-      deviceSecondWiFi: SonoffS20SecondWiFiName('test'),
+      deviceSecondWiFi: SonoffS20SecondWiFiName('amiuz2'),
     );
 
     final DeviceEntity deviceEntityS = DeviceEntity(
@@ -67,7 +67,7 @@ class LocalDbRepository extends ILocalDbRepository {
       lastKnownIp: DeviceLastKnownIp('10.0.0.7'),
       powerConsumption: DevicePowerConsumption('0'),
       deviceMdnsName: DeviceMdnsName('CeilingGuy'),
-      deviceSecondWiFi: DeviceSecondWiFiName('test'),
+      deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
     );
 
     return [deviceEntity, sonoffS20, deviceEntityS];
