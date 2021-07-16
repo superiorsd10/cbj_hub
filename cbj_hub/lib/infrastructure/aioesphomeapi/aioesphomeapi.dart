@@ -69,6 +69,31 @@ class AioEspHomeApi {
           print('');
         }
 
+        /// ListEntitiesSwitchResponse
+        else if (responseType == 17) {
+          print('responseType is ListEntitiesSwitchResponse');
+          String dataPayload = '';
+
+          try {
+            dataPayload = data.length > 3 ? utf8.decode(data.sublist(3)) : '';
+
+            print('ListEntitiesSwitchResponse data payload:'
+                ' $dataPayload');
+          } catch (e) {
+            print('ListEntitiesSwitchResponse data bytes:'
+                ' $data');
+          }
+          print('');
+        }
+
+        /// ListEntitiesDoneResponse
+        else if (responseType == 19) {
+          print('responseType is ListEntitiesDoneResponse');
+          print(
+              'ListEntitiesDoneResponse data: ${utf8.decode(data.sublist(3))}');
+          print('');
+        }
+
         /// PingResponse
         else if (responseType == 26) {
           print('responseType is SwitchStateResponse');
@@ -392,6 +417,43 @@ class AioEspHomeApi {
     }
 
     print('switchCommandRequest message: $message');
+
+//  * The message object encoded as a ProtoBuf message
+    socket.add(message);
+  }
+
+  ///  Turn smart device on
+  Future<void> listEntitiesRequest() async {
+    if (devicePass == null) {
+      print('Please call sendConnect, password is missing');
+      return;
+    }
+    // connect to the socket server
+    final socket = await fSocket;
+    print('Connected request to:'
+        ' ${socket.remoteAddress.address}:${socket.remotePort}');
+
+    final ListEntitiesRequest switchCommandRequest = ListEntitiesRequest();
+
+    const int numOfByteBeforeData = 3;
+
+    const int totalSizeToTransfer = numOfByteBeforeData;
+
+    final Uint8List message = Uint8List(totalSizeToTransfer);
+
+    final ByteData byteData = ByteData.view(message.buffer);
+
+    /// A zero byte.
+    byteData.setUint8(0, 0x00);
+
+    /// VarInt denoting the size of the message object.
+    /// (type is not part of this)
+    byteData.setUint8(1, 0);
+
+    ///  * VarInt denoting the type of message.
+    byteData.setUint8(2, 11);
+
+    print('ListEntitiesRequest message: $message');
 
 //  * The message object encoded as a ProtoBuf message
     socket.add(message);
