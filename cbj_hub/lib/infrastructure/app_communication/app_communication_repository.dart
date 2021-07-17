@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
+import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
@@ -26,7 +26,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
   @override
   void sendToApp(Stream<MqttPublishMessage> dataToSend) {
-    dataToSend.listen((MqttPublishMessage event) {
+    dataToSend.listen((MqttPublishMessage event) async {
       print('Got AppRequestsToHub');
 
       // final DeviceEntity deviceEntityToSend = getIt<ILocalDbRepository>()
@@ -34,8 +34,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       //     .firstWhere((element) =>
       //         element.id!.getOrCrash() == event.variableHeader?.topicName);
 
-      getIt<ILocalDbRepository>()
-          .getSmartDevices()
+      (await getIt<ISavedDevicesRepo>().getAllDevices())
           .forEach((deviceEntityToSend) {
         final DeviceEntityDtoAbstract deviceDtoAbstract =
             DeviceHelper.convertDomainToDto(deviceEntityToSend);
