@@ -261,3 +261,17 @@ class SonoffS20SecondWiFiName extends SonoffS20ValueObjectAbstract<String> {
   @override
   final Either<SonoffS20Failure<String>, String> value;
 }
+
+class SonoffS20SwitchKey extends SonoffS20ValueObjectAbstract<String> {
+  factory SonoffS20SwitchKey(String? input) {
+    assert(input != null);
+    return SonoffS20SwitchKey._(
+      validateSonoffS20SwitchKeyNotEmpty(input!),
+    );
+  }
+
+  const SonoffS20SwitchKey._(this.value);
+
+  @override
+  final Either<SonoffS20Failure<String>, String> value;
+}

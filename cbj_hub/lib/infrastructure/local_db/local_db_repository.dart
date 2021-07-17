@@ -15,7 +15,8 @@ class LocalDbRepository extends ILocalDbRepository {
     final String guyRoomId = SonoffS20UniqueId().getOrCrash()!;
 
     final SonoffS20DE firstRealDeviceTest = SonoffS20DE(
-      id: SonoffS20UniqueId(),
+      id: SonoffS20UniqueId.fromUniqueString(
+          '0ecb1040-e724-11eb-8cec-954d01dcce33'),
       defaultName: SonoffS20DefaultName('guy ceiling'),
       roomId: SonoffS20UniqueId(),
       roomName: SonoffS20RoomName('Guyy'),
@@ -33,6 +34,7 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: SonoffS20SecondWiFiName('amiuz2'),
       deviceMdnsName: SonoffS20MdnsName('guy_ceiling'),
       powerConsumption: SonoffS20PowerConsumption('0'),
+      sonoffS20SwitchKey: SonoffS20SwitchKey('1360107432'),
     );
 
     final SonoffS20DE sonoffS20 = SonoffS20DE(

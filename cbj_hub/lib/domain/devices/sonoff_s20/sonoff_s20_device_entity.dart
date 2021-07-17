@@ -62,6 +62,9 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
 
     /// SonoffS20 second WiFi
     SonoffS20SecondWiFiName? deviceSecondWiFi,
+
+    /// SonoffS20 key of the switch
+    SonoffS20SwitchKey? sonoffS20SwitchKey,
   }) = _SonoffS20DE;
 
   const SonoffS20DE._();
@@ -81,6 +84,7 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
         deviceTypes: SonoffS20Type(''),
         compUuid: SonoffS20CompUuid(''),
         lastKnownIp: SonoffS20LastKnownIp(''),
+        sonoffS20SwitchKey: SonoffS20SwitchKey(''),
       );
 
   /// Will return failure if any of the fields failed or return unit if fields

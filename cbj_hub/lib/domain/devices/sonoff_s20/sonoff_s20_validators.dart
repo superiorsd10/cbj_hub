@@ -60,6 +60,15 @@ Either<SonoffS20Failure<String>, String> validateSonoffS20WiFiNameNotEmpty(
   }
 }
 
+Either<SonoffS20Failure<String>, String> validateSonoffS20SwitchKeyNotEmpty(
+    String input) {
+  if (input != null) {
+    return right(input);
+  } else {
+    return left(SonoffS20Failure.empty(failedValue: input));
+  }
+}
+
 Either<SonoffS20Failure<String>, String> validateSonoffS20MaxNameLength(
     String input, int maxLength) {
   if (input.length <= maxLength) {
