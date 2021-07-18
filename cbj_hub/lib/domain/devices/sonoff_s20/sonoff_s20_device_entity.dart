@@ -133,6 +133,7 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
       deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
       deviceMdnsName: deviceMdnsName!.getOrCrash(),
       lastKnownIp: lastKnownIp!.getOrCrash(),
+      sonoffS20SwitchKey: sonoffS20SwitchKey!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }

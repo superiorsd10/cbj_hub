@@ -13,6 +13,8 @@ abstract class IDeviceRepository {
 
   Future<void> initiateHubConnection();
 
+  Future<void> manageHubRequestsForDevice();
+
   Future<Either<CoreFailure, KtList<DeviceEntity?>>> getAllDevices();
 
   Future<Either<CoreFailure, KtList<DeviceDtos?>>> getAllDevicesAsDto();

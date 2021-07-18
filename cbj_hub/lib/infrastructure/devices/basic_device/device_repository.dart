@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/devices/basic_device/i_device_repository.dart';
@@ -31,52 +33,45 @@ class DeviceRepository implements IDeviceRepository {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> moveDownBlinds(
-      {required List<String>? devicesId, String? forceUpdateLocation}) {
+  Future<Either<CoreFailure, Unit>> moveDownBlinds({required List<String>? devicesId, String? forceUpdateLocation}) {
     // TODO: implement moveDownBlinds
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> moveUpBlinds(
-      {required List<String>? devicesId, String? forceUpdateLocation}) {
+  Future<Either<CoreFailure, Unit>> moveUpBlinds({required List<String>? devicesId, String? forceUpdateLocation}) {
     // TODO: implement moveUpBlinds
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> stopBlinds(
-      {required List<String>? devicesId, String? forceUpdateLocation}) {
+  Future<Either<CoreFailure, Unit>> stopBlinds({required List<String>? devicesId, String? forceUpdateLocation}) {
     // TODO: implement stopBlinds
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOffDevices(
-      {required List<String>? devicesId, String? forceUpdateLocation}) {
+  Future<Either<CoreFailure, Unit>> turnOffDevices({required List<String>? devicesId, String? forceUpdateLocation}) {
     // TODO: implement turnOffDevices
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOnDevices(
-      {required List<String>? devicesId, String? forceUpdateLocation}) {
+  Future<Either<CoreFailure, Unit>> turnOnDevices({required List<String>? devicesId, String? forceUpdateLocation}) {
     // TODO: implement turnOnDevices
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> updateDatabase(
-      {required String pathOfField,
-      required Map<String, dynamic> fieldsToUpdate,
-      String? forceUpdateLocation}) {
+  Future<Either<CoreFailure, Unit>> updateDatabase({required String pathOfField,
+    required Map<String, dynamic> fieldsToUpdate,
+    String? forceUpdateLocation}) {
     // TODO: implement updateDatabase
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> updateWithDeviceEntity(
-      {required DeviceEntity deviceEntity, String? forceUpdateLocation}) {
+  Future<Either<CoreFailure, Unit>> updateWithDeviceEntity({required DeviceEntity deviceEntity, String? forceUpdateLocation}) {
     // TODO: implement updateWithDeviceEntity
     throw UnimplementedError();
   }
@@ -117,4 +112,7 @@ class DeviceRepository implements IDeviceRepository {
         .getOrElse(() => <DeviceEntity?>[].toImmutableList())
         .map((d) => DeviceDtos.fromDomain(d!)));
   }
+
+  @override
+  Future<void> manageHubRequestsForDevice() async {}
 }

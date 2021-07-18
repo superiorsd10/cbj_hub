@@ -2,6 +2,7 @@ import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
+import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -30,6 +31,7 @@ abstract class SonoffS20Dtos
     String? deviceSecondWiFi,
     String? deviceMdnsName,
     String? lastKnownIp,
+    String? sonoffS20SwitchKey,
 
     // required ServerTimestampConverter() FieldValue serverTimeStamp,
   }) = _SonoffS20Dtos;
@@ -57,6 +59,7 @@ abstract class SonoffS20Dtos
       deviceSecondWiFi: sonoffS20DE.deviceSecondWiFi!.getOrCrash(),
       deviceMdnsName: sonoffS20DE.deviceMdnsName!.getOrCrash(),
       lastKnownIp: sonoffS20DE.lastKnownIp!.getOrCrash(),
+      sonoffS20SwitchKey: sonoffS20DE.sonoffS20SwitchKey!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
@@ -82,6 +85,7 @@ abstract class SonoffS20Dtos
       deviceSecondWiFi: DeviceSecondWiFiName(deviceSecondWiFi),
       deviceMdnsName: DeviceMdnsName(deviceMdnsName),
       lastKnownIp: DeviceLastKnownIp(lastKnownIp),
+      sonoffS20SwitchKey: SonoffS20SwitchKey(sonoffS20SwitchKey),
     );
   }
 

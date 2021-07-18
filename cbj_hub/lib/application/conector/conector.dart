@@ -6,6 +6,7 @@ import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.da
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/general_devices_repo.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:typed_data/src/typed_buffer.dart';
@@ -33,9 +34,8 @@ class Conector {
     getIt<IMqttServerRepository>().allHubDevicesSubscriptions();
     // appCommunication.sendToApp();
 
-    ConnectorDevicesStreamFromMqtt().stream.listen((event) async {
-      print('Convert to device and save it to all devices');
-    });
+    GeneralDevicesRepo.updateAllDevicesReposWithDeviceChanges(
+        ConnectorDevicesStreamFromMqtt().stream);
   }
 
   static Future<void> updateDevicesFromMqttDeviceChange(

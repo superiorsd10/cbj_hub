@@ -161,9 +161,12 @@ class AioEspHomeApi {
         i++) {
       byteData.setUint8(i, list[i - numOfByteBeforeData]);
     }
-    print(message);
 
     socket.add(message);
+  }
+
+  Future<void> disconnect() async {
+    await (await fSocket).close();
   }
 
   ///  Turn smart device on
@@ -205,7 +208,6 @@ class AioEspHomeApi {
         i++) {
       byteData.setUint8(i, clientInfoAsIntList[i - numOfByteBeforeData]);
     }
-    print(message);
 
     socket.add(message);
   }
@@ -250,7 +252,6 @@ class AioEspHomeApi {
         i++) {
       byteData.setUint8(i, passwordAsIntList[i - numOfBytesBeforeData]);
     }
-    print(message);
 
     socket.add(message);
   }
@@ -285,7 +286,6 @@ class AioEspHomeApi {
     byteData.setUint8(2, 7);
 
 //  * The message object encoded as a ProtoBuf message
-    print(message);
 
     socket.add(message);
   }
@@ -355,7 +355,6 @@ class AioEspHomeApi {
     ///  * VarInt denoting the type of message.
     byteData.setUint8(2, 20);
 
-    print(message);
     socket.add(message);
   }
 

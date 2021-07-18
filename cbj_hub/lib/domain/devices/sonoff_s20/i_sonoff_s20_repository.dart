@@ -13,6 +13,10 @@ abstract class ISonoffS20Repository {
 
   Future<void> initiateHubConnection();
 
+  Future<void> manageHubRequestsForDevice(SonoffS20DE sonoffS20DE);
+
+  Future<void> executeDeviceAction(SonoffS20DE sonoffS20DE);
+
   Future<Either<CoreFailure, KtList<SonoffS20DE?>>> getAllSonoffS20s();
 
   Future<Either<CoreFailure, KtList<SonoffS20Dtos?>>> getAllSonoffS20sAsDto();
@@ -21,13 +25,9 @@ abstract class ISonoffS20Repository {
 
   Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchLights();
 
-  Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchBlinds();
-
-  Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchBoilers();
-
   Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchUncompleted();
 
-  Future<Either<CoreFailure, Unit>> create(SonoffS20DE SonoffS20);
+  Future<Either<CoreFailure, Unit>> create(SonoffS20DE sonoffS20);
 
   /// Update document in the database in the following fields
   Future<Either<CoreFailure, Unit>> updateDatabase({
@@ -37,34 +37,13 @@ abstract class ISonoffS20Repository {
   });
 
   Future<Either<CoreFailure, Unit>> updateWithSonoffS20({
-    required SonoffS20DE SonoffS20,
+    required SonoffS20DE sonoffS20,
     String? forceUpdateLocation,
   });
 
-  Future<Either<CoreFailure, Unit>> turnOnSonoffS20s({
-    required List<String>? SonoffS20sId,
-    String forceUpdateLocation,
-  });
+  Future<Either<CoreFailure, Unit>> turnOnSonoffS20s(SonoffS20DE sonoffS20DE);
 
-  Future<Either<CoreFailure, Unit>> turnOffSonoffS20s({
-    required List<String>? SonoffS20sId,
-    String forceUpdateLocation,
-  });
+  Future<Either<CoreFailure, Unit>> turnOffSonoffS20s(SonoffS20DE sonoffS20DE);
 
-  Future<Either<CoreFailure, Unit>> moveUpBlinds({
-    required List<String>? SonoffS20sId,
-    String forceUpdateLocation,
-  });
-
-  Future<Either<CoreFailure, Unit>> stopBlinds({
-    required List<String>? SonoffS20sId,
-    String forceUpdateLocation,
-  });
-
-  Future<Either<CoreFailure, Unit>> moveDownBlinds({
-    required List<String>? SonoffS20sId,
-    String forceUpdateLocation,
-  });
-
-  Future<Either<CoreFailure, Unit>> delete(SonoffS20DE SonoffS20);
+  Future<Either<CoreFailure, Unit>> delete(SonoffS20DE sonoffS20);
 }

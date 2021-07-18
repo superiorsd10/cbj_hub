@@ -31,7 +31,7 @@ class LocalDbRepository extends ILocalDbRepository {
       compUuid: DeviceCompUuid('9C:9D:7E:48:60:48'),
       lastKnownIp: DeviceLastKnownIp('192.168.31.21'),
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
-      deviceMdnsName: DeviceMdnsName('guy_ceiling'),
+      deviceMdnsName: DeviceMdnsName('guy_ceiling.local'),
       powerConsumption: DevicePowerConsumption('0'),
       sonoffS20SwitchKey: SonoffS20SwitchKey('1360107432'),
     );

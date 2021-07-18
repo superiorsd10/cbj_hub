@@ -24,6 +24,7 @@ _$_SonoffS20Dtos _$_$_SonoffS20DtosFromJson(Map<String, dynamic> json) {
     deviceSecondWiFi: json['deviceSecondWiFi'] as String?,
     deviceMdnsName: json['deviceMdnsName'] as String?,
     lastKnownIp: json['lastKnownIp'] as String?,
+    sonoffS20SwitchKey: json['sonoffS20SwitchKey'] as String?,
   );
 }
 
@@ -45,4 +46,5 @@ Map<String, dynamic> _$_$_SonoffS20DtosToJson(_$_SonoffS20Dtos instance) =>
       'deviceSecondWiFi': instance.deviceSecondWiFi,
       'deviceMdnsName': instance.deviceMdnsName,
       'lastKnownIp': instance.lastKnownIp,
+      'sonoffS20SwitchKey': instance.sonoffS20SwitchKey,
     };

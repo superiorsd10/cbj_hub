@@ -7,12 +7,6 @@ abstract class DeviceEntityAbstract {
   DeviceEntityDtoAbstract toInfrastructure() {
     return DeviceEntityDtoAbstract();
   }
-
-  /// The smart device id
-// DeviceUniqueId? id;
-//
-// /// The default name of the device
-// DeviceDefaultName? defaultName;
 }
 
 class DeviceEntityNotAbstract implements DeviceEntityAbstract {
