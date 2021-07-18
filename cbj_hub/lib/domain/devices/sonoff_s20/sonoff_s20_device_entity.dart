@@ -1,5 +1,6 @@
+import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_failures.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/sonoff_s20/sonoff_s20_dtos.dart';
@@ -15,13 +16,14 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
   /// All public field of sonoffS20 entity
   const factory SonoffS20DE({
     /// The smart sonoffS20 id
-    required SonoffS20UniqueId? id,
+    //
+    required CoreUniqueId? id,
 
     /// The default name of the sonoffS20
     required SonoffS20DefaultName? defaultName,
 
     /// Room id that the smart sonoffS20 located in.
-    required SonoffS20UniqueId? roomId,
+    required CoreUniqueId? roomId,
 
     /// Room name that the smart sonoffS20 located in.
     required SonoffS20RoomName? roomName,
@@ -71,9 +73,9 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
 
   /// Empty instance of SonoffS20Entity
   factory SonoffS20DE.empty() => SonoffS20DE(
-        id: SonoffS20UniqueId(),
+    id: CoreUniqueId(),
         defaultName: SonoffS20DefaultName(''),
-        roomId: SonoffS20UniqueId(),
+        roomId: CoreUniqueId(),
         roomName: SonoffS20RoomName(''),
         deviceStateGRPC: SonoffS20State(''),
         senderDeviceOs: SonoffS20SenderDeviceOs(''),
@@ -85,11 +87,11 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
         compUuid: SonoffS20CompUuid(''),
         lastKnownIp: SonoffS20LastKnownIp(''),
         sonoffS20SwitchKey: SonoffS20SwitchKey(''),
-      );
+  );
 
   /// Will return failure if any of the fields failed or return unit if fields
   /// have legit values
-  Option<SonoffS20Failure<dynamic>> get failureOption {
+  Option<CoreFailure<dynamic>> get failureOption {
     return defaultName!.value.fold((f) => some(f), (_) => none());
     //
     // return body.failureOrUnit
@@ -105,6 +107,11 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
     //           .fold(() => right(unit), (f) => left(f)),
     //     )
     //     .fold((f) => some(f), (_) => none());
+  }
+
+  @override
+  String getDeviceId() {
+    return this.id!.getOrCrash()!;
   }
 
   @override

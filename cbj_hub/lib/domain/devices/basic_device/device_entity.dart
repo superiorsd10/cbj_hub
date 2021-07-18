@@ -1,5 +1,6 @@
+import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
@@ -15,13 +16,13 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
   /// All public field of device entity
   const factory DeviceEntity({
     /// The smart device id
-    required DeviceUniqueId? id,
+    required CoreUniqueId? id,
 
     /// The default name of the device
     required DeviceDefaultName? defaultName,
 
     /// Room id that the smart device located in.
-    required DeviceUniqueId? roomId,
+    required CoreUniqueId? roomId,
 
     /// Room name that the smart device located in.
     required DeviceRoomName? roomName,
@@ -68,9 +69,9 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
 
   /// Empty instance of DeviceEntity
   factory DeviceEntity.empty() => DeviceEntity(
-        id: DeviceUniqueId(),
+    id: CoreUniqueId(),
         defaultName: DeviceDefaultName(''),
-        roomId: DeviceUniqueId(),
+        roomId: CoreUniqueId(),
         roomName: DeviceRoomName(''),
         deviceStateGRPC: DeviceState(''),
         senderDeviceOs: DeviceSenderDeviceOs(''),
@@ -85,7 +86,7 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
 
   /// Will return failure if any of the fields failed or return unit if fields
   /// have legit values
-  Option<DevicesFailure<dynamic>> get failureOption {
+  Option<CoreFailure<dynamic>> get failureOption {
     return defaultName!.value.fold((f) => some(f), (_) => none());
     //
     // return body.failureOrUnit
@@ -101,6 +102,11 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
     //           .fold(() => right(unit), (f) => left(f)),
     //     )
     //     .fold((f) => some(f), (_) => none());
+  }
+
+  @override
+  String getDeviceId() {
+    return this.id!.getOrCrash()!;
   }
 
   @override

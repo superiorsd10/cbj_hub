@@ -1,17 +1,43 @@
-// import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
-
+import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 
-class DeviceEntityAbstract {
+abstract class DeviceEntityAbstract {
+  String getDeviceId();
+
   DeviceEntityDtoAbstract toInfrastructure() {
     return DeviceEntityDtoAbstract();
   }
 
   /// The smart device id
-  // DeviceUniqueId? id;
-  //
-  // /// The default name of the device
-  // DeviceDefaultName? defaultName;
+// DeviceUniqueId? id;
+//
+// /// The default name of the device
+// DeviceDefaultName? defaultName;
+}
+
+class DeviceEntityNotAbstract implements DeviceEntityAbstract {
+  DeviceEntityNotAbstract(
+
+      /// The smart device id
+      {required this.id});
+
+  CoreUniqueId? id;
+
+  DeviceEntityDtoAbstract toInfrastructure() {
+    return DeviceEntityDtoAbstract();
+  }
+
+  @override
+  String getDeviceId() {
+    // TODO: implement getDeviceId
+    throw UnimplementedError();
+  }
+
+  /// The smart device id
+// DeviceUniqueId? id;
+//
+// /// The default name of the device
+// DeviceDefaultName? defaultName;
 }
 
 //

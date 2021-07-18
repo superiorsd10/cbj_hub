@@ -1,4 +1,5 @@
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
 import 'package:cbj_hub/infrastructure/devices/sonoff_s20/sonoff_s20_dtos.dart';
 
@@ -33,6 +34,6 @@ class DeviceEntityDtoAbstract {
 
   DeviceEntityAbstract toDomain() {
     print('ToDomain');
-    return DeviceEntityAbstract();
+    return DeviceEntityNotAbstract(id: CoreUniqueId());
   }
 }

@@ -1,106 +1,102 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_failures.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:dartz/dartz.dart';
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20NotEmpty(
-    String input) {
+Either<CoreFailure<String>, String> validateSonoffS20NotEmpty(String input) {
   if (input.isNotEmpty) {
     return right(input);
   } else {
-    return left(SonoffS20Failure.empty(
+    return left(CoreFailure.empty(
       failedValue: input,
     ));
   }
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20LastKnownIpNotEmpty(
+Either<CoreFailure<String>, String> validateSonoffS20LastKnownIpNotEmpty(
     String input) {
   if (input.isNotEmpty) {
     return right(input);
   } else {
-    return left(SonoffS20Failure.empty(
+    return left(CoreFailure.empty(
       failedValue: input,
     ));
   }
 }
 
-Either<SonoffS20Failure<String>, String>
-    validateSonoffS20FailurePowerConsumptionNotEmpty(String input) {
+Either<CoreFailure<String>, String> validateCoreFailurePowerConsumptionNotEmpty(
+    String input) {
   if (double.tryParse(input) != null) {
     return right(input);
   } else {
-    return left(const SonoffS20Failure.powerConsumptionIsNotNumber());
+    return left(const CoreFailure.powerConsumptionIsNotNumber());
   }
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20RoomNameNotEmpty(
+Either<CoreFailure<String>, String> validateSonoffS20RoomNameNotEmpty(
     String input) {
   if (input != null) {
     return right(input);
   } else {
-    return left(SonoffS20Failure.empty(failedValue: input));
+    return left(CoreFailure.empty(failedValue: input));
   }
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20MdnsNameNotEmpty(
+Either<CoreFailure<String>, String> validateSonoffS20MdnsNameNotEmpty(
     String input) {
   if (input != null) {
     return right(input);
   } else {
-    return left(SonoffS20Failure.empty(failedValue: input));
+    return left(CoreFailure.empty(failedValue: input));
   }
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20WiFiNameNotEmpty(
+Either<CoreFailure<String>, String> validateSonoffS20WiFiNameNotEmpty(
     String input) {
   if (input != null) {
     return right(input);
   } else {
-    return left(SonoffS20Failure.empty(failedValue: input));
+    return left(CoreFailure.empty(failedValue: input));
   }
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20SwitchKeyNotEmpty(
+Either<CoreFailure<String>, String> validateSonoffS20SwitchKeyNotEmpty(
     String input) {
   if (input != null) {
     return right(input);
   } else {
-    return left(SonoffS20Failure.empty(failedValue: input));
+    return left(CoreFailure.empty(failedValue: input));
   }
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20MaxNameLength(
+Either<CoreFailure<String>, String> validateSonoffS20MaxNameLength(
     String input, int maxLength) {
   if (input.length <= maxLength) {
     return right(input);
   } else {
-    return left(SonoffS20Failure.exceedingLength(
+    return left(CoreFailure.exceedingLength(
       failedValue: input,
       max: maxLength,
     ));
   }
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20StateExist(
-    String input) {
+Either<CoreFailure<String>, String> validateSonoffS20StateExist(String input) {
   if (EnumHelper.stringToDeviceState(input) != null) {
     return right(input);
   }
-  return left(const SonoffS20Failure.deviceActionDoesNotExist());
+  return left(const CoreFailure.deviceActionDoesNotExist());
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20ActionExist(
-    String input) {
+Either<CoreFailure<String>, String> validateSonoffS20ActionExist(String input) {
   if (EnumHelper.stringToDeviceAction(input) != null) {
     return right(input);
   }
-  return left(const SonoffS20Failure.deviceActionDoesNotExist());
+  return left(const CoreFailure.deviceActionDoesNotExist());
 }
 
-Either<SonoffS20Failure<String>, String> validateSonoffS20TypeExist(
-    String input) {
+Either<CoreFailure<String>, String> validateSonoffS20TypeExist(String input) {
   if (EnumHelper.stringToDt(input) != null) {
     return right(input);
   }
-  return left(const SonoffS20Failure.deviceTypeDoesNotExist());
+  return left(const CoreFailure.deviceTypeDoesNotExist());
 }

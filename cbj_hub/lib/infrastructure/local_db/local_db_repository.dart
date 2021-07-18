@@ -1,5 +1,6 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
@@ -12,13 +13,12 @@ import 'package:injectable/injectable.dart';
 class LocalDbRepository extends ILocalDbRepository {
   @override
   List<DeviceEntityAbstract> getSmartDevices() {
-    final String guyRoomId = SonoffS20UniqueId().getOrCrash()!;
+    final String guyRoomId = CoreUniqueId().getOrCrash()!;
 
     final SonoffS20DE firstRealDeviceTest = SonoffS20DE(
-      id: SonoffS20UniqueId.fromUniqueString(
-          '0ecb1040-e724-11eb-8cec-954d01dcce33'),
+      id: CoreUniqueId.fromUniqueString('0ecb1040-e724-11eb-8cec-954d01dcce33'),
       defaultName: SonoffS20DefaultName('guy ceiling'),
-      roomId: SonoffS20UniqueId(),
+      roomId: CoreUniqueId(),
       roomName: SonoffS20RoomName('Guyy'),
       deviceStateGRPC: SonoffS20State(
           EnumHelper.deviceStateToString(DeviceStateGRPC.waitingInComp)),
@@ -38,9 +38,9 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     final SonoffS20DE sonoffS20 = SonoffS20DE(
-      id: SonoffS20UniqueId(),
+      id: CoreUniqueId(),
       defaultName: SonoffS20DefaultName('Ceiling'),
-      roomId: SonoffS20UniqueId.fromUniqueString(guyRoomId),
+      roomId: CoreUniqueId.fromUniqueString(guyRoomId),
       roomName: SonoffS20RoomName('Guy'),
       deviceStateGRPC: SonoffS20State(DeviceStateGRPC.ack.toString()),
       stateMassage: SonoffS20StateMassage('Hello World'),
@@ -57,9 +57,9 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     final DeviceEntity deviceEntity = DeviceEntity(
-      id: DeviceUniqueId(),
+      id: CoreUniqueId(),
       defaultName: DeviceDefaultName('Ceiling'),
-      roomId: DeviceUniqueId.fromUniqueString(guyRoomId),
+      roomId: CoreUniqueId.fromUniqueString(guyRoomId),
       roomName: DeviceRoomName('Guy'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       stateMassage: DeviceStateMassage('Hello World'),
@@ -76,9 +76,9 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     final DeviceEntity deviceEntityS = DeviceEntity(
-      id: DeviceUniqueId(),
+      id: CoreUniqueId(),
       defaultName: DeviceDefaultName('top'),
-      roomId: DeviceUniqueId(),
+      roomId: CoreUniqueId(),
       roomName: DeviceRoomName('Omer'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       stateMassage: DeviceStateMassage('Hello World'),
@@ -94,7 +94,7 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
     );
 
-    return [firstRealDeviceTest, deviceEntity, sonoffS20, deviceEntityS];
+    return [firstRealDeviceTest];
   }
 
   @override

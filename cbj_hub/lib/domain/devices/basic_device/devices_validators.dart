@@ -1,90 +1,89 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
-import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:dartz/dartz.dart';
 
-Either<DevicesFailure<String>, String> validateDeviceNotEmpty(String input) {
+Either<CoreFailure<String>, String> validateDeviceNotEmpty(String input) {
   if (input.isNotEmpty) {
     return right(input);
   } else {
-    return left(DevicesFailure.empty(
+    return left(CoreFailure.empty(
       failedValue: input,
     ));
   }
 }
 
-Either<DevicesFailure<String>, String> validateLastKnownIpNotEmpty(
-    String input) {
+Either<CoreFailure<String>, String> validateLastKnownIpNotEmpty(String input) {
   if (input.isNotEmpty) {
     return right(input);
   } else {
-    return left(DevicesFailure.empty(
+    return left(CoreFailure.empty(
       failedValue: input,
     ));
   }
 }
 
-Either<DevicesFailure<String>, String> validatePowerConsumptionNotEmpty(
+Either<CoreFailure<String>, String> validatePowerConsumptionNotEmpty(
     String input) {
   if (double.tryParse(input) != null) {
     return right(input);
   } else {
-    return left(const DevicesFailure.powerConsumptionIsNotNumber());
+    return left(const CoreFailure.powerConsumptionIsNotNumber());
   }
 }
 
-Either<DevicesFailure<String>, String> validateRoomNameNotEmpty(String input) {
+Either<CoreFailure<String>, String> validateRoomNameNotEmpty(String input) {
   if (input != null) {
     return right(input);
   } else {
-    return left(DevicesFailure.empty(failedValue: input));
+    return left(CoreFailure.empty(failedValue: input));
   }
 }
 
-Either<DevicesFailure<String>, String> validateMdnsNameNotEmpty(String input) {
+Either<CoreFailure<String>, String> validateMdnsNameNotEmpty(String input) {
   if (input != null) {
     return right(input);
   } else {
-    return left(DevicesFailure.empty(failedValue: input));
+    return left(CoreFailure.empty(failedValue: input));
   }
 }
 
-Either<DevicesFailure<String>, String> validateWiFiNameNotEmpty(String input) {
+Either<CoreFailure<String>, String> validateWiFiNameNotEmpty(String input) {
   if (input != null) {
     return right(input);
   } else {
-    return left(DevicesFailure.empty(failedValue: input));
+    return left(CoreFailure.empty(failedValue: input));
   }
 }
 
-Either<DevicesFailure<String>, String> validateDeviceMaxNameLength(
+Either<CoreFailure<String>, String> validateDeviceMaxNameLength(
     String input, int maxLength) {
   if (input.length <= maxLength) {
     return right(input);
   } else {
-    return left(DevicesFailure.exceedingLength(
+    return left(CoreFailure.exceedingLength(
       failedValue: input,
       max: maxLength,
     ));
   }
 }
 
-Either<DevicesFailure<String>, String> validateDeviceStateExist(String input) {
+Either<CoreFailure<String>, String> validateDeviceStateExist(String input) {
   if (EnumHelper.stringToDeviceState(input) != null) {
     return right(input);
   }
-  return left(const DevicesFailure.deviceActionDoesNotExist());
+  return left(const CoreFailure.deviceActionDoesNotExist());
 }
 
-Either<DevicesFailure<String>, String> validateDeviceActionExist(String input) {
+Either<CoreFailure<String>, String> validateDeviceActionExist(String input) {
   if (EnumHelper.stringToDeviceAction(input) != null) {
     return right(input);
   }
-  return left(const DevicesFailure.deviceActionDoesNotExist());
+  return left(const CoreFailure.deviceActionDoesNotExist());
 }
 
-Either<DevicesFailure<String>, String> validateDeviceTypeExist(String input) {
+Either<CoreFailure<String>, String> validateDeviceTypeExist(String input) {
   if (EnumHelper.stringToDt(input) != null) {
     return right(input);
   }
-  return left(const DevicesFailure.deviceTypeDoesNotExist());
+  return left(const CoreFailure.deviceTypeDoesNotExist());
 }

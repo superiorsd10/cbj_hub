@@ -1,14 +1,11 @@
-/*
- * Package : mqtt_client
- * Author : S. Hamblett <steve.hamblett@linux.com>
- * Date   : 31/05/2017
- * Copyright :  S.Hamblett
- */
-
+import 'package:cbj_hub/application/conector/conector.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:mqtt_client/src/observable/src/records.dart';
 
 @LazySingleton(as: IMqttServerRepository)
 class MqttServerRepository extends IMqttServerRepository {
@@ -18,6 +15,9 @@ class MqttServerRepository extends IMqttServerRepository {
 
   /// Static instance of connection to mqtt broker
   static MqttServerClient client = MqttServerClient('127.0.0.1', 'CBJ_Hub');
+
+  String hubBaseTopic = 'CBJ_Hub_Topic';
+  String devicesTopicTypeName = 'Devices';
 
   /// Connect the client to mqtt if not in connecting or connected state already
   @override
@@ -57,6 +57,7 @@ class MqttServerRepository extends IMqttServerRepository {
       print('Error: $e');
       client.disconnect();
     }
+    client.subscribe('#', MqttQos.atLeastOnce);
     return client;
   }
 
@@ -67,10 +68,45 @@ class MqttServerRepository extends IMqttServerRepository {
   }
 
   @override
-  Stream<MqttPublishMessage> streamOfAllSubscriptions() async* {
+  Stream<List<MqttReceivedMessage<MqttMessage?>>>
+      streamOfAllSubscriptions() async* {
     await connect();
-    client.subscribe('#', MqttQos.atLeastOnce);
-    yield* client.published!;
+    yield* MqttClientTopicFilter('#', client.updates).updates;
+  }
+
+  @override
+  Stream<List<MqttReceivedMessage<MqttMessage?>>>
+      streamOfAllHubSubscriptions() async* {
+    await connect();
+
+    yield* MqttClientTopicFilter('$hubBaseTopic/#', client.updates).updates;
+  }
+
+  @override
+  Stream<List<MqttReceivedMessage<MqttMessage?>>>
+      streamOfAllDevicesHubSubscriptions() async* {
+    await connect();
+    yield* MqttClientTopicFilter(
+            '$hubBaseTopic/$devicesTopicTypeName/#', client.updates)
+        .updates;
+  }
+
+  @override
+  Future<void> allHubDevicesSubscriptions() async {
+    streamOfAllDevicesHubSubscriptions().listen(
+        (List<MqttReceivedMessage<MqttMessage?>> mqttPublishMessage) async {
+      final String messageTopic = mqttPublishMessage[0].topic;
+      final List<String> topicsSplitted = messageTopic.split('/');
+      if (topicsSplitted.length < 4) {
+        return;
+      }
+      final String deviceId = topicsSplitted[2];
+      final String deviceDeviceTypeThatChanged = topicsSplitted[3];
+      final String devicePropertyMassageThatChanged =
+          messageTopic.split('/')[4];
+      ConnectorDevicesStreamFromMqtt.controller.sink.add(MapEntry(deviceId,
+          {deviceDeviceTypeThatChanged: mqttPublishMessage[0].payload}));
+    });
   }
 
   @override
@@ -82,9 +118,39 @@ class MqttServerRepository extends IMqttServerRepository {
   }
 
   @override
-  Future<String> readingFromMqtt(String topic) {
-    // TODO: implement readingFromMqtt
-    throw UnimplementedError();
+  Future<void> publishDeviceEntity(DeviceEntityAbstract deviceEntity) async {
+    final DeviceEntityDtoAbstract deviceAsDto = deviceEntity.toInfrastructure();
+
+    final Map<String, String> devicePropertiesAsMqttTopicsAndValues =
+        deviceEntityPropertiesToListOfTopicAndValue(deviceAsDto);
+
+    for (final String propertyTopicAndMassage
+        in devicePropertiesAsMqttTopicsAndValues.keys) {
+      final MapEntry<String, String> deviceTopicAndProperty =
+          MapEntry<String, String>(propertyTopicAndMassage,
+              devicePropertiesAsMqttTopicsAndValues[propertyTopicAndMassage]!);
+      publishMessage(deviceTopicAndProperty.key, deviceTopicAndProperty.value);
+    }
+  }
+
+  @override
+  Future<List<ChangeRecord>?> readingFromMqttOnce(String topic) async {
+    await connect();
+
+    final MqttClientTopicFilter mqttClientTopic =
+        MqttClientTopicFilter(topic, client.updates);
+    final Stream<List<MqttReceivedMessage<MqttMessage?>>> myValueStream =
+        mqttClientTopic.updates.asBroadcastStream();
+
+    // myValueStream.listen((event) {
+    //   print(event);
+    // });
+    // final List<MqttReceivedMessage<MqttMessage?>> result =
+    //     await myValueStream.first;
+    return client
+        .subscribe('$hubBaseTopic/#', MqttQos.atLeastOnce)!
+        .changes
+        .last;
   }
 
   /// Callback function for connection succeeded
@@ -115,5 +181,41 @@ class MqttServerRepository extends IMqttServerRepository {
   /// PING response received
   void pong() {
     print('Ping response client callback invoked');
+  }
+
+  /// Convert device entity properties to mqtt topic and massage
+  Map<String, String> deviceEntityPropertiesToListOfTopicAndValue(
+      DeviceEntityDtoAbstract deviceEntity) {
+    final Map<String, dynamic> json = deviceEntity.toJson();
+    final String deviceId = json['id'].toString();
+
+    final Map<String, String> topicsAndProperties = <String, String>{};
+
+    for (final String devicePropertyKey in json.keys) {
+      if (devicePropertyKey == 'id') {
+        continue;
+      }
+      final MapEntry<String, String> topicAndProperty =
+          MapEntry<String, String>(
+              '$hubBaseTopic/$devicesTopicTypeName/$deviceId',
+              json[devicePropertyKey].toString());
+      topicsAndProperties.addEntries([topicAndProperty]);
+    }
+
+    return topicsAndProperties;
+  }
+
+  /// Get saved device dto from mqtt by device id
+  Future<DeviceEntityDtoAbstract> getDeviceDtoFromMqtt(String deviceId,
+      {String? deviceComponentKey}) async {
+    String pathToDeviceTopic = '$hubBaseTopic/$devicesTopicTypeName/$deviceId';
+
+    if (deviceComponentKey != null) {
+      pathToDeviceTopic += '/$deviceComponentKey';
+    }
+    final List<ChangeRecord>? a =
+        await readingFromMqttOnce('$pathToDeviceTopic/type');
+    print('This is a $a');
+    return DeviceEntityDtoAbstract();
   }
 }

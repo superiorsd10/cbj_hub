@@ -1,5 +1,6 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
@@ -67,9 +68,9 @@ abstract class SonoffS20Dtos
   DeviceEntityAbstract toDomain() {
     print('SonoffS2Dto to Domain');
     return SonoffS20DE(
-      id: SonoffS20UniqueId.fromUniqueString(id),
+      id: CoreUniqueId.fromUniqueString(id),
       defaultName: SonoffS20DefaultName(defaultName),
-      roomId: SonoffS20UniqueId.fromUniqueString(roomId),
+      roomId: CoreUniqueId.fromUniqueString(roomId),
       roomName: SonoffS20RoomName(roomName),
       deviceStateGRPC: SonoffS20State(deviceStateGRPC),
       stateMassage: SonoffS20StateMassage(stateMassage),
