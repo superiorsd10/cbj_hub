@@ -102,9 +102,8 @@ class MqttServerRepository extends IMqttServerRepository {
       }
       final String deviceId = topicsSplitted[2];
       final String deviceDeviceTypeThatChanged = topicsSplitted[3];
-      final String devicePropertyMassageThatChanged =
-          messageTopic.split('/')[4];
-      ConnectorDevicesStreamFromMqtt.controller.sink.add(MapEntry(deviceId,
+
+      Conector.updateDevicesFromMqttDeviceChange(MapEntry(deviceId,
           {deviceDeviceTypeThatChanged: mqttPublishMessage[0].payload}));
     });
   }

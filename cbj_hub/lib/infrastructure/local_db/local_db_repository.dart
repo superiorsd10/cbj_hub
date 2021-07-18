@@ -2,7 +2,6 @@ import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
-import 'package:cbj_hub/domain/devices/basic_device/value_objects.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
@@ -17,43 +16,43 @@ class LocalDbRepository extends ILocalDbRepository {
 
     final SonoffS20DE firstRealDeviceTest = SonoffS20DE(
       id: CoreUniqueId.fromUniqueString('0ecb1040-e724-11eb-8cec-954d01dcce33'),
-      defaultName: SonoffS20DefaultName('guy ceiling'),
+      defaultName: DeviceDefaultName('guy ceiling'),
       roomId: CoreUniqueId(),
-      roomName: SonoffS20RoomName('Guyy'),
-      deviceStateGRPC: SonoffS20State(
+      roomName: DeviceRoomName('Guyy'),
+      deviceStateGRPC: DeviceState(
           EnumHelper.deviceStateToString(DeviceStateGRPC.waitingInComp)),
-      senderDeviceOs: SonoffS20SenderDeviceOs('ESPHome'),
-      senderDeviceModel: SonoffS20SenderDeviceModel('ESP8266 D1 R1'),
-      stateMassage: SonoffS20StateMassage('Test'),
-      senderId: SonoffS20SenderId(),
+      senderDeviceOs: DeviceSenderDeviceOs('ESPHome'),
+      senderDeviceModel: DeviceSenderDeviceModel('ESP8266 D1 R1'),
+      stateMassage: DeviceStateMassage('Test'),
+      senderId: DeviceSenderId(),
       deviceActions:
-          SonoffS20Action(EnumHelper.deviceActionToString(DeviceActions.off)),
-      deviceTypes: SonoffS20Type(EnumHelper.dTToString(DeviceTypes.light)),
-      compUuid: SonoffS20CompUuid('9C:9D:7E:48:60:48'),
-      lastKnownIp: SonoffS20LastKnownIp('192.168.31.21'),
-      deviceSecondWiFi: SonoffS20SecondWiFiName('amiuz2'),
-      deviceMdnsName: SonoffS20MdnsName('guy_ceiling'),
-      powerConsumption: SonoffS20PowerConsumption('0'),
+          DeviceAction(EnumHelper.deviceActionToString(DeviceActions.off)),
+      deviceTypes: DeviceType(EnumHelper.dTToString(DeviceTypes.light)),
+      compUuid: DeviceCompUuid('9C:9D:7E:48:60:48'),
+      lastKnownIp: DeviceLastKnownIp('192.168.31.21'),
+      deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
+      deviceMdnsName: DeviceMdnsName('guy_ceiling'),
+      powerConsumption: DevicePowerConsumption('0'),
       sonoffS20SwitchKey: SonoffS20SwitchKey('1360107432'),
     );
 
     final SonoffS20DE sonoffS20 = SonoffS20DE(
       id: CoreUniqueId(),
-      defaultName: SonoffS20DefaultName('Ceiling'),
+      defaultName: DeviceDefaultName('Ceiling'),
       roomId: CoreUniqueId.fromUniqueString(guyRoomId),
-      roomName: SonoffS20RoomName('Guy'),
-      deviceStateGRPC: SonoffS20State(DeviceStateGRPC.ack.toString()),
-      stateMassage: SonoffS20StateMassage('Hello World'),
-      senderDeviceOs: SonoffS20SenderDeviceOs('Linux'),
-      senderDeviceModel: SonoffS20SenderDeviceModel('Computer'),
-      senderId: SonoffS20SenderId(),
-      deviceActions: SonoffS20Action(DeviceActions.on.toString()),
-      deviceTypes: SonoffS20Type(DeviceTypes.light.toString()),
-      compUuid: SonoffS20CompUuid('Comp1'),
-      lastKnownIp: SonoffS20LastKnownIp('10.0.0.7'),
-      powerConsumption: SonoffS20PowerConsumption('0'),
-      deviceMdnsName: SonoffS20MdnsName('CeilingGuy'),
-      deviceSecondWiFi: SonoffS20SecondWiFiName('amiuz2'),
+      roomName: DeviceRoomName('Guy'),
+      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
+      stateMassage: DeviceStateMassage('Hello World'),
+      senderDeviceOs: DeviceSenderDeviceOs('Linux'),
+      senderDeviceModel: DeviceSenderDeviceModel('Computer'),
+      senderId: DeviceSenderId(),
+      deviceActions: DeviceAction(DeviceActions.on.toString()),
+      deviceTypes: DeviceType(DeviceTypes.light.toString()),
+      compUuid: DeviceCompUuid('Comp1'),
+      lastKnownIp: DeviceLastKnownIp('10.0.0.7'),
+      powerConsumption: DevicePowerConsumption('0'),
+      deviceMdnsName: DeviceMdnsName('CeilingGuy'),
+      deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
     );
 
     final DeviceEntity deviceEntity = DeviceEntity(

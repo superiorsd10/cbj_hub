@@ -2,7 +2,6 @@ import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -69,20 +68,20 @@ abstract class SonoffS20Dtos
     print('SonoffS2Dto to Domain');
     return SonoffS20DE(
       id: CoreUniqueId.fromUniqueString(id),
-      defaultName: SonoffS20DefaultName(defaultName),
+      defaultName: DeviceDefaultName(defaultName),
       roomId: CoreUniqueId.fromUniqueString(roomId),
-      roomName: SonoffS20RoomName(roomName),
-      deviceStateGRPC: SonoffS20State(deviceStateGRPC),
-      stateMassage: SonoffS20StateMassage(stateMassage),
-      senderDeviceOs: SonoffS20SenderDeviceOs(senderDeviceOs),
-      senderDeviceModel: SonoffS20SenderDeviceModel(senderDeviceModel),
-      senderId: SonoffS20SenderId.fromUniqueString(senderId),
-      deviceActions: SonoffS20Action(deviceActions),
-      deviceTypes: SonoffS20Type(deviceTypes),
-      compUuid: SonoffS20CompUuid(compUuid),
-      deviceSecondWiFi: SonoffS20SecondWiFiName(deviceSecondWiFi),
-      deviceMdnsName: SonoffS20MdnsName(deviceMdnsName),
-      lastKnownIp: SonoffS20LastKnownIp(lastKnownIp),
+      roomName: DeviceRoomName(roomName),
+      deviceStateGRPC: DeviceState(deviceStateGRPC),
+      stateMassage: DeviceStateMassage(stateMassage),
+      senderDeviceOs: DeviceSenderDeviceOs(senderDeviceOs),
+      senderDeviceModel: DeviceSenderDeviceModel(senderDeviceModel),
+      senderId: DeviceSenderId.fromUniqueString(senderId),
+      deviceActions: DeviceAction(deviceActions),
+      deviceTypes: DeviceType(deviceTypes),
+      compUuid: DeviceCompUuid(compUuid),
+      deviceSecondWiFi: DeviceSecondWiFiName(deviceSecondWiFi),
+      deviceMdnsName: DeviceMdnsName(deviceMdnsName),
+      lastKnownIp: DeviceLastKnownIp(lastKnownIp),
     );
   }
 

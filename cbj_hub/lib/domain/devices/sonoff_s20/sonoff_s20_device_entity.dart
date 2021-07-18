@@ -20,50 +20,50 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
     required CoreUniqueId? id,
 
     /// The default name of the sonoffS20
-    required SonoffS20DefaultName? defaultName,
+    required DeviceDefaultName? defaultName,
 
     /// Room id that the smart sonoffS20 located in.
     required CoreUniqueId? roomId,
 
     /// Room name that the smart sonoffS20 located in.
-    required SonoffS20RoomName? roomName,
+    required DeviceRoomName? roomName,
 
     /// Did the massage arrived or was it just sent.
     /// Will be 'set' (need change) or 'ack' for acknowledge
-    required SonoffS20State? deviceStateGRPC,
+    required DeviceState? deviceStateGRPC,
 
     /// If state didn't change the error description will be found here.
-    SonoffS20StateMassage? stateMassage,
+    DeviceStateMassage? stateMassage,
 
     /// Sender SonoffS20 os type, example: android, iphone, browser
-    required SonoffS20SenderDeviceOs? senderDeviceOs,
+    required DeviceSenderDeviceOs? senderDeviceOs,
 
     /// The sender SonoffS20 model, example: onePlus 3T
-    required SonoffS20SenderDeviceModel? senderDeviceModel,
+    required DeviceSenderDeviceModel? senderDeviceModel,
 
     /// Last SonoffS20 sender id that activated the action
-    required SonoffS20SenderId? senderId,
+    required DeviceSenderId? senderId,
 
     /// What action to execute
-    required SonoffS20Action? deviceActions,
+    required DeviceAction? deviceActions,
 
     /// The smart sonoffS20 type
-    required SonoffS20Type? deviceTypes,
+    required DeviceType? deviceTypes,
 
     /// Unique id of the computer that the sonoffS20s located in
-    required SonoffS20CompUuid? compUuid,
+    required DeviceCompUuid? compUuid,
 
     /// Last known Ip of the computer that the sonoffS20 located in
-    SonoffS20LastKnownIp? lastKnownIp,
+    DeviceLastKnownIp? lastKnownIp,
 
     /// SonoffS20 power consumption in watts
-    SonoffS20PowerConsumption? powerConsumption,
+    DevicePowerConsumption? powerConsumption,
 
     /// SonoffS20 mdns name
-    SonoffS20MdnsName? deviceMdnsName,
+    DeviceMdnsName? deviceMdnsName,
 
     /// SonoffS20 second WiFi
-    SonoffS20SecondWiFiName? deviceSecondWiFi,
+    DeviceSecondWiFiName? deviceSecondWiFi,
 
     /// SonoffS20 key of the switch
     SonoffS20SwitchKey? sonoffS20SwitchKey,
@@ -73,21 +73,21 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
 
   /// Empty instance of SonoffS20Entity
   factory SonoffS20DE.empty() => SonoffS20DE(
-    id: CoreUniqueId(),
-        defaultName: SonoffS20DefaultName(''),
+        id: CoreUniqueId(),
+        defaultName: DeviceDefaultName(''),
         roomId: CoreUniqueId(),
-        roomName: SonoffS20RoomName(''),
-        deviceStateGRPC: SonoffS20State(''),
-        senderDeviceOs: SonoffS20SenderDeviceOs(''),
-        senderDeviceModel: SonoffS20SenderDeviceModel(''),
-        stateMassage: SonoffS20StateMassage(''),
-        senderId: SonoffS20SenderId(),
-        deviceActions: SonoffS20Action(''),
-        deviceTypes: SonoffS20Type(''),
-        compUuid: SonoffS20CompUuid(''),
-        lastKnownIp: SonoffS20LastKnownIp(''),
+        roomName: DeviceRoomName(''),
+        deviceStateGRPC: DeviceState(''),
+        senderDeviceOs: DeviceSenderDeviceOs(''),
+        senderDeviceModel: DeviceSenderDeviceModel(''),
+        stateMassage: DeviceStateMassage(''),
+        senderId: DeviceSenderId(),
+        deviceActions: DeviceAction(''),
+        deviceTypes: DeviceType(''),
+        compUuid: DeviceCompUuid(''),
+        lastKnownIp: DeviceLastKnownIp(''),
         sonoffS20SwitchKey: SonoffS20SwitchKey(''),
-  );
+      );
 
   /// Will return failure if any of the fields failed or return unit if fields
   /// have legit values
