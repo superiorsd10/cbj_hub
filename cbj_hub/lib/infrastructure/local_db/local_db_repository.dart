@@ -11,7 +11,7 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: ILocalDbRepository)
 class LocalDbRepository extends ILocalDbRepository {
   @override
-  List<DeviceEntityAbstract> getSmartDevices() {
+  Map<String, DeviceEntityAbstract> getSmartDevices() {
     final String guyRoomId = CoreUniqueId().getOrCrash()!;
 
     final SonoffS20DE firstRealDeviceTest = SonoffS20DE(
@@ -93,7 +93,7 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
     );
 
-    return [firstRealDeviceTest];
+    return {firstRealDeviceTest.id!.getOrCrash()!: firstRealDeviceTest};
   }
 
   @override

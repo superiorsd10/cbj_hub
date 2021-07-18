@@ -5,5 +5,5 @@ abstract class ISavedDevicesRepo {
   String addNewDevice();
 
   /// Get all saved devices
-  Future<List<DeviceEntityAbstract>> getAllDevices();
+  Future<Map<String, DeviceEntityAbstract>> getAllDevices();
 }

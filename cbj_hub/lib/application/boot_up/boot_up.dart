@@ -14,7 +14,7 @@ class BootUp {
     // Return all saved devices
     final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
 
-    final List<DeviceEntityAbstract> allDevices =
+    final Map<String, DeviceEntityAbstract> allDevices =
         await savedDevicesRepo.getAllDevices();
 
     GeneralDevicesRepo.addAllDevicesToItsRepos(allDevices);

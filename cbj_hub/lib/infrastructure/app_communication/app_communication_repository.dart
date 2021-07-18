@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:cbj_hub/application/conector/conector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
+import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
@@ -35,7 +38,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       //         element.id!.getOrCrash() == event.variableHeader?.topicName);
 
       (await getIt<ISavedDevicesRepo>().getAllDevices())
-          .forEach((deviceEntityToSend) {
+          .forEach((String id, deviceEntityToSend) {
         final DeviceEntityDtoAbstract deviceDtoAbstract =
             DeviceHelper.convertDomainToDto(deviceEntityToSend);
         AppClientStream.controller.sink.add(deviceDtoAbstract);
@@ -49,16 +52,41 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
   @override
   Future<void> getFromApp(Stream<ClientStatusRequests> request) async {
-    request.listen((event) {
+    request.listen((event) async {
       print('Got From App');
 
       if (event.sendingType == SendingType.deviceType) {
-        HubClientStream.controller.sink.add(
-            DeviceHelper.convertJsonStringToDomain(event.allRemoteCommands));
+        final DeviceEntityAbstract deviceEntityFromApp =
+            DeviceHelper.convertJsonStringToDomain(event.allRemoteCommands);
+
+        seindToMqtt(deviceEntityFromApp);
       } else {
         print('Request from app does not support this sending device type');
       }
     });
+  }
+
+  static Future<void> seindToMqtt(
+      DeviceEntityAbstract deviceEntityFromApp) async {
+    final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
+    final Map<String, DeviceEntityAbstract> allDevices =
+        await savedDevicesRepo.getAllDevices();
+    final DeviceEntityAbstract savedDeviceEntity =
+        allDevices[deviceEntityFromApp.getDeviceId()]!;
+
+    if (savedDeviceEntity is SonoffS20DE) {
+      final DeviceEntity savedDeviceEntityFromApp =
+          deviceEntityFromApp as DeviceEntity;
+      final SonoffS20DE savedDeviceEntityAsSonoff = savedDeviceEntity.copyWith(
+          deviceActions: savedDeviceEntityFromApp.deviceActions);
+
+      final MapEntry<String, DeviceEntityAbstract> deviceFromApp = MapEntry(
+          savedDeviceEntityAsSonoff.id!.getOrCrash()!,
+          savedDeviceEntityAsSonoff);
+      ConnectorStreamToMqtt.controller.sink.add(deviceFromApp);
+    } else {
+      print('Cant find device from app type');
+    }
   }
 }
 
@@ -69,13 +97,5 @@ class AppClientStream {
       StreamController();
 
   static Stream<DeviceEntityDtoAbstract> get stream =>
-      controller.stream.asBroadcastStream();
-}
-
-/// Requests and responses from the app into the hub
-class HubClientStream {
-  static StreamController<DeviceEntityAbstract> controller = StreamController();
-
-  static Stream<DeviceEntityAbstract> get stream =>
       controller.stream.asBroadcastStream();
 }

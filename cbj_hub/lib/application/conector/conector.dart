@@ -13,19 +13,19 @@ import 'package:typed_data/src/typed_buffer.dart';
 
 class Conector {
   static Future<void> startConector() async {
-    ConnectorStreamToMqtt.controller.stream
-        .listen((deviceEntityAbstract) async {
+    ConnectorStreamToMqtt.stream.listen((deviceEntityAbstract) async {
       await getIt<IMqttServerRepository>()
-          .publishDeviceEntity(deviceEntityAbstract);
+          .publishDeviceEntity(deviceEntityAbstract.value);
     });
 
     final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
 
-    final List<DeviceEntityAbstract> allDevices =
+    final Map<String, DeviceEntityAbstract> allDevices =
         await savedDevicesRepo.getAllDevices();
 
-    for (final DeviceEntityAbstract device in allDevices) {
-      ConnectorStreamToMqtt.controller.sink.add(device);
+    for (final String deviceId in allDevices.keys) {
+      ConnectorStreamToMqtt.controller.sink.add(allDevices.entries.firstWhere(
+          (MapEntry<String, DeviceEntityAbstract> a) => a.key == deviceId));
     }
 
     final IAppCommunicationRepository appCommunication =
@@ -42,13 +42,13 @@ class Conector {
       MapEntry<String, Map<String, dynamic>> deviceChangeFromMqtt) async {
     final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
 
-    final List<DeviceEntityAbstract> allDevices =
+    final Map<String, DeviceEntityAbstract> allDevices =
         await savedDevicesRepo.getAllDevices();
 
     final Map<String, dynamic> devicePropertyAndValues =
         deviceChangeFromMqtt.value;
 
-    for (final DeviceEntityAbstract d in allDevices) {
+    for (final DeviceEntityAbstract d in allDevices.values) {
       if (d.getDeviceId() == deviceChangeFromMqtt.key) {
         final Map<String, dynamic> deviceAsJson = d.toInfrastructure().toJson();
 
@@ -65,16 +65,20 @@ class Conector {
                   .message;
           final String propertyValueString =
               String.fromCharCodes(valueMessage!);
-          final Map<String, dynamic> propertyValueJson =
-              jsonDecode(propertyValueString) as Map<String, dynamic>;
-          deviceAsJson[propery] = propertyValueJson['value'];
-        }
-        final DeviceEntityAbstract savedDeviceWithSameIdAsMqtt =
-            DeviceEntityDtoAbstract.fromJson(deviceAsJson).toDomain();
+          if (propertyValueString.contains('value')) {
+            final Map<String, dynamic> propertyValueJson =
+                jsonDecode(propertyValueString) as Map<String, dynamic>;
+            deviceAsJson[propery] = propertyValueJson['value'];
+          } else {
+            deviceAsJson[propery] = propertyValueString;
+          }
+          final DeviceEntityAbstract savedDeviceWithSameIdAsMqtt =
+              DeviceEntityDtoAbstract.fromJson(deviceAsJson).toDomain();
 
-        ConnectorDevicesStreamFromMqtt.controller.sink
-            .add(savedDeviceWithSameIdAsMqtt);
-        return;
+          ConnectorDevicesStreamFromMqtt.controller.sink
+              .add(savedDeviceWithSameIdAsMqtt);
+          return;
+        }
       }
     }
   }
@@ -83,9 +87,10 @@ class Conector {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class ConnectorStreamToMqtt {
-  static StreamController<DeviceEntityAbstract> controller = StreamController();
+  static StreamController<MapEntry<String, DeviceEntityAbstract>> controller =
+      StreamController();
 
-  Stream<DeviceEntityAbstract> get stream =>
+  static Stream<MapEntry<String, DeviceEntityAbstract>> get stream =>
       controller.stream.asBroadcastStream();
 }
 

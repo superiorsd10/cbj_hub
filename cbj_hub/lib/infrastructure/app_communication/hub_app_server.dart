@@ -21,14 +21,14 @@ class HubAppServer extends CbjHubServiceBase {
 
     getIt<IAppCommunicationRepository>().getFromApp(request);
 
-    final Iterable<String> allDevices = getIt<ILocalDbRepository>()
+    final Map<String, String> allDevices = getIt<ILocalDbRepository>()
         .getSmartDevices()
-        .map((DeviceEntityAbstract e) {
-      return DeviceHelper.convertDomainToJsonString(e);
+        .map((String id, DeviceEntityAbstract d) {
+      return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
     });
 
     /// Each first connection to the server send all saved devices
-    for (final String responseToHub in allDevices) {
+    for (final String responseToHub in allDevices.values) {
       yield RequestsAndStatusFromHub(
         sendingType: SendingType.deviceType,
         allRemoteCommands: responseToHub,

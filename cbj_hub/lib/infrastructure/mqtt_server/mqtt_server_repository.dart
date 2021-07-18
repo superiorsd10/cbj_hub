@@ -194,10 +194,10 @@ class MqttServerRepository extends IMqttServerRepository {
       if (devicePropertyKey == 'id') {
         continue;
       }
-      final MapEntry<String, String> topicAndProperty =
-          MapEntry<String, String>(
-              '$hubBaseTopic/$devicesTopicTypeName/$deviceId',
-              json[devicePropertyKey].toString());
+      final MapEntry<String, String> topicAndProperty = MapEntry<String,
+              String>(
+          '$hubBaseTopic/$devicesTopicTypeName/$deviceId/$devicePropertyKey',
+          json[devicePropertyKey].toString());
       topicsAndProperties.addEntries([topicAndProperty]);
     }
 

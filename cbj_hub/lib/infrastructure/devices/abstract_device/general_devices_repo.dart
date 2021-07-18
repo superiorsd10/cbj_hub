@@ -14,16 +14,22 @@ class GeneralDevicesRepo {
     });
   }
 
-  static addAllDevicesToItsRepos(List<DeviceEntityAbstract> allDevices) {
-    for (final DeviceEntityAbstract deviceEntityAbstract in allDevices) {
-      addDeviceToItsRepo(deviceEntityAbstract);
+  static addAllDevicesToItsRepos(Map<String, DeviceEntityAbstract> allDevices) {
+    for (final String deviceId in allDevices.keys) {
+      final MapEntry<String, DeviceEntityAbstract> currentDeviceMapEntry =
+          MapEntry<String, DeviceEntityAbstract>(
+              deviceId, allDevices[deviceId]!);
+      addDeviceToItsRepo(currentDeviceMapEntry);
     }
   }
 
-  static addDeviceToItsRepo(DeviceEntityAbstract deviceEntityAbstract) {
-    if (deviceEntityAbstract is SonoffS20DE) {
-      SonoffS20Repo.sonoffDevices[deviceEntityAbstract.getDeviceId()] =
-          deviceEntityAbstract;
+  static addDeviceToItsRepo(
+      MapEntry<String, DeviceEntityAbstract> deviceEntityAbstract) {
+    if (deviceEntityAbstract.value is SonoffS20DE) {
+      final MapEntry<String, SonoffS20DE> sonoffEntry =
+          MapEntry<String, SonoffS20DE>(deviceEntityAbstract.key,
+              deviceEntityAbstract.value as SonoffS20DE);
+      SonoffS20Repo.sonoffDevices.addEntries([sonoffEntry]);
     } else {
       print('Cannot add device entity to its repo, type not supported');
     }

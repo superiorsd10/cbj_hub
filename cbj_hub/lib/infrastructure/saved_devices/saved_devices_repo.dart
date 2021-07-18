@@ -13,7 +13,7 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
   }
 
   @override
-  Future<List<DeviceEntityAbstract>> getAllDevices() async {
+  Future<Map<String, DeviceEntityAbstract>> getAllDevices() async {
     return getIt<ILocalDbRepository>().getSmartDevices();
   }
 }
