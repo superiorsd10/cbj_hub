@@ -14,6 +14,7 @@ import 'package:cbj_hub/injection.dart';
 import 'package:grpc/grpc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:rxdart/rxdart.dart';
 
 @LazySingleton(as: IAppCommunicationRepository)
 class AppCommunicationRepository extends IAppCommunicationRepository {
@@ -41,7 +42,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           .forEach((String id, deviceEntityToSend) {
         final DeviceEntityDtoAbstract deviceDtoAbstract =
             DeviceHelper.convertDomainToDto(deviceEntityToSend);
-        AppClientStream.controller.sink.add(deviceDtoAbstract);
+        AppClientStream.streamRequestsFromAPp.sink.add(deviceDtoAbstract);
       });
 
       // print('Will send the topic "${event.payload.variableHeader?.topicName}" '
@@ -63,7 +64,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       } else {
         print('Request from app does not support this sending device type');
       }
-    });
+    }).onError((error) => print('Stream getFromApp have error $error'));
   }
 
   static Future<void> seindToMqtt(
@@ -93,9 +94,6 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class AppClientStream {
-  static StreamController<DeviceEntityDtoAbstract> controller =
-      StreamController();
-
-  static Stream<DeviceEntityDtoAbstract> get stream =>
-      controller.stream.asBroadcastStream();
+  static BehaviorSubject<DeviceEntityDtoAbstract> streamRequestsFromAPp =
+      BehaviorSubject<DeviceEntityDtoAbstract>();
 }
