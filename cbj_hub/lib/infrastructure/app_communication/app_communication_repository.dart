@@ -83,7 +83,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       final MapEntry<String, DeviceEntityAbstract> deviceFromApp = MapEntry(
           savedDeviceEntityAsSonoff.id!.getOrCrash()!,
           savedDeviceEntityAsSonoff);
-      ConnectorStreamToMqtt.controller.sink.add(deviceFromApp);
+      ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
     } else {
       print('Cant find device from app type');
     }

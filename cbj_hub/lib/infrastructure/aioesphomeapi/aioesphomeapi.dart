@@ -419,6 +419,7 @@ class AioEspHomeApi {
 
 //  * The message object encoded as a ProtoBuf message
     socket.add(message);
+    await Future.delayed(const Duration(milliseconds: 1000));
   }
 
   ///  Turn smart device on

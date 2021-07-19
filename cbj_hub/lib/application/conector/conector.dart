@@ -9,11 +9,12 @@ import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto
 import 'package:cbj_hub/infrastructure/devices/abstract_device/general_devices_repo.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:typed_data/src/typed_buffer.dart';
 
 class Conector {
   static Future<void> startConector() async {
-    ConnectorStreamToMqtt.stream.listen((deviceEntityAbstract) async {
+    ConnectorStreamToMqtt.toMqttStream.listen((deviceEntityAbstract) async {
       await getIt<IMqttServerRepository>()
           .publishDeviceEntity(deviceEntityAbstract.value);
     });
@@ -24,7 +25,7 @@ class Conector {
         await savedDevicesRepo.getAllDevices();
 
     for (final String deviceId in allDevices.keys) {
-      ConnectorStreamToMqtt.controller.sink.add(allDevices.entries.firstWhere(
+      ConnectorStreamToMqtt.toMqttController.add(allDevices.entries.firstWhere(
           (MapEntry<String, DeviceEntityAbstract> a) => a.key == deviceId));
     }
 
@@ -35,7 +36,11 @@ class Conector {
     // appCommunication.sendToApp();
 
     GeneralDevicesRepo.updateAllDevicesReposWithDeviceChanges(
-        ConnectorDevicesStreamFromMqtt().stream);
+        ConnectorDevicesStreamFromMqtt.fromMqttStream);
+
+    ConnectorDevicesStreamFromMqtt.fromMqttStream.listen((deviceFromMqtt) {
+      savedDevicesRepo.addOrUpdateDevice(deviceFromMqtt);
+    });
   }
 
   static Future<void> updateDevicesFromMqttDeviceChange(
@@ -56,15 +61,14 @@ class Conector {
           final String pt = MqttPublishPayload.bytesToStringAsString(
                   (devicePropertyAndValues[propery] as MqttPublishMessage)
                       .payload
-                      .message!)
+                      .message)
               .replaceAll('\n', '');
 
-          final Uint8Buffer? valueMessage =
+          final Uint8Buffer valueMessage =
               (devicePropertyAndValues[propery] as MqttPublishMessage)
                   .payload
                   .message;
-          final String propertyValueString =
-              String.fromCharCodes(valueMessage!);
+          final String propertyValueString = String.fromCharCodes(valueMessage);
           if (propertyValueString.contains('value')) {
             final Map<String, dynamic> propertyValueJson =
                 jsonDecode(propertyValueString) as Map<String, dynamic>;
@@ -75,7 +79,7 @@ class Conector {
           final DeviceEntityAbstract savedDeviceWithSameIdAsMqtt =
               DeviceEntityDtoAbstract.fromJson(deviceAsJson).toDomain();
 
-          ConnectorDevicesStreamFromMqtt.controller.sink
+          ConnectorDevicesStreamFromMqtt.fromMqttStream.sink
               .add(savedDeviceWithSameIdAsMqtt);
           return;
         }
@@ -87,18 +91,16 @@ class Conector {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class ConnectorStreamToMqtt {
-  static StreamController<MapEntry<String, DeviceEntityAbstract>> controller =
-      StreamController();
+  static StreamController<MapEntry<String, DeviceEntityAbstract>>
+      toMqttController = StreamController();
 
-  static Stream<MapEntry<String, DeviceEntityAbstract>> get stream =>
-      controller.stream.asBroadcastStream();
+  static Stream<MapEntry<String, DeviceEntityAbstract>> get toMqttStream =>
+      toMqttController.stream.asBroadcastStream();
 }
 
 /// Connect all streams from the mqtt devices changes into one stream that will
 /// be sent to whoever need to be notify of changes
 class ConnectorDevicesStreamFromMqtt {
-  static StreamController<DeviceEntityAbstract> controller = StreamController();
-
-  Stream<DeviceEntityAbstract> get stream =>
-      controller.stream.asBroadcastStream();
+  static BehaviorSubject<DeviceEntityAbstract> fromMqttStream =
+      BehaviorSubject<DeviceEntityAbstract>();
 }

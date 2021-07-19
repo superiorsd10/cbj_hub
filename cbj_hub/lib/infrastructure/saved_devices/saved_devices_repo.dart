@@ -6,14 +6,21 @@ import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: ISavedDevicesRepo)
 class SavedDevicesRepo extends ISavedDevicesRepo {
+  SavedDevicesRepo() {
+    allDevices = getIt<ILocalDbRepository>().getSmartDevices();
+  }
+
+  Map<String, DeviceEntityAbstract> allDevices = {};
+
   @override
-  String addNewDevice() {
-    // TODO: implement addNewDevice
-    throw UnimplementedError();
+  String addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {
+    allDevices[deviceEntity.getDeviceId()] = deviceEntity;
+
+    return 'add or updated success';
   }
 
   @override
   Future<Map<String, DeviceEntityAbstract>> getAllDevices() async {
-    return getIt<ILocalDbRepository>().getSmartDevices();
+    return allDevices;
   }
 }

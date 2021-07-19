@@ -29,11 +29,11 @@ class LocalDbRepository extends ILocalDbRepository {
           DeviceAction(EnumHelper.deviceActionToString(DeviceActions.off)),
       deviceTypes: DeviceType(EnumHelper.dTToString(DeviceTypes.light)),
       compUuid: DeviceCompUuid('9C:9D:7E:48:60:48'),
-      lastKnownIp: DeviceLastKnownIp('192.168.31.21'),
+      lastKnownIp: DeviceLastKnownIp('192.168.31.66'),
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
-      deviceMdnsName: DeviceMdnsName('guy_ceiling.local'),
+      deviceMdnsName: DeviceMdnsName('livingroom.local'),
       powerConsumption: DevicePowerConsumption('0'),
-      sonoffS20SwitchKey: SonoffS20SwitchKey('1360107432'),
+      sonoffS20SwitchKey: SonoffS20SwitchKey('1711856045'),
     );
 
     final SonoffS20DE sonoffS20 = SonoffS20DE(
