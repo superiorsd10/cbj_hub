@@ -1,9 +1,9 @@
-import 'package:cbj_hub/domain/devices/basic_device/devices_failures.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 
-class DevicesUnexpectedValueError extends Error {
-  DevicesUnexpectedValueError(this.deviceValueFailure);
+class CoreUnexpectedValueError extends Error {
+  CoreUnexpectedValueError(this.deviceValueFailure);
 
-  final DevicesFailure deviceValueFailure;
+  final CoreFailure deviceValueFailure;
 
   @override
   String toString() {

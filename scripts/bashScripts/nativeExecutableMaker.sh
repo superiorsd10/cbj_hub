@@ -9,11 +9,11 @@ rm dartsdk-*.zip
 
 cd cbj_hub
 ../dart-sdk/bin/pub get --no-precompile
-#sudo ../dart-sdk/bin/pub run build_runner build --delete-conflicting-outputs
+../dart-sdk/bin/dart run build_runner build --delete-conflicting-outputs
 cd ..
 
 #chmod -R +rx dart-sdk/
-dart-sdk/bin/dart2native cbj_hub/bin/main.dart -o CyBear-Jinni_Hub
-# sudo dart-sdk/bin/dart CyBear-Jinni_Hub/bin/main.dart .
+dart-sdk/bin/dart2native cbj_hub/bin/cbj_hub.dart -o CyBear-Jinni_Hub
+# sudo dart-sdk/bin/dart CyBear-Jinni_Hub/bin/cbj_hub.dart .
 
 rm -r dart-sdk/

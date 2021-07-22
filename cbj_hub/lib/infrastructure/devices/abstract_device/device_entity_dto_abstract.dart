@@ -1,6 +1,7 @@
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
-import 'package:cbj_hub/infrastructure/devices/sonoff_s20/sonoff_s20_dtos.dart';
+import 'package:cbj_hub/infrastructure/devices/esphome/esphome_dtos.dart';
 
 class DeviceEntityDtoAbstract {
   DeviceEntityDtoAbstract();
@@ -18,8 +19,8 @@ class DeviceEntityDtoAbstract {
 
     if (jsonDeviceDtoClass == (DeviceDtos).toString()) {
       deviceEntityDtoAbstract = DeviceDtos.fromJson(json);
-    } else if (jsonDeviceDtoClass == (SonoffS20Dtos).toString()) {
-      deviceEntityDtoAbstract = SonoffS20Dtos.fromJson(json);
+    } else if (jsonDeviceDtoClass == (EspHomeDtos).toString()) {
+      deviceEntityDtoAbstract = EspHomeDtos.fromJson(json);
     } else {
       throw 'DtoClassTypeDoesNotExist';
     }
@@ -33,6 +34,6 @@ class DeviceEntityDtoAbstract {
 
   DeviceEntityAbstract toDomain() {
     print('ToDomain');
-    return DeviceEntityAbstract();
+    return DeviceEntityNotAbstract(id: CoreUniqueId());
   }
 }

@@ -5,9 +5,12 @@
 // @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
+import 'dart:async' as $async;
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
+
+import 'api_options.pb.dart' as $0;
 
 import 'api.pbenum.dart';
 
@@ -5143,5 +5146,87 @@ class NumberCommandRequest extends $pb.GeneratedMessage {
   $core.bool hasState() => $_has(1);
   @$pb.TagNumber(2)
   void clearState() => clearField(2);
+}
+
+class APIConnectionApi {
+  $pb.RpcClient _client;
+  APIConnectionApi(this._client);
+
+  $async.Future<HelloResponse> hello($pb.ClientContext? ctx, HelloRequest request) {
+    var emptyResponse = HelloResponse();
+    return _client.invoke<HelloResponse>(ctx, 'APIConnection', 'hello', request, emptyResponse);
+  }
+  $async.Future<ConnectResponse> connect($pb.ClientContext? ctx, ConnectRequest request) {
+    var emptyResponse = ConnectResponse();
+    return _client.invoke<ConnectResponse>(ctx, 'APIConnection', 'connect', request, emptyResponse);
+  }
+  $async.Future<DisconnectResponse> disconnect($pb.ClientContext? ctx, DisconnectRequest request) {
+    var emptyResponse = DisconnectResponse();
+    return _client.invoke<DisconnectResponse>(ctx, 'APIConnection', 'disconnect', request, emptyResponse);
+  }
+  $async.Future<PingResponse> ping($pb.ClientContext? ctx, PingRequest request) {
+    var emptyResponse = PingResponse();
+    return _client.invoke<PingResponse>(ctx, 'APIConnection', 'ping', request, emptyResponse);
+  }
+  $async.Future<DeviceInfoResponse> device_info($pb.ClientContext? ctx, DeviceInfoRequest request) {
+    var emptyResponse = DeviceInfoResponse();
+    return _client.invoke<DeviceInfoResponse>(ctx, 'APIConnection', 'device_info', request, emptyResponse);
+  }
+  $async.Future<$0.void_> list_entities($pb.ClientContext? ctx, ListEntitiesRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'list_entities', request, emptyResponse);
+  }
+  $async.Future<$0.void_> subscribe_states($pb.ClientContext? ctx, SubscribeStatesRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'subscribe_states', request, emptyResponse);
+  }
+  $async.Future<$0.void_> subscribe_logs($pb.ClientContext? ctx, SubscribeLogsRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'subscribe_logs', request, emptyResponse);
+  }
+  $async.Future<$0.void_> subscribe_homeassistant_services($pb.ClientContext? ctx, SubscribeHomeassistantServicesRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'subscribe_homeassistant_services', request, emptyResponse);
+  }
+  $async.Future<$0.void_> subscribe_home_assistant_states($pb.ClientContext? ctx, SubscribeHomeAssistantStatesRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'subscribe_home_assistant_states', request, emptyResponse);
+  }
+  $async.Future<GetTimeResponse> get_time($pb.ClientContext? ctx, GetTimeRequest request) {
+    var emptyResponse = GetTimeResponse();
+    return _client.invoke<GetTimeResponse>(ctx, 'APIConnection', 'get_time', request, emptyResponse);
+  }
+  $async.Future<$0.void_> execute_service($pb.ClientContext? ctx, ExecuteServiceRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'execute_service', request, emptyResponse);
+  }
+  $async.Future<$0.void_> cover_command($pb.ClientContext? ctx, CoverCommandRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'cover_command', request, emptyResponse);
+  }
+  $async.Future<$0.void_> fan_command($pb.ClientContext? ctx, FanCommandRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'fan_command', request, emptyResponse);
+  }
+  $async.Future<$0.void_> light_command($pb.ClientContext? ctx, LightCommandRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'light_command', request, emptyResponse);
+  }
+  $async.Future<$0.void_> switch_command($pb.ClientContext? ctx, SwitchCommandRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'switch_command', request, emptyResponse);
+  }
+  $async.Future<$0.void_> camera_image($pb.ClientContext? ctx, CameraImageRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'camera_image', request, emptyResponse);
+  }
+  $async.Future<$0.void_> climate_command($pb.ClientContext? ctx, ClimateCommandRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'climate_command', request, emptyResponse);
+  }
+  $async.Future<$0.void_> number_command($pb.ClientContext? ctx, NumberCommandRequest request) {
+    var emptyResponse = $0.void_();
+    return _client.invoke<$0.void_>(ctx, 'APIConnection', 'number_command', request, emptyResponse);
+  }
 }
 

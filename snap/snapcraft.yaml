@@ -22,10 +22,6 @@ parts:
 
       rm -r cbj_hub
 
-      cd scripts/bashScripts/
-      ./compileAllCFiles.sh # Have to be executed when working directory is this file location
-      cd ../..
-
       snapcraftctl build
 
     build-packages:
@@ -41,4 +37,4 @@ apps:
   cbj-hub:
     command: CyBear-Jinni_Hub $SNAP
     daemon: simple
-    plugs: [network, network-bind, gpio, hardware-observe]
+    plugs: [network, network-bind, hardware-observe]

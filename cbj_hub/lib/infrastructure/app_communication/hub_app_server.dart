@@ -17,30 +17,36 @@ class HubAppServer extends CbjHubServiceBase {
   @override
   Stream<RequestsAndStatusFromHub> clientTransferDevices(
       ServiceCall call, Stream<ClientStatusRequests> request) async* {
-    print('Got new Client');
+    try {
+      print('Got new Client');
 
-    getIt<IAppCommunicationRepository>().getFromApp(request);
+      getIt<IAppCommunicationRepository>().getFromApp(request);
 
-    final Iterable<String> allDevices = getIt<ILocalDbRepository>()
-        .getSmartDevices()
-        .map((DeviceEntityAbstract e) {
-      return DeviceHelper.convertDomainToJsonString(e);
-    });
+      final Map<String, String> allDevices = getIt<ILocalDbRepository>()
+          .getSmartDevices()
+          .map((String id, DeviceEntityAbstract d) {
+        return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
+      });
 
-    /// Each first connection to the server send all saved devices
-    for (final String responseToHub in allDevices) {
-      yield RequestsAndStatusFromHub(
-        sendingType: SendingType.deviceType,
-        allRemoteCommands: responseToHub,
-      );
+      /// Each first connection to the server send all saved devices
+      for (final String responseToHub in allDevices.values) {
+        yield RequestsAndStatusFromHub(
+          sendingType: SendingType.deviceType,
+          allRemoteCommands: responseToHub,
+        );
+      }
+
+      yield* AppClientStream.streamRequestsFromAPp
+          .map((DeviceEntityDtoAbstract deviceEntityDto) =>
+              RequestsAndStatusFromHub(
+                sendingType: SendingType.deviceType,
+                allRemoteCommands:
+                    DeviceHelper.convertDtoToJsonString(deviceEntityDto),
+              ))
+          .handleError((error) => print('Stream have error $error'));
+    } catch (e) {
+      print('Hub server error $e');
     }
-
-    yield* AppClientStream.stream.map(
-        (DeviceEntityDtoAbstract deviceEntityDto) => RequestsAndStatusFromHub(
-              sendingType: SendingType.deviceType,
-              allRemoteCommands:
-                  DeviceHelper.convertDtoToJsonString(deviceEntityDto),
-            ));
   }
 
   @override

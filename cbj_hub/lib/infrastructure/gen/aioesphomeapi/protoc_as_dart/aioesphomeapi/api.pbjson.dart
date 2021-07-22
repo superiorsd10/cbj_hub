@@ -8,6 +8,8 @@
 import 'dart:core' as $core;
 import 'dart:convert' as $convert;
 import 'dart:typed_data' as $typed_data;
+import 'api_options.pbjson.dart' as $0;
+
 @$core.Deprecated('Use legacyCoverStateDescriptor instead')
 const LegacyCoverState$json = const {
   '1': 'LegacyCoverState',
@@ -996,3 +998,61 @@ const NumberCommandRequest$json = const {
 
 /// Descriptor for `NumberCommandRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List numberCommandRequestDescriptor = $convert.base64Decode('ChROdW1iZXJDb21tYW5kUmVxdWVzdBIQCgNrZXkYASABKAdSA2tleRIUCgVzdGF0ZRgCIAEoAlIFc3RhdGU6FuBAM+hAAvJAClVTRV9OVU1CRVKAQQE=');
+const $core.Map<$core.String, $core.dynamic> APIConnectionServiceBase$json = const {
+  '1': 'APIConnection',
+  '2': const [
+    const {'1': 'hello', '2': '.HelloRequest', '3': '.HelloResponse', '4': const {}},
+    const {'1': 'connect', '2': '.ConnectRequest', '3': '.ConnectResponse', '4': const {}},
+    const {'1': 'disconnect', '2': '.DisconnectRequest', '3': '.DisconnectResponse', '4': const {}},
+    const {'1': 'ping', '2': '.PingRequest', '3': '.PingResponse', '4': const {}},
+    const {'1': 'device_info', '2': '.DeviceInfoRequest', '3': '.DeviceInfoResponse', '4': const {}},
+    const {'1': 'list_entities', '2': '.ListEntitiesRequest', '3': '.void', '4': const {}},
+    const {'1': 'subscribe_states', '2': '.SubscribeStatesRequest', '3': '.void', '4': const {}},
+    const {'1': 'subscribe_logs', '2': '.SubscribeLogsRequest', '3': '.void', '4': const {}},
+    const {'1': 'subscribe_homeassistant_services', '2': '.SubscribeHomeassistantServicesRequest', '3': '.void', '4': const {}},
+    const {'1': 'subscribe_home_assistant_states', '2': '.SubscribeHomeAssistantStatesRequest', '3': '.void', '4': const {}},
+    const {'1': 'get_time', '2': '.GetTimeRequest', '3': '.GetTimeResponse', '4': const {}},
+    const {'1': 'execute_service', '2': '.ExecuteServiceRequest', '3': '.void', '4': const {}},
+    const {'1': 'cover_command', '2': '.CoverCommandRequest', '3': '.void', '4': const {}},
+    const {'1': 'fan_command', '2': '.FanCommandRequest', '3': '.void', '4': const {}},
+    const {'1': 'light_command', '2': '.LightCommandRequest', '3': '.void', '4': const {}},
+    const {'1': 'switch_command', '2': '.SwitchCommandRequest', '3': '.void', '4': const {}},
+    const {'1': 'camera_image', '2': '.CameraImageRequest', '3': '.void', '4': const {}},
+    const {'1': 'climate_command', '2': '.ClimateCommandRequest', '3': '.void', '4': const {}},
+    const {'1': 'number_command', '2': '.NumberCommandRequest', '3': '.void', '4': const {}},
+  ],
+};
+
+@$core.Deprecated('Use aPIConnectionServiceDescriptor instead')
+const $core.Map<$core.String, $core.Map<$core.String, $core.dynamic>> APIConnectionServiceBase$messageJson = const {
+  '.HelloRequest': HelloRequest$json,
+  '.HelloResponse': HelloResponse$json,
+  '.ConnectRequest': ConnectRequest$json,
+  '.ConnectResponse': ConnectResponse$json,
+  '.DisconnectRequest': DisconnectRequest$json,
+  '.DisconnectResponse': DisconnectResponse$json,
+  '.PingRequest': PingRequest$json,
+  '.PingResponse': PingResponse$json,
+  '.DeviceInfoRequest': DeviceInfoRequest$json,
+  '.DeviceInfoResponse': DeviceInfoResponse$json,
+  '.ListEntitiesRequest': ListEntitiesRequest$json,
+  '.void': $0.void_$json,
+  '.SubscribeStatesRequest': SubscribeStatesRequest$json,
+  '.SubscribeLogsRequest': SubscribeLogsRequest$json,
+  '.SubscribeHomeassistantServicesRequest': SubscribeHomeassistantServicesRequest$json,
+  '.SubscribeHomeAssistantStatesRequest': SubscribeHomeAssistantStatesRequest$json,
+  '.GetTimeRequest': GetTimeRequest$json,
+  '.GetTimeResponse': GetTimeResponse$json,
+  '.ExecuteServiceRequest': ExecuteServiceRequest$json,
+  '.ExecuteServiceArgument': ExecuteServiceArgument$json,
+  '.CoverCommandRequest': CoverCommandRequest$json,
+  '.FanCommandRequest': FanCommandRequest$json,
+  '.LightCommandRequest': LightCommandRequest$json,
+  '.SwitchCommandRequest': SwitchCommandRequest$json,
+  '.CameraImageRequest': CameraImageRequest$json,
+  '.ClimateCommandRequest': ClimateCommandRequest$json,
+  '.NumberCommandRequest': NumberCommandRequest$json,
+};
+
+/// Descriptor for `APIConnection`. Decode as a `google.protobuf.ServiceDescriptorProto`.
+final $typed_data.Uint8List aPIConnectionServiceDescriptor = $convert.base64Decode('Cg1BUElDb25uZWN0aW9uEi4KBWhlbGxvEg0uSGVsbG9SZXF1ZXN0Gg4uSGVsbG9SZXNwb25zZSIG8EAA+EAAEjQKB2Nvbm5lY3QSDy5Db25uZWN0UmVxdWVzdBoQLkNvbm5lY3RSZXNwb25zZSIG8EAA+EAAEj0KCmRpc2Nvbm5lY3QSEi5EaXNjb25uZWN0UmVxdWVzdBoTLkRpc2Nvbm5lY3RSZXNwb25zZSIG8EAA+EAAEisKBHBpbmcSDC5QaW5nUmVxdWVzdBoNLlBpbmdSZXNwb25zZSIG8EAA+EAAEjsKC2RldmljZV9pbmZvEhIuRGV2aWNlSW5mb1JlcXVlc3QaEy5EZXZpY2VJbmZvUmVzcG9uc2UiA/hAABIuCg1saXN0X2VudGl0aWVzEhQuTGlzdEVudGl0aWVzUmVxdWVzdBoFLnZvaWQiABI0ChBzdWJzY3JpYmVfc3RhdGVzEhcuU3Vic2NyaWJlU3RhdGVzUmVxdWVzdBoFLnZvaWQiABIwCg5zdWJzY3JpYmVfbG9ncxIVLlN1YnNjcmliZUxvZ3NSZXF1ZXN0GgUudm9pZCIAElMKIHN1YnNjcmliZV9ob21lYXNzaXN0YW50X3NlcnZpY2VzEiYuU3Vic2NyaWJlSG9tZWFzc2lzdGFudFNlcnZpY2VzUmVxdWVzdBoFLnZvaWQiABJQCh9zdWJzY3JpYmVfaG9tZV9hc3Npc3RhbnRfc3RhdGVzEiQuU3Vic2NyaWJlSG9tZUFzc2lzdGFudFN0YXRlc1JlcXVlc3QaBS52b2lkIgASMgoIZ2V0X3RpbWUSDy5HZXRUaW1lUmVxdWVzdBoQLkdldFRpbWVSZXNwb25zZSID+EAAEjIKD2V4ZWN1dGVfc2VydmljZRIWLkV4ZWN1dGVTZXJ2aWNlUmVxdWVzdBoFLnZvaWQiABIuCg1jb3Zlcl9jb21tYW5kEhQuQ292ZXJDb21tYW5kUmVxdWVzdBoFLnZvaWQiABIqCgtmYW5fY29tbWFuZBISLkZhbkNvbW1hbmRSZXF1ZXN0GgUudm9pZCIAEi4KDWxpZ2h0X2NvbW1hbmQSFC5MaWdodENvbW1hbmRSZXF1ZXN0GgUudm9pZCIAEjAKDnN3aXRjaF9jb21tYW5kEhUuU3dpdGNoQ29tbWFuZFJlcXVlc3QaBS52b2lkIgASLAoMY2FtZXJhX2ltYWdlEhMuQ2FtZXJhSW1hZ2VSZXF1ZXN0GgUudm9pZCIAEjIKD2NsaW1hdGVfY29tbWFuZBIWLkNsaW1hdGVDb21tYW5kUmVxdWVzdBoFLnZvaWQiABIwCg5udW1iZXJfY29tbWFuZBIVLk51bWJlckNvbW1hbmRSZXF1ZXN0GgUudm9pZCIA');

@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'sonoff_s20_dtos.dart';
+part of 'esphome_dtos.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_SonoffS20Dtos _$_$_SonoffS20DtosFromJson(Map<String, dynamic> json) {
-  return _$_SonoffS20Dtos(
+_$_EspHomeDtos _$_$_EspHomeDtosFromJson(Map<String, dynamic> json) {
+  return _$_EspHomeDtos(
     deviceDtoClass: json['deviceDtoClass'] as String?,
     id: json['id'] as String?,
     defaultName: json['defaultName'] as String?,
@@ -24,10 +24,11 @@ _$_SonoffS20Dtos _$_$_SonoffS20DtosFromJson(Map<String, dynamic> json) {
     deviceSecondWiFi: json['deviceSecondWiFi'] as String?,
     deviceMdnsName: json['deviceMdnsName'] as String?,
     lastKnownIp: json['lastKnownIp'] as String?,
+    espHomeSwitchKey: json['espHomeSwitchKey'] as String?,
   );
 }
 
-Map<String, dynamic> _$_$_SonoffS20DtosToJson(_$_SonoffS20Dtos instance) =>
+Map<String, dynamic> _$_$_EspHomeDtosToJson(_$_EspHomeDtos instance) =>
     <String, dynamic>{
       'deviceDtoClass': instance.deviceDtoClass,
       'id': instance.id,
@@ -45,4 +46,5 @@ Map<String, dynamic> _$_$_SonoffS20DtosToJson(_$_SonoffS20Dtos instance) =>
       'deviceSecondWiFi': instance.deviceSecondWiFi,
       'deviceMdnsName': instance.deviceMdnsName,
       'lastKnownIp': instance.lastKnownIp,
+      'espHomeSwitchKey': instance.espHomeSwitchKey,
     };

@@ -1,29 +1,31 @@
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
+import 'package:cbj_hub/infrastructure/devices/esphome/esphome_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'device_entity.freezed.dart';
+part 'esphome_device_entity.freezed.dart';
 
-/// Abstract smart device that exist inside a computer, the implementations will
-/// be actual device like blinds lights and more
+/// Abstract smart ESPHome that exist inside a computer, the implementations
+/// will be actual ESPHome like blinds lights and more
 @freezed
-abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
-  /// All public field of device entity
-  const factory DeviceEntity({
-    /// The smart device id
+abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
+  /// All public field of ESPHome entity
+  const factory ESPHomeDE({
+    /// The smart ESPHome id
+    //
     required CoreUniqueId? id,
 
-    /// The default name of the device
+    /// The default name of the ESPHome
     required DeviceDefaultName? defaultName,
 
-    /// Room id that the smart device located in.
+    /// Room id that the smart ESPHome located in.
     required CoreUniqueId? roomId,
 
-    /// Room name that the smart device located in.
+    /// Room name that the smart ESPHome located in.
     required DeviceRoomName? roomName,
 
     /// Did the massage arrived or was it just sent.
@@ -33,41 +35,44 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
     /// If state didn't change the error description will be found here.
     DeviceStateMassage? stateMassage,
 
-    /// Sender device os type, example: android, iphone, browser
+    /// Sender ESPHome os type, example: android, iphone, browser
     required DeviceSenderDeviceOs? senderDeviceOs,
 
-    /// The sender device model, example: onePlus 3T
+    /// The sender ESPHome model, example: onePlus 3T
     required DeviceSenderDeviceModel? senderDeviceModel,
 
-    /// Last device sender id that activated the action
+    /// Last ESPHome sender id that activated the action
     required DeviceSenderId? senderId,
 
     /// What action to execute
     required DeviceAction? deviceActions,
 
-    /// The smart device type
+    /// The smart ESPHome type
     required DeviceType? deviceTypes,
 
-    /// Unique id of the computer that the devices located in
+    /// Unique id of the computer that the ESPHome located in
     required DeviceCompUuid? compUuid,
 
-    /// Last known Ip of the computer that the device located in
+    /// Last known Ip of the computer that the ESPHome located in
     DeviceLastKnownIp? lastKnownIp,
 
-    /// Device power consumption in watts
+    /// ESPHome power consumption in watts
     DevicePowerConsumption? powerConsumption,
 
-    /// Device mdns name
+    /// ESPHome mdns name
     DeviceMdnsName? deviceMdnsName,
 
-    /// Device second WiFi
+    /// ESPHome second WiFi
     DeviceSecondWiFiName? deviceSecondWiFi,
-  }) = _DeviceEnitie;
 
-  const DeviceEntity._();
+    /// ESPHome key of the switch
+    ESPHomeSwitchKey? espHomeSwitchKey,
+  }) = _ESPHomeDE;
 
-  /// Empty instance of DeviceEntity
-  factory DeviceEntity.empty() => DeviceEntity(
+  const ESPHomeDE._();
+
+  /// Empty instance of ESPHomeEntity
+  factory ESPHomeDE.empty() => ESPHomeDE(
         id: CoreUniqueId(),
         defaultName: DeviceDefaultName(''),
         roomId: CoreUniqueId(),
@@ -81,6 +86,7 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
         deviceTypes: DeviceType(''),
         compUuid: DeviceCompUuid(''),
         lastKnownIp: DeviceLastKnownIp(''),
+        espHomeSwitchKey: ESPHomeSwitchKey(''),
       );
 
   /// Will return failure if any of the fields failed or return unit if fields
@@ -110,8 +116,8 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
-    print('DeviceDtos.fromDomain');
-    return DeviceDtos(
+    return EspHomeDtos(
+      deviceDtoClass: (EspHomeDtos).toString(),
       id: this.id!.getOrCrash(),
       defaultName: defaultName!.getOrCrash(),
       roomId: roomId!.getOrCrash(),
@@ -127,6 +133,7 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
       deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
       deviceMdnsName: deviceMdnsName!.getOrCrash(),
       lastKnownIp: lastKnownIp!.getOrCrash(),
+      espHomeSwitchKey: espHomeSwitchKey!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
