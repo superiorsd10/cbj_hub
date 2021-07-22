@@ -8,7 +8,6 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'esphome_dtos.freezed.dart';
-
 part 'esphome_dtos.g.dart';
 
 @freezed
