@@ -1,31 +1,31 @@
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
+import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/devices/sonoff_s20/sonoff_s20_dtos.dart';
+import 'package:cbj_hub/infrastructure/devices/esphome/esphome_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'sonoff_s20_device_entity.freezed.dart';
+part 'esphome_device_entity.freezed.dart';
 
-/// Abstract smart sonoffS20 that exist inside a computer, the implementations will
-/// be actual sonoffS20 like blinds lights and more
+/// Abstract smart ESPHome that exist inside a computer, the implementations
+/// will be actual ESPHome like blinds lights and more
 @freezed
-abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
-  /// All public field of sonoffS20 entity
-  const factory SonoffS20DE({
-    /// The smart sonoffS20 id
+abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
+  /// All public field of ESPHome entity
+  const factory ESPHomeDE({
+    /// The smart ESPHome id
     //
     required CoreUniqueId? id,
 
-    /// The default name of the sonoffS20
+    /// The default name of the ESPHome
     required DeviceDefaultName? defaultName,
 
-    /// Room id that the smart sonoffS20 located in.
+    /// Room id that the smart ESPHome located in.
     required CoreUniqueId? roomId,
 
-    /// Room name that the smart sonoffS20 located in.
+    /// Room name that the smart ESPHome located in.
     required DeviceRoomName? roomName,
 
     /// Did the massage arrived or was it just sent.
@@ -35,44 +35,44 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
     /// If state didn't change the error description will be found here.
     DeviceStateMassage? stateMassage,
 
-    /// Sender SonoffS20 os type, example: android, iphone, browser
+    /// Sender ESPHome os type, example: android, iphone, browser
     required DeviceSenderDeviceOs? senderDeviceOs,
 
-    /// The sender SonoffS20 model, example: onePlus 3T
+    /// The sender ESPHome model, example: onePlus 3T
     required DeviceSenderDeviceModel? senderDeviceModel,
 
-    /// Last SonoffS20 sender id that activated the action
+    /// Last ESPHome sender id that activated the action
     required DeviceSenderId? senderId,
 
     /// What action to execute
     required DeviceAction? deviceActions,
 
-    /// The smart sonoffS20 type
+    /// The smart ESPHome type
     required DeviceType? deviceTypes,
 
-    /// Unique id of the computer that the sonoffS20s located in
+    /// Unique id of the computer that the ESPHome located in
     required DeviceCompUuid? compUuid,
 
-    /// Last known Ip of the computer that the sonoffS20 located in
+    /// Last known Ip of the computer that the ESPHome located in
     DeviceLastKnownIp? lastKnownIp,
 
-    /// SonoffS20 power consumption in watts
+    /// ESPHome power consumption in watts
     DevicePowerConsumption? powerConsumption,
 
-    /// SonoffS20 mdns name
+    /// ESPHome mdns name
     DeviceMdnsName? deviceMdnsName,
 
-    /// SonoffS20 second WiFi
+    /// ESPHome second WiFi
     DeviceSecondWiFiName? deviceSecondWiFi,
 
-    /// SonoffS20 key of the switch
-    SonoffS20SwitchKey? sonoffS20SwitchKey,
-  }) = _SonoffS20DE;
+    /// ESPHome key of the switch
+    ESPHomeSwitchKey? espHomeSwitchKey,
+  }) = _ESPHomeDE;
 
-  const SonoffS20DE._();
+  const ESPHomeDE._();
 
-  /// Empty instance of SonoffS20Entity
-  factory SonoffS20DE.empty() => SonoffS20DE(
+  /// Empty instance of ESPHomeEntity
+  factory ESPHomeDE.empty() => ESPHomeDE(
         id: CoreUniqueId(),
         defaultName: DeviceDefaultName(''),
         roomId: CoreUniqueId(),
@@ -86,7 +86,7 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
         deviceTypes: DeviceType(''),
         compUuid: DeviceCompUuid(''),
         lastKnownIp: DeviceLastKnownIp(''),
-        sonoffS20SwitchKey: SonoffS20SwitchKey(''),
+        espHomeSwitchKey: ESPHomeSwitchKey(''),
       );
 
   /// Will return failure if any of the fields failed or return unit if fields
@@ -116,8 +116,8 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
-    return SonoffS20Dtos(
-      deviceDtoClass: (SonoffS20Dtos).toString(),
+    return EspHomeDtos(
+      deviceDtoClass: (EspHomeDtos).toString(),
       id: this.id!.getOrCrash(),
       defaultName: defaultName!.getOrCrash(),
       roomId: roomId!.getOrCrash(),
@@ -133,7 +133,7 @@ abstract class SonoffS20DE implements _$SonoffS20DE, DeviceEntityAbstract {
       deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
       deviceMdnsName: deviceMdnsName!.getOrCrash(),
       lastKnownIp: lastKnownIp!.getOrCrash(),
-      sonoffS20SwitchKey: sonoffS20SwitchKey!.getOrCrash(),
+      espHomeSwitchKey: espHomeSwitchKey!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }

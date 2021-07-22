@@ -1,19 +1,19 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
+import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
+import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'sonoff_s20_dtos.freezed.dart';
-part 'sonoff_s20_dtos.g.dart';
+part 'esphome_dtos.freezed.dart';
+
+part 'esphome_dtos.g.dart';
 
 @freezed
-abstract class SonoffS20Dtos
-    implements _$SonoffS20Dtos, DeviceEntityDtoAbstract {
-  factory SonoffS20Dtos({
+abstract class EspHomeDtos implements _$EspHomeDtos, DeviceEntityDtoAbstract {
+  factory EspHomeDtos({
     // @JsonKey(ignore: true)
     String? deviceDtoClass,
     String? id,
@@ -31,45 +31,45 @@ abstract class SonoffS20Dtos
     String? deviceSecondWiFi,
     String? deviceMdnsName,
     String? lastKnownIp,
-    String? sonoffS20SwitchKey,
+    String? espHomeSwitchKey,
 
     // required ServerTimestampConverter() FieldValue serverTimeStamp,
-  }) = _SonoffS20Dtos;
+  }) = _EspHomeDtos;
 
-  SonoffS20Dtos._();
+  EspHomeDtos._();
 
   @override
-  final String deviceDtoClassInstance = (SonoffS20Dtos).toString();
+  final String deviceDtoClassInstance = (EspHomeDtos).toString();
 
-  factory SonoffS20Dtos.fromDomain(SonoffS20DE sonoffS20DE) {
-    return SonoffS20Dtos(
-      deviceDtoClass: (SonoffS20Dtos).toString(),
-      id: sonoffS20DE.id!.getOrCrash(),
-      defaultName: sonoffS20DE.defaultName!.getOrCrash(),
-      roomId: sonoffS20DE.roomId!.getOrCrash(),
-      roomName: sonoffS20DE.roomName!.getOrCrash(),
-      deviceStateGRPC: sonoffS20DE.deviceStateGRPC!.getOrCrash(),
-      stateMassage: sonoffS20DE.stateMassage!.getOrCrash(),
-      senderDeviceOs: sonoffS20DE.senderDeviceOs!.getOrCrash(),
-      senderDeviceModel: sonoffS20DE.senderDeviceModel!.getOrCrash(),
-      senderId: sonoffS20DE.senderId!.getOrCrash(),
-      deviceActions: sonoffS20DE.deviceActions!.getOrCrash(),
-      deviceTypes: sonoffS20DE.deviceTypes!.getOrCrash(),
-      compUuid: sonoffS20DE.compUuid!.getOrCrash(),
-      deviceSecondWiFi: sonoffS20DE.deviceSecondWiFi!.getOrCrash(),
-      deviceMdnsName: sonoffS20DE.deviceMdnsName!.getOrCrash(),
-      lastKnownIp: sonoffS20DE.lastKnownIp!.getOrCrash(),
-      sonoffS20SwitchKey: sonoffS20DE.sonoffS20SwitchKey!.getOrCrash(),
+  factory EspHomeDtos.fromDomain(ESPHomeDE espHomeDE) {
+    return EspHomeDtos(
+      deviceDtoClass: (EspHomeDtos).toString(),
+      id: espHomeDE.id!.getOrCrash(),
+      defaultName: espHomeDE.defaultName!.getOrCrash(),
+      roomId: espHomeDE.roomId!.getOrCrash(),
+      roomName: espHomeDE.roomName!.getOrCrash(),
+      deviceStateGRPC: espHomeDE.deviceStateGRPC!.getOrCrash(),
+      stateMassage: espHomeDE.stateMassage!.getOrCrash(),
+      senderDeviceOs: espHomeDE.senderDeviceOs!.getOrCrash(),
+      senderDeviceModel: espHomeDE.senderDeviceModel!.getOrCrash(),
+      senderId: espHomeDE.senderId!.getOrCrash(),
+      deviceActions: espHomeDE.deviceActions!.getOrCrash(),
+      deviceTypes: espHomeDE.deviceTypes!.getOrCrash(),
+      compUuid: espHomeDE.compUuid!.getOrCrash(),
+      deviceSecondWiFi: espHomeDE.deviceSecondWiFi!.getOrCrash(),
+      deviceMdnsName: espHomeDE.deviceMdnsName!.getOrCrash(),
+      lastKnownIp: espHomeDE.lastKnownIp!.getOrCrash(),
+      espHomeSwitchKey: espHomeDE.espHomeSwitchKey!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
 
-  factory SonoffS20Dtos.fromJson(Map<String, dynamic> json) =>
-      _$SonoffS20DtosFromJson(json);
+  factory EspHomeDtos.fromJson(Map<String, dynamic> json) =>
+      _$EspHomeDtosFromJson(json);
 
   DeviceEntityAbstract toDomain() {
-    print('SonoffS2Dto to Domain');
-    return SonoffS20DE(
+    print('ESPHomeDto to Domain');
+    return ESPHomeDE(
       id: CoreUniqueId.fromUniqueString(id),
       defaultName: DeviceDefaultName(defaultName),
       roomId: CoreUniqueId.fromUniqueString(roomId),
@@ -85,7 +85,7 @@ abstract class SonoffS20Dtos
       deviceSecondWiFi: DeviceSecondWiFiName(deviceSecondWiFi),
       deviceMdnsName: DeviceMdnsName(deviceMdnsName),
       lastKnownIp: DeviceLastKnownIp(lastKnownIp),
-      sonoffS20SwitchKey: SonoffS20SwitchKey(sonoffS20SwitchKey),
+      espHomeSwitchKey: ESPHomeSwitchKey(espHomeSwitchKey),
     );
   }
 

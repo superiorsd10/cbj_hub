@@ -2,32 +2,32 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/i_sonoff_s20_repository.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
+import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
+import 'package:cbj_hub/domain/devices/esphome_device/i_esphome_device_repository.dart';
 import 'package:cbj_hub/infrastructure/aioesphomeapi/aioesphomeapi.dart';
-import 'package:cbj_hub/infrastructure/devices/sonoff_s20/sonoff_s20_dtos.dart';
+import 'package:cbj_hub/infrastructure/devices/esphome/esphome_dtos.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbenum.dart';
 import 'package:dartz/dartz.dart';
 import 'package:kt_dart/kt.dart';
 
-class SonoffS20Repo implements ISonoffS20Repository {
-  static Map<String, SonoffS20DE> sonoffDevices = {};
+class ESPHomeRepo implements IESPHomeRepository {
+  static Map<String, ESPHomeDE> espHomeDevices = {};
 
   @override
-  Future<Either<CoreFailure, Unit>> delete(SonoffS20DE sonoffS20) {
+  Future<Either<CoreFailure, Unit>> delete(ESPHomeDE espHome) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, KtList<SonoffS20DE?>>> getAllSonoffS20s() {
-    // TODO: implement getAllSonoffS20s
+  Future<Either<CoreFailure, KtList<ESPHomeDE?>>> getAllESPHome() {
+    // TODO: implement getAllESPHome
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, KtList<SonoffS20Dtos?>>> getAllSonoffS20sAsDto() {
-    // TODO: implement getAllSonoffS20sAsDto
+  Future<Either<CoreFailure, KtList<EspHomeDtos?>>> getAllESPHomeAsDto() {
+    // TODO: implement getAllESPHomeAsDto
     throw UnimplementedError();
   }
 
@@ -39,40 +39,39 @@ class SonoffS20Repo implements ISonoffS20Repository {
 
   @override
   Future<Either<CoreFailure, Unit>> moveDownBlinds(
-      {required List<String>? sonoffS20sId, String? forceUpdateLocation}) {
+      {required List<String>? espHomesId, String? forceUpdateLocation}) {
     // TODO: implement moveDownBlinds
     throw UnimplementedError();
   }
 
   @override
   Future<Either<CoreFailure, Unit>> moveUpBlinds(
-      {required List<String>? sonoffS20sId, String? forceUpdateLocation}) {
+      {required List<String>? espHomesId, String? forceUpdateLocation}) {
     // TODO: implement moveUpBlinds
     throw UnimplementedError();
   }
 
   @override
   Future<Either<CoreFailure, Unit>> stopBlinds(
-      {required List<String>? sonoffS20sId, String? forceUpdateLocation}) {
+      {required List<String>? espHomesId, String? forceUpdateLocation}) {
     // TODO: implement stopBlinds
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOffSonoffS20s(
-      SonoffS20DE sonoffS20DE) async {
+  Future<Either<CoreFailure, Unit>> turnOffESPHome(ESPHomeDE espHomeDE) async {
     try {
-      print('Turn off sonoff device');
+      print('Turn off ESPHome device');
       AioEspHomeApi aioEspHomeApi;
       try {
         aioEspHomeApi = AioEspHomeApi.createWithAddress(
-            sonoffS20DE.deviceMdnsName!.getOrCrash());
+            espHomeDE.deviceMdnsName!.getOrCrash());
         //
         // aioEspHomeApi.listenToResponses();
         await aioEspHomeApi.helloRequestToEsp();
       } catch (mDnsCannotBeFound) {
         aioEspHomeApi = AioEspHomeApi.createWithAddress(
-            sonoffS20DE.lastKnownIp!.getOrCrash());
+            espHomeDE.lastKnownIp!.getOrCrash());
         //
         // aioEspHomeApi.listenToResponses();
         await aioEspHomeApi.helloRequestToEsp();
@@ -82,7 +81,7 @@ class SonoffS20Repo implements ISonoffS20Repository {
       // await aioEspHomeApi.listEntitiesRequest();
       // await aioEspHomeApi.subscribeStatesRequest();
       await aioEspHomeApi.switchCommandRequest(
-          int.parse(sonoffS20DE.sonoffS20SwitchKey!.getOrCrash()), false);
+          int.parse(espHomeDE.espHomeSwitchKey!.getOrCrash()), false);
       await aioEspHomeApi.disconnect();
       return right(unit);
     } catch (exception) {
@@ -91,20 +90,19 @@ class SonoffS20Repo implements ISonoffS20Repository {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOnSonoffS20s(
-      SonoffS20DE sonoffS20DE) async {
+  Future<Either<CoreFailure, Unit>> turnOnESPHome(ESPHomeDE espHomeDE) async {
     try {
-      print('Turn on sonoff device');
+      print('Turn on ESPHome device');
       AioEspHomeApi aioEspHomeApi;
       try {
         aioEspHomeApi = AioEspHomeApi.createWithAddress(
-            sonoffS20DE.deviceMdnsName!.getOrCrash());
+            espHomeDE.deviceMdnsName!.getOrCrash());
         //
         // aioEspHomeApi.listenToResponses();
         await aioEspHomeApi.helloRequestToEsp();
       } catch (mDnsCannotBeFound) {
         aioEspHomeApi = AioEspHomeApi.createWithAddress(
-            sonoffS20DE.lastKnownIp!.getOrCrash());
+            espHomeDE.lastKnownIp!.getOrCrash());
         //
         // aioEspHomeApi.listenToResponses();
         await aioEspHomeApi.helloRequestToEsp();
@@ -114,7 +112,7 @@ class SonoffS20Repo implements ISonoffS20Repository {
       // await aioEspHomeApi.listEntitiesRequest();
       // await aioEspHomeApi.subscribeStatesRequest();
       await aioEspHomeApi.switchCommandRequest(
-          int.parse(sonoffS20DE.sonoffS20SwitchKey!.getOrCrash()), true);
+          int.parse(espHomeDE.espHomeSwitchKey!.getOrCrash()), true);
       await aioEspHomeApi.disconnect();
       return right(unit);
     } catch (exception) {
@@ -132,80 +130,80 @@ class SonoffS20Repo implements ISonoffS20Repository {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> updateWithSonoffS20(
-      {required SonoffS20DE sonoffS20, String? forceUpdateLocation}) {
-    // TODO: implement updateWithSonoffS20
+  Future<Either<CoreFailure, Unit>> updateWithESPHome(
+      {required ESPHomeDE espHome, String? forceUpdateLocation}) {
+    // TODO: implement updateWithESPHome
     throw UnimplementedError();
   }
 
   @override
-  Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchAll() {
+  Stream<Either<CoreFailure, KtList<ESPHomeDE?>>> watchAll() {
     // TODO: implement watchAll
     throw UnimplementedError();
   }
 
   @override
-  Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchBlinds() {
+  Stream<Either<CoreFailure, KtList<ESPHomeDE?>>> watchBlinds() {
     // TODO: implement watchBlinds
     throw UnimplementedError();
   }
 
   @override
-  Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchBoilers() {
+  Stream<Either<CoreFailure, KtList<ESPHomeDE?>>> watchBoilers() {
     // TODO: implement watchBoilers
     throw UnimplementedError();
   }
 
   @override
-  Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchLights() {
+  Stream<Either<CoreFailure, KtList<ESPHomeDE?>>> watchLights() {
     // TODO: implement watchLights
     throw UnimplementedError();
   }
 
   @override
-  Stream<Either<CoreFailure, KtList<SonoffS20DE?>>> watchUncompleted() {
+  Stream<Either<CoreFailure, KtList<ESPHomeDE?>>> watchUncompleted() {
     // TODO: implement watchUncompleted
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> create(SonoffS20DE sonoffS20) {
+  Future<Either<CoreFailure, Unit>> create(ESPHomeDE espHome) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   @override
-  Future<void> manageHubRequestsForDevice(SonoffS20DE sonoffS20DE) async {
-    final SonoffS20DE? device = sonoffDevices[sonoffS20DE.id!.getOrCrash()];
+  Future<void> manageHubRequestsForDevice(ESPHomeDE espHomeDE) async {
+    final ESPHomeDE? device = espHomeDevices[espHomeDE.id!.getOrCrash()];
     if (device == null) {
-      print('Cant change SonoffS20, does not exist');
+      print('Cant change ESPHome, does not exist');
       return;
     }
 
-    if (sonoffS20DE.getDeviceId() == device.getDeviceId()) {
-      if (sonoffS20DE.deviceActions != device.deviceActions) {
-        executeDeviceAction(sonoffS20DE);
+    if (espHomeDE.getDeviceId() == device.getDeviceId()) {
+      if (espHomeDE.deviceActions != device.deviceActions) {
+        executeDeviceAction(espHomeDE);
       } else {
-        print('Sonoff change is not supported');
+        print('ESPHome change is not supported');
       }
       return;
     }
-    print('manageHubRequestsForDevice in sonoff');
+    print('manageHubRequestsForDevice in ESPHome');
   }
 
   @override
-  Future<void> executeDeviceAction(SonoffS20DE sonoffS20DE) async {
-    final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        sonoffS20DE.deviceActions!.getOrCrash());
+  Future<void> executeDeviceAction(ESPHomeDE espHomeDE) async {
+    final DeviceActions? actionToPreform =
+        EnumHelper.stringToDeviceAction(espHomeDE.deviceActions!.getOrCrash());
 
-    sonoffDevices[sonoffS20DE.id!.getOrCrash()!] =
-        sonoffDevices[sonoffS20DE.id!.getOrCrash()!]!
-            .copyWith(deviceActions: sonoffS20DE.deviceActions);
+    espHomeDevices[espHomeDE.id!.getOrCrash()!] =
+        espHomeDevices[espHomeDE.id!.getOrCrash()!]!
+            .copyWith(deviceActions: espHomeDE.deviceActions);
 
     if (actionToPreform == DeviceActions.on) {
-      turnOnSonoffS20s(sonoffS20DE);
+      turnOnESPHome(espHomeDE);
     } else if (actionToPreform == DeviceActions.off) {
-      turnOffSonoffS20s(sonoffS20DE);
+      turnOffESPHome(espHomeDE);
     }
   }
 }

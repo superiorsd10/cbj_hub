@@ -2,8 +2,8 @@ import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_device_entity.dart';
-import 'package:cbj_hub/domain/devices/sonoff_s20/sonoff_s20_value_objects.dart';
+import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
+import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:injectable/injectable.dart';
@@ -14,7 +14,7 @@ class LocalDbRepository extends ILocalDbRepository {
   Map<String, DeviceEntityAbstract> getSmartDevices() {
     final String guyRoomId = CoreUniqueId().getOrCrash()!;
 
-    final SonoffS20DE firstRealDeviceTest = SonoffS20DE(
+    final ESPHomeDE firstRealDeviceTest = ESPHomeDE(
       id: CoreUniqueId.fromUniqueString('0ecb1040-e724-11eb-8cec-954d01dcce33'),
       defaultName: DeviceDefaultName('guy ceiling'),
       roomId: CoreUniqueId(),
@@ -33,10 +33,10 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
       deviceMdnsName: DeviceMdnsName('livingroom.local'),
       powerConsumption: DevicePowerConsumption('0'),
-      sonoffS20SwitchKey: SonoffS20SwitchKey('1711856045'),
+      espHomeSwitchKey: ESPHomeSwitchKey('1711856045'),
     );
 
-    final SonoffS20DE sonoffS20 = SonoffS20DE(
+    final ESPHomeDE espHome = ESPHomeDE(
       id: CoreUniqueId(),
       defaultName: DeviceDefaultName('Ceiling'),
       roomId: CoreUniqueId.fromUniqueString(guyRoomId),
@@ -53,6 +53,7 @@ class LocalDbRepository extends ILocalDbRepository {
       powerConsumption: DevicePowerConsumption('0'),
       deviceMdnsName: DeviceMdnsName('CeilingGuy'),
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
+      espHomeSwitchKey: ESPHomeSwitchKey('1711856045'),
     );
 
     final DeviceEntity deviceEntity = DeviceEntity(
@@ -93,7 +94,10 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
     );
 
-    return {firstRealDeviceTest.id!.getOrCrash()!: firstRealDeviceTest};
+    return {
+      firstRealDeviceTest.id!.getOrCrash()!: firstRealDeviceTest,
+      espHome.id!.getOrCrash()!: espHome
+    };
   }
 
   @override
