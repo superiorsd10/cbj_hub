@@ -9,7 +9,7 @@ rm dartsdk-*.zip
 
 cd cbj_hub
 ../dart-sdk/bin/pub get --no-precompile
-#sudo ../dart-sdk/bin/pub run build_runner build --delete-conflicting-outputs
+../dart-sdk/bin/dart run build_runner build --delete-conflicting-outputs
 cd ..
 
 #chmod -R +rx dart-sdk/
