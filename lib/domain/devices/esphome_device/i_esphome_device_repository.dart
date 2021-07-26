@@ -33,7 +33,7 @@ abstract class IESPHomeRepository {
   Future<Either<CoreFailure, Unit>> updateDatabase({
     required String pathOfField,
     required Map<String, dynamic> fieldsToUpdate,
-    String forceUpdateLocation,
+    String? forceUpdateLocation,
   });
 
   Future<Either<CoreFailure, Unit>> updateWithESPHome({
