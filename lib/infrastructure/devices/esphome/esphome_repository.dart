@@ -184,7 +184,7 @@ class ESPHomeRepo implements IESPHomeRepository {
       if (espHomeDE.deviceActions != device.deviceActions) {
         executeDeviceAction(espHomeDE);
       } else {
-        print('ESPHome change is not supported');
+        print('No changes for ESPHome');
       }
       return;
     }

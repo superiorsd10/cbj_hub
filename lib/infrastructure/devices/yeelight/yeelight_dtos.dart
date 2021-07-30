@@ -1,18 +1,18 @@
 import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
-import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_value_objects.dart';
+import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_entity.dart';
+import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'esphome_dtos.freezed.dart';
-part 'esphome_dtos.g.dart';
+part 'yeelight_dtos.freezed.dart';
+part 'yeelight_dtos.g.dart';
 
 @freezed
-abstract class EspHomeDtos implements _$EspHomeDtos, DeviceEntityDtoAbstract {
-  factory EspHomeDtos({
+abstract class YeelightDtos implements _$YeelightDtos, DeviceEntityDtoAbstract {
+  factory YeelightDtos({
     // @JsonKey(ignore: true)
     String? deviceDtoClass,
     String? id,
@@ -30,44 +30,45 @@ abstract class EspHomeDtos implements _$EspHomeDtos, DeviceEntityDtoAbstract {
     String? deviceSecondWiFi,
     String? deviceMdnsName,
     String? lastKnownIp,
-    String? espHomeSwitchKey,
+    String? yeelightSwitchKey,
 
     // required ServerTimestampConverter() FieldValue serverTimeStamp,
-  }) = _EspHomeDtos;
+  }) = _YeelightDtos;
 
-  EspHomeDtos._();
+  YeelightDtos._();
 
   @override
-  final String deviceDtoClassInstance = (EspHomeDtos).toString();
+  final String deviceDtoClassInstance = (YeelightDtos).toString();
 
-  factory EspHomeDtos.fromDomain(ESPHomeDE espHomeDE) {
-    return EspHomeDtos(
-      deviceDtoClass: (EspHomeDtos).toString(),
-      id: espHomeDE.id!.getOrCrash(),
-      defaultName: espHomeDE.defaultName!.getOrCrash(),
-      roomId: espHomeDE.roomId!.getOrCrash(),
-      roomName: espHomeDE.roomName!.getOrCrash(),
-      deviceStateGRPC: espHomeDE.deviceStateGRPC!.getOrCrash(),
-      stateMassage: espHomeDE.stateMassage!.getOrCrash(),
-      senderDeviceOs: espHomeDE.senderDeviceOs!.getOrCrash(),
-      senderDeviceModel: espHomeDE.senderDeviceModel!.getOrCrash(),
-      senderId: espHomeDE.senderId!.getOrCrash(),
-      deviceActions: espHomeDE.deviceActions!.getOrCrash(),
-      deviceTypes: espHomeDE.deviceTypes!.getOrCrash(),
-      compUuid: espHomeDE.compUuid!.getOrCrash(),
-      deviceSecondWiFi: espHomeDE.deviceSecondWiFi!.getOrCrash(),
-      deviceMdnsName: espHomeDE.deviceMdnsName!.getOrCrash(),
-      lastKnownIp: espHomeDE.lastKnownIp!.getOrCrash(),
-      espHomeSwitchKey: espHomeDE.espHomeSwitchKey!.getOrCrash(),
+  factory YeelightDtos.fromDomain(YeelightDE yeelightDE) {
+    return YeelightDtos(
+      deviceDtoClass: (YeelightDtos).toString(),
+      id: yeelightDE.id!.getOrCrash(),
+      defaultName: yeelightDE.defaultName!.getOrCrash(),
+      roomId: yeelightDE.roomId!.getOrCrash(),
+      roomName: yeelightDE.roomName!.getOrCrash(),
+      deviceStateGRPC: yeelightDE.deviceStateGRPC!.getOrCrash(),
+      stateMassage: yeelightDE.stateMassage!.getOrCrash(),
+      senderDeviceOs: yeelightDE.senderDeviceOs!.getOrCrash(),
+      senderDeviceModel: yeelightDE.senderDeviceModel!.getOrCrash(),
+      senderId: yeelightDE.senderId!.getOrCrash(),
+      deviceActions: yeelightDE.deviceActions!.getOrCrash(),
+      deviceTypes: yeelightDE.deviceTypes!.getOrCrash(),
+      compUuid: yeelightDE.compUuid!.getOrCrash(),
+      deviceSecondWiFi: yeelightDE.deviceSecondWiFi!.getOrCrash(),
+      deviceMdnsName: yeelightDE.deviceMdnsName!.getOrCrash(),
+      lastKnownIp: yeelightDE.lastKnownIp!.getOrCrash(),
+      yeelightSwitchKey: yeelightDE.yeelightSwitchKey!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
 
-  factory EspHomeDtos.fromJson(Map<String, dynamic> json) =>
-      _$EspHomeDtosFromJson(json);
+  factory YeelightDtos.fromJson(Map<String, dynamic> json) =>
+      _$YeelightDtosFromJson(json);
 
   DeviceEntityAbstract toDomain() {
-    return ESPHomeDE(
+    print('YeelightDto to Domain');
+    return YeelightDE(
       id: CoreUniqueId.fromUniqueString(id),
       defaultName: DeviceDefaultName(defaultName),
       roomId: CoreUniqueId.fromUniqueString(roomId),
@@ -83,7 +84,7 @@ abstract class EspHomeDtos implements _$EspHomeDtos, DeviceEntityDtoAbstract {
       deviceSecondWiFi: DeviceSecondWiFiName(deviceSecondWiFi),
       deviceMdnsName: DeviceMdnsName(deviceMdnsName),
       lastKnownIp: DeviceLastKnownIp(lastKnownIp),
-      espHomeSwitchKey: ESPHomeSwitchKey(espHomeSwitchKey),
+      yeelightSwitchKey: YeelightSwitchKey(yeelightSwitchKey),
     );
   }
 
