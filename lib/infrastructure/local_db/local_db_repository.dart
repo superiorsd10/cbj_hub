@@ -4,6 +4,8 @@ import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
 import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
 import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_value_objects.dart';
+import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_entity.dart';
+import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:injectable/injectable.dart';
@@ -18,7 +20,7 @@ class LocalDbRepository extends ILocalDbRepository {
       id: CoreUniqueId.fromUniqueString('0ecb1040-e724-11eb-8cec-954d01dcce33'),
       defaultName: DeviceDefaultName('guy ceiling'),
       roomId: CoreUniqueId(),
-      roomName: DeviceRoomName('Guyy'),
+      roomName: DeviceRoomName('Guyy Esp1'),
       deviceStateGRPC: DeviceState(
           EnumHelper.deviceStateToString(DeviceStateGRPC.waitingInComp)),
       senderDeviceOs: DeviceSenderDeviceOs('ESPHome'),
@@ -38,7 +40,7 @@ class LocalDbRepository extends ILocalDbRepository {
 
     final ESPHomeDE espHome = ESPHomeDE(
       id: CoreUniqueId(),
-      defaultName: DeviceDefaultName('Ceiling'),
+      defaultName: DeviceDefaultName('test esp2'),
       roomId: CoreUniqueId.fromUniqueString(guyRoomId),
       roomName: DeviceRoomName('Guy'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
@@ -58,7 +60,7 @@ class LocalDbRepository extends ILocalDbRepository {
 
     final DeviceEntity deviceEntity = DeviceEntity(
       id: CoreUniqueId(),
-      defaultName: DeviceDefaultName('Ceiling'),
+      defaultName: DeviceDefaultName('DeviceEntity test 1'),
       roomId: CoreUniqueId.fromUniqueString(guyRoomId),
       roomName: DeviceRoomName('Guy'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
@@ -94,9 +96,31 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
     );
 
+    final YeelightDE yeelightDE = YeelightDE(
+      id: CoreUniqueId(),
+      defaultName: DeviceDefaultName('Yeelight test 1'),
+      roomId: CoreUniqueId(),
+      roomName: DeviceRoomName('Guy'),
+      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
+      senderDeviceOs: DeviceSenderDeviceOs('yeelight'),
+      senderDeviceModel: DeviceSenderDeviceModel('1SE'),
+      senderId: DeviceSenderId(),
+      deviceActions: DeviceAction(DeviceActions.on.toString()),
+      deviceTypes: DeviceType(DeviceTypes.light.toString()),
+      compUuid: DeviceCompUuid('34asd23gggg'),
+      deviceMdnsName: DeviceMdnsName('yeelink-light-colora_miap9C52'),
+      lastKnownIp: DeviceLastKnownIp('192.168.31.129'),
+      yeelightDeviceId: YeelightDeviceId('249185746'),
+      yeelightPort: YeelightPort('55443'),
+      stateMassage: DeviceStateMassage('Hello World'),
+      powerConsumption: DevicePowerConsumption('0'),
+      deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
+    );
+
     return {
       firstRealDeviceTest.id!.getOrCrash()!: firstRealDeviceTest,
-      espHome.id!.getOrCrash()!: espHome
+      espHome.id!.getOrCrash()!: espHome,
+      yeelightDE.id!.getOrCrash()!: yeelightDE,
     };
   }
 

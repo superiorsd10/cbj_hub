@@ -3,15 +3,31 @@ import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_validators.dart';
 import 'package:dartz/dartz.dart';
 
-class YeelightSwitchKey extends ValueObjectCore<String> {
-  factory YeelightSwitchKey(String? input) {
+/// Yeelight device unique address that came withe the device
+class YeelightDeviceId extends ValueObjectCore<String> {
+  factory YeelightDeviceId(String? input) {
     assert(input != null);
-    return YeelightSwitchKey._(
-      validateYeelightSwitchKeyNotEmpty(input!),
+    return YeelightDeviceId._(
+      validateYeelightIdNotEmpty(input!),
     );
   }
 
-  const YeelightSwitchKey._(this.value);
+  const YeelightDeviceId._(this.value);
+
+  @override
+  final Either<CoreFailure<String>, String> value;
+}
+
+/// Yeelight communication port
+class YeelightPort extends ValueObjectCore<String> {
+  factory YeelightPort(String? input) {
+    assert(input != null);
+    return YeelightPort._(
+      validateYeelightPortNotEmpty(input!),
+    );
+  }
+
+  const YeelightPort._(this.value);
 
   @override
   final Either<CoreFailure<String>, String> value;

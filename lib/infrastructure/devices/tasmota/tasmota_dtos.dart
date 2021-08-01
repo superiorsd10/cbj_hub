@@ -1,10 +1,8 @@
-import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/tasmota_device/tasmota_device_entity.dart';
 import 'package:cbj_hub/domain/devices/tasmota_device/tasmota_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'tasmota_dtos.freezed.dart';
@@ -85,23 +83,6 @@ abstract class TasmotaDtos implements _$TasmotaDtos, DeviceEntityDtoAbstract {
       deviceMdnsName: DeviceMdnsName(deviceMdnsName),
       lastKnownIp: DeviceLastKnownIp(lastKnownIp),
       tasmotaSwitchKey: TasmotaSwitchKey(tasmotaSwitchKey),
-    );
-  }
-
-  SmartDeviceInfo toSmartDeviceInfo() {
-    return SmartDeviceInfo(
-      id: id,
-      defaultName: defaultName,
-      roomId: roomId,
-      state: deviceStateGRPC,
-      senderDeviceOs: senderDeviceOs,
-      senderDeviceModel: senderDeviceModel,
-      senderId: senderId,
-      deviceTypesActions: DeviceTypesActions(
-        deviceStateGRPC: EnumHelper.stringToDeviceState(deviceStateGRPC!),
-        deviceAction: EnumHelper.stringToDeviceAction(deviceActions!),
-        deviceType: EnumHelper.stringToDt(deviceTypes!),
-      ),
     );
   }
 }

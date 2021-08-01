@@ -53,6 +53,12 @@ abstract class YeelightDE implements _$YeelightDE, DeviceEntityAbstract {
     /// Unique id of the computer that the Yeelight located in
     required DeviceCompUuid? compUuid,
 
+    /// Yeelight device unique id that came withe the device
+    required YeelightDeviceId? yeelightDeviceId,
+
+    /// Yeelight communication port
+    required YeelightPort? yeelightPort,
+
     /// Last known Ip of the computer that the Yeelight located in
     DeviceLastKnownIp? lastKnownIp,
 
@@ -64,9 +70,6 @@ abstract class YeelightDE implements _$YeelightDE, DeviceEntityAbstract {
 
     /// Yeelight second WiFi
     DeviceSecondWiFiName? deviceSecondWiFi,
-
-    /// Yeelight key of the switch
-    YeelightSwitchKey? yeelightSwitchKey,
   }) = _YeelightDE;
 
   const YeelightDE._();
@@ -86,7 +89,8 @@ abstract class YeelightDE implements _$YeelightDE, DeviceEntityAbstract {
         deviceTypes: DeviceType(''),
         compUuid: DeviceCompUuid(''),
         lastKnownIp: DeviceLastKnownIp(''),
-        yeelightSwitchKey: YeelightSwitchKey(''),
+        yeelightDeviceId: YeelightDeviceId(''),
+        yeelightPort: YeelightPort(''),
       );
 
   /// Will return failure if any of the fields failed or return unit if fields
@@ -133,7 +137,8 @@ abstract class YeelightDE implements _$YeelightDE, DeviceEntityAbstract {
       deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
       deviceMdnsName: deviceMdnsName!.getOrCrash(),
       lastKnownIp: lastKnownIp!.getOrCrash(),
-      yeelightSwitchKey: yeelightSwitchKey!.getOrCrash(),
+      yeelightDeviceId: yeelightDeviceId!.getOrCrash(),
+      yeelightPort: yeelightPort!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
