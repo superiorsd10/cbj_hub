@@ -1,4 +1,4 @@
-import 'package:cbj_hub/application/conector/conector.dart';
+import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
@@ -21,6 +21,6 @@ class BootUp {
 
     getIt<IMqttServerRepository>();
 
-    Conector.startConector();
+    Connector.startConnector();
   }
 }
