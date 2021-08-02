@@ -13,7 +13,7 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: ILocalDbRepository)
 class LocalDbRepository extends ILocalDbRepository {
   @override
-  Map<String, DeviceEntityAbstract> getSmartDevices() {
+  Map<String, DeviceEntityAbstract> getSmartDevicesFromDb() {
     final String guyRoomId = CoreUniqueId().getOrCrash()!;
 
     final ESPHomeDE firstRealDeviceTest = ESPHomeDE(
@@ -118,8 +118,8 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     return {
-      firstRealDeviceTest.id!.getOrCrash()!: firstRealDeviceTest,
-      espHome.id!.getOrCrash()!: espHome,
+      // firstRealDeviceTest.id!.getOrCrash()!: firstRealDeviceTest,
+      // espHome.id!.getOrCrash()!: espHome,
       yeelightDE.id!.getOrCrash()!: yeelightDE,
     };
   }

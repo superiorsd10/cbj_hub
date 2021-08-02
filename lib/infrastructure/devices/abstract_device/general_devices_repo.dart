@@ -1,6 +1,8 @@
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
+import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_repository.dart';
+import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_repository.dart';
 
 class GeneralDevicesRepo {
   static updateAllDevicesReposWithDeviceChanges(
@@ -8,6 +10,9 @@ class GeneralDevicesRepo {
     allDevices.listen((deviceEntityAbstract) {
       if (deviceEntityAbstract is ESPHomeDE) {
         ESPHomeRepo().manageHubRequestsForDevice(deviceEntityAbstract);
+      }
+      if (deviceEntityAbstract is YeelightDE) {
+        YeelightRepo().manageHubRequestsForDevice(deviceEntityAbstract);
       } else {
         print('Cannot send device changes to its repo, type not supported');
       }
@@ -30,6 +35,11 @@ class GeneralDevicesRepo {
           MapEntry<String, ESPHomeDE>(deviceEntityAbstract.key,
               deviceEntityAbstract.value as ESPHomeDE);
       ESPHomeRepo.espHomeDevices.addEntries([espHomeEntry]);
+    } else if (deviceEntityAbstract.value is YeelightDE) {
+      final MapEntry<String, YeelightDE> yeelightEntry =
+          MapEntry<String, YeelightDE>(deviceEntityAbstract.key,
+              deviceEntityAbstract.value as YeelightDE);
+      YeelightRepo.yeelightDevices.addEntries([yeelightEntry]);
     } else {
       print('Cannot add device entity to its repo, type not supported');
     }

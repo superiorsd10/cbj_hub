@@ -30,8 +30,6 @@ abstract class YeelightDtos implements _$YeelightDtos, DeviceEntityDtoAbstract {
     String? deviceSecondWiFi,
     String? deviceMdnsName,
     String? lastKnownIp,
-    String? yeelightSwitchKey,
-
     // required ServerTimestampConverter() FieldValue serverTimeStamp,
   }) = _YeelightDtos;
 
