@@ -2,6 +2,7 @@ import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.da
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_dtos.dart';
+import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_dtos.dart';
 
 class DeviceEntityDtoAbstract {
   DeviceEntityDtoAbstract();
@@ -21,6 +22,8 @@ class DeviceEntityDtoAbstract {
       deviceEntityDtoAbstract = DeviceDtos.fromJson(json);
     } else if (jsonDeviceDtoClass == (EspHomeDtos).toString()) {
       deviceEntityDtoAbstract = EspHomeDtos.fromJson(json);
+    } else if (jsonDeviceDtoClass == (YeelightDtos).toString()) {
+      deviceEntityDtoAbstract = YeelightDtos.fromJson(json);
     } else {
       throw 'DtoClassTypeDoesNotExist';
     }

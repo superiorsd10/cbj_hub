@@ -31,6 +31,8 @@ dependencies:
   lint: ^1.5.3
   # A server and browser based MQTT client for Dart.
   mqtt_client: ^9.4.1
+  # Service discovery over multicast DNS (mDNS), Bonjour, and Avahi.
+  multicast_dns: ^0.3.0
   # Provides runtime support for a Dart implementation of protobufs.
   protobuf: ^2.0.0
   # Extends the capabilities of Dart Streams and StreamControllers.

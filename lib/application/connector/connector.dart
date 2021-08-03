@@ -12,8 +12,8 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:typed_data/src/typed_buffer.dart';
 
-class Conector {
-  static Future<void> startConector() async {
+class Connector {
+  static Future<void> startConnector() async {
     ConnectorStreamToMqtt.toMqttStream.listen((deviceEntityAbstract) async {
       await getIt<IMqttServerRepository>()
           .publishDeviceEntity(deviceEntityAbstract.value);
