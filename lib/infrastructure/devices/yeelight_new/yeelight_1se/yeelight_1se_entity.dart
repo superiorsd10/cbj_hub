@@ -2,6 +2,7 @@ import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_value_objects.dart';
+import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:dartz/dartz.dart';
 
@@ -89,6 +90,12 @@ class Yeelight1SeEntity implements GenericLightDE {
   @override
   // TODO: implement stateMassage
   DeviceStateMassage? get stateMassage => throw UnimplementedError();
+
+  /// Yeelight device unique id that came withe the device
+  YeelightDeviceId? yeelightDeviceId;
+
+  /// Yeelight communication port
+  YeelightPort? yeelightPort;
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {

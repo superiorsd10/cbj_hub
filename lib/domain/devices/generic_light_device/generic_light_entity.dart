@@ -2,6 +2,8 @@ import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/generic_light_device/generic_light_device_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -113,27 +115,26 @@ abstract class GenericLightDE
     return this.id!.getOrCrash()!;
   }
 
-// @override
-// DeviceEntityDtoAbstract toInfrastructure() {
-//   return EspHomeDtos(
-//     deviceDtoClass: (EspHomeDtos).toString(),
-//     id: this.id!.getOrCrash(),
-//     defaultName: defaultName!.getOrCrash(),
-//     roomId: roomId!.getOrCrash(),
-//     roomName: roomName!.getOrCrash(),
-//     deviceStateGRPC: deviceStateGRPC!.getOrCrash(),
-//     stateMassage: stateMassage!.getOrCrash(),
-//     senderDeviceOs: senderDeviceOs!.getOrCrash(),
-//     senderDeviceModel: senderDeviceModel!.getOrCrash(),
-//     senderId: senderId!.getOrCrash(),
-//     deviceActions: deviceActions!.getOrCrash(),
-//     deviceTypes: deviceTypes!.getOrCrash(),
-//     compUuid: compUuid!.getOrCrash(),
-//     deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
-//     deviceMdnsName: deviceMdnsName!.getOrCrash(),
-//     lastKnownIp: lastKnownIp!.getOrCrash(),
-//     genericLightSwitchKey: genericLightSwitchKey!.getOrCrash(),
-//     // serverTimeStamp: FieldValue.serverTimestamp(),
-//   );
-// }
+  @override
+  DeviceEntityDtoAbstract toInfrastructure() {
+    return GenericLightDeviceDtos(
+      deviceDtoClass: (GenericLightDeviceDtos).toString(),
+      id: this.id!.getOrCrash(),
+      defaultName: defaultName!.getOrCrash(),
+      roomId: roomId!.getOrCrash(),
+      roomName: roomName!.getOrCrash(),
+      deviceStateGRPC: deviceStateGRPC!.getOrCrash(),
+      stateMassage: stateMassage!.getOrCrash(),
+      senderDeviceOs: senderDeviceOs!.getOrCrash(),
+      senderDeviceModel: senderDeviceModel!.getOrCrash(),
+      senderId: senderId!.getOrCrash(),
+      deviceActions: deviceActions!.getOrCrash(),
+      deviceTypes: deviceTypes!.getOrCrash(),
+      compUuid: compUuid!.getOrCrash(),
+      deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
+      deviceMdnsName: deviceMdnsName!.getOrCrash(),
+      lastKnownIp: lastKnownIp!.getOrCrash(),
+      // serverTimeStamp: FieldValue.serverTimestamp(),
+    );
+  }
 }
