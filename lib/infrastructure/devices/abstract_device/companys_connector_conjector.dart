@@ -4,7 +4,7 @@ import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_repository.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_repository.dart';
 
-class GeneralDevicesRepo {
+class CompanysConnectorConjector {
   static updateAllDevicesReposWithDeviceChanges(
       Stream<DeviceEntityAbstract> allDevices) {
     allDevices.listen((deviceEntityAbstract) {

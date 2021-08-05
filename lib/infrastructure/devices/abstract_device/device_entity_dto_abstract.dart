@@ -1,7 +1,7 @@
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/esphome_dtos.dart';
+import 'package:cbj_hub/infrastructure/devices/esphome/old/esphome_dtos.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_dtos.dart';
 
 class DeviceEntityDtoAbstract {

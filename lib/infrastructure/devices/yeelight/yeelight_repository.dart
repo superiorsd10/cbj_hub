@@ -128,6 +128,10 @@ class YeelightRepo implements IYeelightRepository {
             port: int.parse(yeelightDE.yeelightPort!.getOrCrash()));
 
         await device.turnOn();
+        String color = '#ff0000';
+        String hex = color.replaceAll('#', '');
+
+        await device.setRGB(color: int.parse(hex, radix: 16));
         device.disconnect();
 
         return right(unit);
