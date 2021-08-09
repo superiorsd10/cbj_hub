@@ -1,31 +1,32 @@
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_value_objects.dart';
+import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/old/esphome_dtos.dart';
+import 'package:cbj_hub/infrastructure/devices/generic_light_device/generic_light_device_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'esphome_device_entity.freezed.dart';
+part 'generic_light_entity.freezed.dart';
 
-/// Abstract smart ESPHome that exist inside a computer, the implementations
-/// will be actual ESPHome like blinds lights and more
+/// Abstract smart GenericLight that exist inside a computer, the
+/// implementations will be actual GenericLight like blinds lights and more
 @freezed
-abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
-  /// All public field of ESPHome entity
-  const factory ESPHomeDE({
-    /// The smart ESPHome id
+abstract class GenericLightDE
+    implements _$GenericLightDE, DeviceEntityAbstract {
+  /// All public field of GenericLight entity
+  const factory GenericLightDE({
+    /// The smart GenericLight id
     //
     required CoreUniqueId? id,
 
-    /// The default name of the ESPHome
+    /// The default name of the GenericLight
     required DeviceDefaultName? defaultName,
 
-    /// Room id that the smart ESPHome located in.
+    /// Room id that the smart GenericLight located in.
     required CoreUniqueId? roomId,
 
-    /// Room name that the smart ESPHome located in.
+    /// Room name that the smart GenericLight located in.
     required DeviceRoomName? roomName,
 
     /// Did the massage arrived or was it just sent.
@@ -35,44 +36,44 @@ abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
     /// If state didn't change the error description will be found here.
     DeviceStateMassage? stateMassage,
 
-    /// Sender ESPHome os type, example: android, iphone, browser
+    /// Sender GenericLight os type, example: android, iphone, browser
     required DeviceSenderDeviceOs? senderDeviceOs,
 
-    /// The sender ESPHome model, example: onePlus 3T
+    /// The sender GenericLight model, example: onePlus 3T
     required DeviceSenderDeviceModel? senderDeviceModel,
 
-    /// Last ESPHome sender id that activated the action
+    /// Last GenericLight sender id that activated the action
     required DeviceSenderId? senderId,
 
     /// What action to execute
     required DeviceAction? deviceActions,
 
-    /// The smart ESPHome type
+    /// The smart GenericLight type
     required DeviceType? deviceTypes,
 
-    /// Unique id of the computer that the ESPHome located in
+    /// Unique id of the computer that the GenericLight located in
     required DeviceCompUuid? compUuid,
 
-    /// Last known Ip of the computer that the ESPHome located in
+    /// Last known Ip of the computer that the GenericLight located in
     DeviceLastKnownIp? lastKnownIp,
 
-    /// ESPHome power consumption in watts
+    /// GenericLight power consumption in watts
     DevicePowerConsumption? powerConsumption,
 
-    /// ESPHome mdns name
+    /// GenericLight mdns name
     DeviceMdnsName? deviceMdnsName,
 
-    /// ESPHome second WiFi
+    /// GenericLight second WiFi
     DeviceSecondWiFiName? deviceSecondWiFi,
 
-    /// ESPHome key of the switch
-    ESPHomeSwitchKey? espHomeSwitchKey,
-  }) = _ESPHomeDE;
+    /// GenericLight key of the switch
+    GenericLightSwitchKey? genericLightSwitchKey,
+  }) = _GenericLightDE;
 
-  const ESPHomeDE._();
+  const GenericLightDE._();
 
-  /// Empty instance of ESPHomeEntity
-  factory ESPHomeDE.empty() => ESPHomeDE(
+  /// Empty instance of GenericLightEntity
+  factory GenericLightDE.empty() => GenericLightDE(
         id: CoreUniqueId(),
         defaultName: DeviceDefaultName(''),
         roomId: CoreUniqueId(),
@@ -86,7 +87,7 @@ abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
         deviceTypes: DeviceType(''),
         compUuid: DeviceCompUuid(''),
         lastKnownIp: DeviceLastKnownIp(''),
-        espHomeSwitchKey: ESPHomeSwitchKey(''),
+        genericLightSwitchKey: GenericLightSwitchKey(''),
       );
 
   /// Will return failure if any of the fields failed or return unit if fields
@@ -116,8 +117,8 @@ abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
-    return EspHomeDtos(
-      deviceDtoClass: (EspHomeDtos).toString(),
+    return GenericLightDeviceDtos(
+      deviceDtoClass: (GenericLightDeviceDtos).toString(),
       id: this.id!.getOrCrash(),
       defaultName: defaultName!.getOrCrash(),
       roomId: roomId!.getOrCrash(),
@@ -133,7 +134,6 @@ abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
       deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
       deviceMdnsName: deviceMdnsName!.getOrCrash(),
       lastKnownIp: lastKnownIp!.getOrCrash(),
-      espHomeSwitchKey: espHomeSwitchKey!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
