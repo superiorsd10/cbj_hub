@@ -192,6 +192,21 @@ class DeviceType extends ValueObjectCore<String> {
   final Either<CoreFailure<String>, String> value;
 }
 
+class DeviceVendor extends ValueObjectCore<String> {
+  factory DeviceVendor(String? input) {
+    assert(input != null);
+    return DeviceVendor._(
+      validateDeviceNotEmpty(input!)
+          .flatMap((a) => validateDeviceVendorExist(input)),
+    );
+  }
+
+  const DeviceVendor._(this.value);
+
+  @override
+  final Either<CoreFailure<String>, String> value;
+}
+
 class DeviceCompUuid extends ValueObjectCore<String> {
   factory DeviceCompUuid(String? input) {
     assert(input != null);

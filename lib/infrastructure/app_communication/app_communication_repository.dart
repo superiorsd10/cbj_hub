@@ -3,14 +3,12 @@ import 'dart:async';
 import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/devices/basic_device/device_entity.dart';
-import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
-import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_entity.dart';
+import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
-import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:grpc/grpc.dart';
 import 'package:injectable/injectable.dart';
@@ -81,26 +79,13 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       return;
     }
 
-    if (savedDeviceEntity is ESPHomeDE) {
-      final DeviceEntity savedDeviceEntityFromApp =
-          deviceEntityFromApp as DeviceEntity;
-      final ESPHomeDE savedDeviceEntityAsESPHome = savedDeviceEntity.copyWith(
-          deviceActions: savedDeviceEntityFromApp.deviceActions);
+    if (savedDeviceEntity is GenericLightDE) {
+      final GenericLightDE savedDeviceEntityFromApp =
+          deviceEntityFromApp as GenericLightDE;
+      savedDeviceEntity.deviceActions = savedDeviceEntityFromApp.deviceActions;
 
-      final MapEntry<String, DeviceEntityAbstract> deviceFromApp = MapEntry(
-          savedDeviceEntityAsESPHome.id!.getOrCrash()!,
-          savedDeviceEntityAsESPHome);
-      ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
-    }
-    if (savedDeviceEntity is YeelightDE) {
-      final YeelightDE savedDeviceEntityFromApp =
-          deviceEntityFromApp as YeelightDE;
-      final YeelightDE savedDeviceEntityAsYeelight = savedDeviceEntity.copyWith(
-          deviceActions: savedDeviceEntityFromApp.deviceActions);
-
-      final MapEntry<String, DeviceEntityAbstract> deviceFromApp = MapEntry(
-          savedDeviceEntityAsYeelight.id!.getOrCrash()!,
-          savedDeviceEntityAsYeelight);
+      final MapEntry<String, DeviceEntityAbstract> deviceFromApp =
+          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
       ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
     } else {
       print('Cant find device from app type');
