@@ -1,5 +1,5 @@
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 
 abstract class DeviceEntityAbstract {
   DeviceEntityAbstract(

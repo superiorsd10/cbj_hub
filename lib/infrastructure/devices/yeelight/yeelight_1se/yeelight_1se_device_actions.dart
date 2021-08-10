@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight_new/yeelight_1se/yeelight_1se_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:yeedart/yeedart.dart';
