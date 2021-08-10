@@ -82,7 +82,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     if (savedDeviceEntity is GenericLightDE) {
       final GenericLightDE savedDeviceEntityFromApp =
           deviceEntityFromApp as GenericLightDE;
-      savedDeviceEntity.deviceActions = savedDeviceEntityFromApp.deviceActions;
+      savedDeviceEntity.lightSwitchState =
+          savedDeviceEntityFromApp.lightSwitchState;
 
       final MapEntry<String, DeviceEntityAbstract> deviceFromApp =
           MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);

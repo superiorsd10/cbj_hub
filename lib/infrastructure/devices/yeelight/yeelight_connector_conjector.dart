@@ -34,7 +34,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
     if (yeelightDE is GenericLightDE) {
       final GenericLightDE yeelightDELight = yeelightDE;
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          yeelightDELight.deviceActions!.getOrCrash());
+          yeelightDELight.lightSwitchState!.getOrCrash());
       //
       // companyDevices[yeelightDELight.id!.getOrCrash()!] =
       //     companyDevices[yeelightDELight.id!.getOrCrash()!]!
@@ -65,8 +65,8 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
     }
 
     if (yeelightDE.getDeviceId() == device.getDeviceId()) {
-      if ((yeelightDE as GenericLightDE).deviceActions !=
-          device.deviceActions) {
+      if ((yeelightDE as GenericLightDE).lightSwitchState !=
+          device.lightSwitchState) {
         executeDeviceAction(yeelightDE);
       } else {
         print('No changes for Yeelight');

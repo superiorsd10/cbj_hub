@@ -10,40 +10,35 @@ class Yeelight1SeEntity extends GenericLightDE {
     required CoreUniqueId roomId,
     required DeviceType deviceTypes,
     required DeviceDefaultName defaultName,
-    DeviceRoomName? roomName,
-    DeviceState? deviceStateGRPC,
-    DeviceStateMassage? stateMassage,
-    DeviceSenderDeviceOs? senderDeviceOs,
-    DeviceSenderDeviceModel? senderDeviceModel,
-    DeviceSenderId? senderId,
-    DeviceAction? deviceActions,
-    DeviceVendor? deviceVendor,
-    DeviceCompUuid? compUuid,
-    DeviceLastKnownIp? lastKnownIp,
-    DevicePowerConsumption? powerConsumption,
-    DeviceMdnsName? deviceMdnsName,
-    DeviceSecondWiFiName? deviceSecondWiFi,
-    GenericLightSwitchState? lightSwitchState,
+    required DeviceRoomName roomName,
+    required DeviceState deviceStateGRPC,
+    required DeviceStateMassage stateMassage,
+    required DeviceSenderDeviceOs senderDeviceOs,
+    required DeviceSenderDeviceModel senderDeviceModel,
+    required DeviceSenderId senderId,
+    required DeviceAction deviceActions,
+    required DeviceCompUuid compUuid,
+    required DevicePowerConsumption powerConsumption,
+    required DeviceSecondWiFiName deviceSecondWiFi,
+    required GenericLightSwitchState lightSwitchState,
     required this.yeelightDeviceId,
     required this.yeelightPort,
+    this.deviceMdnsName,
+    this.lastKnownIp,
   }) : super(
-          uniqueId: uniqueId,
+    uniqueId: uniqueId,
           defaultName: defaultName,
           roomId: roomId,
+          lightSwitchState: lightSwitchState,
           roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,
           senderDeviceModel: senderDeviceModel,
           senderId: senderId,
-          deviceActions: deviceActions,
           deviceVendor: DeviceVendor(VendorsAndServices.yeelight.toString()),
-          deviceTypes: deviceTypes,
           compUuid: compUuid,
-          lastKnownIp: lastKnownIp,
           powerConsumption: powerConsumption,
-          deviceMdnsName: deviceMdnsName,
-          deviceSecondWiFi: deviceSecondWiFi,
         );
 
   /// Yeelight device unique id that came withe the device
@@ -51,4 +46,8 @@ class Yeelight1SeEntity extends GenericLightDE {
 
   /// Yeelight communication port
   YeelightPort? yeelightPort;
+
+  DeviceLastKnownIp? lastKnownIp;
+
+  DeviceMdnsName? deviceMdnsName;
 }

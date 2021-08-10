@@ -27,13 +27,18 @@ class CompanysConnectorConjector {
 
   static addDeviceToItsRepo(
       MapEntry<String, DeviceEntityAbstract> deviceEntityAbstract) {
-    if (deviceEntityAbstract.value.deviceVendor!.getOrCrash() ==
+    if (deviceEntityAbstract.value.deviceVendor.getOrCrash() ==
         VendorsAndServices.yeelight.toString()) {
       final MapEntry<String, DeviceEntityAbstract> yeelightEntry =
           MapEntry<String, DeviceEntityAbstract>(
               deviceEntityAbstract.key, deviceEntityAbstract.value);
       YeelightConnectorConjector.companyDevices.addEntries([yeelightEntry]);
-    } else {
+    }
+    // else if (deviceEntityAbstract.value.deviceVendor!.getOrCrash() ==
+    //     VendorsAndServices.tasmota.toString()) {
+    //   print('Call tasmota repo');
+    // }
+    else {
       print('Cannot add device entity to its repo, type not supported');
     }
   }

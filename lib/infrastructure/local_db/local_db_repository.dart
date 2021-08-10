@@ -1,5 +1,6 @@
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_device_value_objects.dart';
@@ -31,6 +32,8 @@ class LocalDbRepository extends ILocalDbRepository {
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
       yeelightDeviceId: YeelightDeviceId('249185746'),
       yeelightPort: YeelightPort('55443'),
+      lightSwitchState:
+          GenericLightSwitchState(DeviceActions.actionNotSupported.toString()),
     );
 
     return {

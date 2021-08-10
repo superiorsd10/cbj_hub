@@ -1,52 +1,59 @@
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:uuid/uuid.dart';
 
 abstract class DeviceEntityAbstract {
-  DeviceEntityAbstract(
-      {required this.uniqueId,
-      this.defaultName,
-      this.roomId,
-      this.deviceTypes});
+  DeviceEntityAbstract({
+    required this.uniqueId,
+    required this.deviceVendor,
+    required this.deviceTypes,
+    required this.defaultName,
+    required this.roomId,
+    required this.roomName,
+    required this.stateMassage,
+    required this.senderDeviceOs,
+    required this.senderDeviceModel,
+    required this.senderId,
+    required this.compUuid,
+    required this.deviceStateGRPC,
+  });
 
-  /// The smart GenericLight id
   CoreUniqueId uniqueId;
 
   /// The default name of the GenericLight
-  DeviceDefaultName? defaultName;
+  DeviceDefaultName defaultName;
 
   /// Room id that the smart GenericLight located in.
-  CoreUniqueId? roomId;
+  CoreUniqueId roomId;
 
   /// Room name that the smart GenericLight located in.
-  DeviceRoomName? roomName;
+  DeviceRoomName roomName;
 
   /// Did the massage arrived or was it just sent.
   /// Will be 'set' (need change) or 'ack' for acknowledge
-  DeviceState? deviceStateGRPC;
+  DeviceState deviceStateGRPC;
 
   /// If state didn't change the error description will be found here.
-  DeviceStateMassage? stateMassage;
+  DeviceStateMassage stateMassage;
 
   /// Sender GenericLight os type, example: android, iphone, browser
-  DeviceSenderDeviceOs? senderDeviceOs;
+  DeviceSenderDeviceOs senderDeviceOs;
 
   /// The sender GenericLight model; example: onePlus 3T
-  DeviceSenderDeviceModel? senderDeviceModel;
+  DeviceSenderDeviceModel senderDeviceModel;
 
   /// Last GenericLight sender id that activated the action
-  DeviceSenderId? senderId;
-
-  /// What action to execute
-  DeviceAction? deviceActions;
+  DeviceSenderId senderId;
 
   /// The smart GenericLight type
-  DeviceType? deviceTypes;
+  DeviceType deviceTypes;
 
   /// The smart GenericLight type
-  DeviceVendor? deviceVendor;
+  DeviceVendor deviceVendor;
 
   /// Unique id of the computer that the GenericLight located in
-  DeviceCompUuid? compUuid;
+  DeviceCompUuid compUuid;
 
   String getDeviceId();
 
@@ -56,8 +63,22 @@ abstract class DeviceEntityAbstract {
 }
 
 class DeviceEntityNotAbstract extends DeviceEntityAbstract {
-  DeviceEntityNotAbstract({required CoreUniqueId uniqueId})
-      : super(uniqueId: uniqueId);
+  DeviceEntityNotAbstract()
+      : super(
+          uniqueId: CoreUniqueId(),
+          deviceVendor: DeviceVendor(
+              VendorsAndServices.VendorsAndServicesNotSupported.toString()),
+          deviceStateGRPC: DeviceState(DeviceTypes.typeNotSupported.toString()),
+          compUuid: DeviceCompUuid(Uuid().v1().toString()),
+          defaultName: DeviceDefaultName('No Name'),
+          deviceTypes: DeviceType(DeviceTypes.light.toString()),
+          roomId: CoreUniqueId(),
+          roomName: DeviceRoomName('No name'),
+          senderDeviceModel: DeviceSenderDeviceModel('a'),
+          senderDeviceOs: DeviceSenderDeviceOs('b'),
+          senderId: DeviceSenderId(),
+          stateMassage: DeviceStateMassage('go'),
+        );
 
   DeviceEntityDtoAbstract toInfrastructure() {
     return DeviceEntityDtoAbstract();
