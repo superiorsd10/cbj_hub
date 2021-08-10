@@ -6,9 +6,10 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 
 class Yeelight1SeEntity extends GenericLightDE {
   Yeelight1SeEntity({
-    required this.uniqueId,
+    required CoreUniqueId uniqueId,
+    required CoreUniqueId roomId,
+    required DeviceType deviceTypes,
     required this.defaultName,
-    required this.roomId,
     required this.roomName,
     required this.deviceStateGRPC,
     required this.stateMassage,
@@ -16,7 +17,6 @@ class Yeelight1SeEntity extends GenericLightDE {
     required this.senderDeviceModel,
     required this.senderId,
     required this.deviceActions,
-    required this.deviceTypes,
     required this.compUuid,
     required this.lastKnownIp,
     this.powerConsumption,
@@ -43,7 +43,6 @@ class Yeelight1SeEntity extends GenericLightDE {
           powerConsumption: powerConsumption,
           deviceMdnsName: deviceMdnsName,
           deviceSecondWiFi: deviceSecondWiFi,
-          genericLightSwitchKey: genericLightSwitchKey,
         );
 
   /// Yeelight device unique id that came withe the device
@@ -71,9 +70,6 @@ class Yeelight1SeEntity extends GenericLightDE {
   DeviceState? deviceStateGRPC;
 
   @override
-  DeviceType? deviceTypes;
-
-  @override
   GenericLightSwitchKey? genericLightSwitchKey;
 
   @override
@@ -81,9 +77,6 @@ class Yeelight1SeEntity extends GenericLightDE {
 
   @override
   DevicePowerConsumption? powerConsumption;
-
-  @override
-  CoreUniqueId? roomId;
 
   @override
   DeviceRoomName? roomName;
@@ -99,7 +92,4 @@ class Yeelight1SeEntity extends GenericLightDE {
 
   @override
   DeviceStateMassage? stateMassage;
-
-  @override
-  CoreUniqueId? uniqueId;
 }

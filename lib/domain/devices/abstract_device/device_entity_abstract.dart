@@ -2,6 +2,52 @@ import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 
 abstract class DeviceEntityAbstract {
+  DeviceEntityAbstract(
+      {required this.uniqueId,
+      this.defaultName,
+      this.roomId,
+      this.deviceTypes});
+
+  /// The smart GenericLight id
+  CoreUniqueId uniqueId;
+
+  /// The default name of the GenericLight
+  DeviceDefaultName? defaultName;
+
+  /// Room id that the smart GenericLight located in.
+  CoreUniqueId? roomId;
+
+  /// Room name that the smart GenericLight located in.
+  DeviceRoomName? roomName;
+
+  /// Did the massage arrived or was it just sent.
+  /// Will be 'set' (need change) or 'ack' for acknowledge
+  DeviceState? deviceStateGRPC;
+
+  /// If state didn't change the error description will be found here.
+  DeviceStateMassage? stateMassage;
+
+  /// Sender GenericLight os type, example: android, iphone, browser
+  DeviceSenderDeviceOs? senderDeviceOs;
+
+  /// The sender GenericLight model; example: onePlus 3T
+  DeviceSenderDeviceModel? senderDeviceModel;
+
+  /// Last GenericLight sender id that activated the action
+  DeviceSenderId? senderId;
+
+  /// What action to execute
+  DeviceAction? deviceActions;
+
+  /// The smart GenericLight type
+  DeviceType? deviceTypes;
+
+  /// The smart GenericLight type
+  DeviceVendor? deviceVendor;
+
+  /// Unique id of the computer that the GenericLight located in
+  DeviceCompUuid? compUuid;
+
   String getDeviceId();
 
   DeviceEntityDtoAbstract toInfrastructure() {
@@ -9,13 +55,9 @@ abstract class DeviceEntityAbstract {
   }
 }
 
-class DeviceEntityNotAbstract implements DeviceEntityAbstract {
-  DeviceEntityNotAbstract(
-
-      /// The smart device id
-      {required this.id});
-
-  CoreUniqueId? id;
+class DeviceEntityNotAbstract extends DeviceEntityAbstract {
+  DeviceEntityNotAbstract({required CoreUniqueId uniqueId})
+      : super(uniqueId: uniqueId);
 
   DeviceEntityDtoAbstract toInfrastructure() {
     return DeviceEntityDtoAbstract();

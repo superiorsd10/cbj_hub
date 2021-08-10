@@ -1,74 +1,80 @@
-import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
-import 'package:dartz/dartz.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:cbj_hub/infrastructure/devices/generic_light_device/generic_light_device_dtos.dart';
 
-part 'device_entity.freezed.dart';
+/// Abstract smart GenericLight that exist inside a computer, the
+/// implementations will be actual GenericLight like blinds lights and more
+class DeviceEntity extends DeviceEntityAbstract {
+  /// All public field of GenericLight entity
+  DeviceEntity({
+    required CoreUniqueId uniqueId,
+    DeviceDefaultName? defaultName,
+    required CoreUniqueId roomId,
+    this.roomName,
+    required this.deviceStateGRPC,
+    required this.stateMassage,
+    required this.senderDeviceOs,
+    required this.senderDeviceModel,
+    required this.senderId,
+    required this.deviceActions,
+    required DeviceType deviceTypes,
+    required this.deviceVendor,
+    required this.compUuid,
+    required this.lastKnownIp,
+    this.powerConsumption,
+    this.deviceMdnsName,
+    this.deviceSecondWiFi,
+  }) : super(
+          uniqueId: uniqueId,
+          deviceTypes: deviceTypes,
+          defaultName: defaultName,
+          roomId: roomId,
+        );
 
-/// Abstract smart device that exist inside a computer, the implementations will
-/// be actual device like blinds lights and more
-@freezed
-abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
-  /// All public field of device entity
-  const factory DeviceEntity({
-    /// The smart device id
-    required CoreUniqueId? id,
+  /// Room name that the smart GenericLight located in.
+  DeviceRoomName? roomName;
 
-    /// The default name of the device
-    required DeviceDefaultName? defaultName,
+  /// Did the massage arrived or was it just sent.
+  /// Will be 'set' (need change) or 'ack' for acknowledge
+  DeviceState? deviceStateGRPC;
 
-    /// Room id that the smart device located in.
-    required CoreUniqueId? roomId,
+  /// If state didn't change the error description will be found here.
+  DeviceStateMassage? stateMassage;
 
-    /// Room name that the smart device located in.
-    required DeviceRoomName? roomName,
+  /// Sender GenericLight os type, example: android, iphone, browser
+  DeviceSenderDeviceOs? senderDeviceOs;
 
-    /// Did the massage arrived or was it just sent.
-    /// Will be 'set' (need change) or 'ack' for acknowledge
-    required DeviceState? deviceStateGRPC,
+  /// The sender GenericLight model; example: onePlus 3T
+  DeviceSenderDeviceModel? senderDeviceModel;
 
-    /// If state didn't change the error description will be found here.
-    DeviceStateMassage? stateMassage,
+  /// Last GenericLight sender id that activated the action
+  DeviceSenderId? senderId;
 
-    /// Sender device os type, example: android, iphone, browser
-    required DeviceSenderDeviceOs? senderDeviceOs,
+  /// What action to execute
+  DeviceAction? deviceActions;
 
-    /// The sender device model, example: onePlus 3T
-    required DeviceSenderDeviceModel? senderDeviceModel,
+  /// The smart GenericLight type
+  DeviceVendor? deviceVendor;
 
-    /// Last device sender id that activated the action
-    required DeviceSenderId? senderId,
+  /// Unique id of the computer that the GenericLight located in
+  DeviceCompUuid? compUuid;
 
-    /// What action to execute
-    required DeviceAction? deviceActions,
+  /// Last known Ip of the computer that the GenericLight located in
+  DeviceLastKnownIp? lastKnownIp;
 
-    /// The smart device type
-    required DeviceType? deviceTypes,
+  /// GenericLight power consumption in watts
+  DevicePowerConsumption? powerConsumption;
 
-    /// Unique id of the computer that the devices located in
-    required DeviceCompUuid? compUuid,
+  /// GenericLight mdns name
+  DeviceMdnsName? deviceMdnsName;
 
-    /// Last known Ip of the computer that the device located in
-    DeviceLastKnownIp? lastKnownIp,
+  /// GenericLight second WiFi
+  DeviceSecondWiFiName? deviceSecondWiFi;
 
-    /// Device power consumption in watts
-    DevicePowerConsumption? powerConsumption,
-
-    /// Device mdns name
-    DeviceMdnsName? deviceMdnsName,
-
-    /// Device second WiFi
-    DeviceSecondWiFiName? deviceSecondWiFi,
-  }) = _DeviceEnitie;
-
-  const DeviceEntity._();
-
-  /// Empty instance of DeviceEntity
+  /// Empty instance of GenericLightEntity
   factory DeviceEntity.empty() => DeviceEntity(
-        id: CoreUniqueId(),
+        uniqueId: CoreUniqueId(),
         defaultName: DeviceDefaultName(''),
         roomId: CoreUniqueId(),
         roomName: DeviceRoomName(''),
@@ -78,41 +84,43 @@ abstract class DeviceEntity implements _$DeviceEntity, DeviceEntityAbstract {
         stateMassage: DeviceStateMassage(''),
         senderId: DeviceSenderId(),
         deviceActions: DeviceAction(''),
+        deviceVendor: DeviceVendor(''),
         deviceTypes: DeviceType(''),
         compUuid: DeviceCompUuid(''),
         lastKnownIp: DeviceLastKnownIp(''),
       );
 
-  /// Will return failure if any of the fields failed or return unit if fields
-  /// have legit values
-  Option<CoreFailure<dynamic>> get failureOption {
-    return defaultName!.value.fold((f) => some(f), (_) => none());
-    //
-    // return body.failureOrUnit
-    //     .andThen(todos.failureOrUnit)
-    //     .andThen(
-    //       todos
-    //           .getOrCrash()
-    //           // Getting the failureOption from the TodoItem ENTITY - NOT a failureOrUnit from a VALUE OBJECT
-    //           .map((todoItem) => todoItem.failureOption)
-    //           .filter((o) => o.isSome())
-    //           // If we can't get the 0th element, the list is empty. In such a case, it's valid.
-    //           .getOrElse(0, (_) => none())
-    //           .fold(() => right(unit), (f) => left(f)),
-    //     )
-    //     .fold((f) => some(f), (_) => none());
-  }
+  //
+  // /// Will return failure if any of the fields failed or return unit if fields
+  // /// have legit values
+  // Option<CoreFailure<dynamic>> get failureOption {
+  //   return defaultName!.value.fold((f) => some(f), (_) => none());
+  //
+  // return body.failureOrUnit
+  //     .andThen(todos.failureOrUnit)
+  //     .andThen(
+  //       todos
+  //           .getOrCrash()
+  //           // Getting the failureOption from the TodoItem ENTITY - NOT a failureOrUnit from a VALUE OBJECT
+  //           .map((todoItem) => todoItem.failureOption)
+  //           .filter((o) => o.isSome())
+  //           // If we can't get the 0th element, the list is empty. In such a case, it's valid.
+  //           .getOrElse(0, (_) => none())
+  //           .fold(() => right(unit), (f) => left(f)),
+  //     )
+  //     .fold((f) => some(f), (_) => none());
+  // }
 
   @override
   String getDeviceId() {
-    return this.id!.getOrCrash()!;
+    return uniqueId.getOrCrash()!;
   }
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
-    print('DeviceDtos.fromDomain');
-    return DeviceDtos(
-      id: this.id!.getOrCrash(),
+    return GenericLightDeviceDtos(
+      deviceDtoClass: (GenericLightDeviceDtos).toString(),
+      id: uniqueId.getOrCrash(),
       defaultName: defaultName!.getOrCrash(),
       roomId: roomId!.getOrCrash(),
       roomName: roomName!.getOrCrash(),

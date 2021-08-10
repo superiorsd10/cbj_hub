@@ -5,7 +5,7 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 extension SmartDeviceInfoX on SmartDeviceInfo {
   DeviceEntity toDeviceEntity() {
     return DeviceEntity(
-      id: CoreUniqueId.fromUniqueString(this.id),
+      uniqueId: CoreUniqueId.fromUniqueString(this.id),
       defaultName: DeviceDefaultName(this.defaultName),
       roomId: CoreUniqueId.fromUniqueString(this.roomId),
       roomName: DeviceRoomName('Will Save the room name'),
@@ -18,6 +18,9 @@ extension SmartDeviceInfoX on SmartDeviceInfo {
       deviceTypes:
           DeviceType(this.deviceTypesActions.deviceType.name.toString()),
       compUuid: DeviceCompUuid('12345555'),
+      lastKnownIp: null,
+      stateMassage: null,
+      deviceVendor: null,
     );
   }
 }

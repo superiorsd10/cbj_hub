@@ -1,6 +1,5 @@
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/generic_light_device/generic_light_device_dtos.dart';
 
@@ -9,34 +8,29 @@ import 'package:cbj_hub/infrastructure/devices/generic_light_device/generic_ligh
 class GenericLightDE extends DeviceEntityAbstract {
   /// All public field of GenericLight entity
   GenericLightDE({
-    required this.uniqueId,
-    required this.defaultName,
-    required this.roomId,
-    required this.roomName,
+    required CoreUniqueId uniqueId,
+    DeviceDefaultName? defaultName,
+    required CoreUniqueId roomId,
+    this.roomName,
     required this.deviceStateGRPC,
     required this.stateMassage,
     required this.senderDeviceOs,
     required this.senderDeviceModel,
     required this.senderId,
     required this.deviceActions,
-    required this.deviceTypes,
+    required DeviceType deviceTypes,
     required this.deviceVendor,
     required this.compUuid,
     required this.lastKnownIp,
     this.powerConsumption,
     this.deviceMdnsName,
     this.deviceSecondWiFi,
-    this.genericLightSwitchKey,
-  });
-
-  /// The smart GenericLight id
-  CoreUniqueId? uniqueId;
-
-  /// The default name of the GenericLight
-  DeviceDefaultName? defaultName;
-
-  /// Room id that the smart GenericLight located in.
-  CoreUniqueId? roomId;
+  }) : super(
+          uniqueId: uniqueId,
+          deviceTypes: deviceTypes,
+          defaultName: defaultName,
+          roomId: roomId,
+        );
 
   /// Room name that the smart GenericLight located in.
   DeviceRoomName? roomName;
@@ -61,9 +55,6 @@ class GenericLightDE extends DeviceEntityAbstract {
   DeviceAction? deviceActions;
 
   /// The smart GenericLight type
-  DeviceType? deviceTypes;
-
-  /// The smart GenericLight type
   DeviceVendor? deviceVendor;
 
   /// Unique id of the computer that the GenericLight located in
@@ -81,9 +72,6 @@ class GenericLightDE extends DeviceEntityAbstract {
   /// GenericLight second WiFi
   DeviceSecondWiFiName? deviceSecondWiFi;
 
-  /// GenericLight key of the switch
-  GenericLightSwitchKey? genericLightSwitchKey;
-
   /// Empty instance of GenericLightEntity
   factory GenericLightDE.empty() => GenericLightDE(
         uniqueId: CoreUniqueId(),
@@ -100,7 +88,6 @@ class GenericLightDE extends DeviceEntityAbstract {
         deviceTypes: DeviceType(''),
         compUuid: DeviceCompUuid(''),
         lastKnownIp: DeviceLastKnownIp(''),
-        genericLightSwitchKey: GenericLightSwitchKey(''),
       );
 
   //
@@ -126,14 +113,14 @@ class GenericLightDE extends DeviceEntityAbstract {
 
   @override
   String getDeviceId() {
-    return uniqueId!.getOrCrash()!;
+    return uniqueId.getOrCrash()!;
   }
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
     return GenericLightDeviceDtos(
       deviceDtoClass: (GenericLightDeviceDtos).toString(),
-      id: uniqueId!.getOrCrash(),
+      id: uniqueId.getOrCrash(),
       defaultName: defaultName!.getOrCrash(),
       roomId: roomId!.getOrCrash(),
       roomName: roomName!.getOrCrash(),

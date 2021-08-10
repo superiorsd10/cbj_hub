@@ -41,7 +41,7 @@ abstract class DeviceDtos implements _$DeviceDtos, DeviceEntityDtoAbstract {
 
     return DeviceDtos(
       deviceDtoClass: (DeviceDtos).toString(),
-      id: deviceEntity.id!.getOrCrash(),
+      id: deviceEntity.uniqueId.getOrCrash(),
       defaultName: deviceEntity.defaultName!.getOrCrash(),
       roomId: deviceEntity.roomId!.getOrCrash(),
       roomName: deviceEntity.roomName!.getOrCrash(),
@@ -66,7 +66,7 @@ abstract class DeviceDtos implements _$DeviceDtos, DeviceEntityDtoAbstract {
   DeviceEntity toDomain() {
     print('To Domain deviceEntity');
     return DeviceEntity(
-      id: CoreUniqueId.fromUniqueString(id),
+      uniqueId: CoreUniqueId.fromUniqueString(id),
       defaultName: DeviceDefaultName(defaultName),
       roomId: CoreUniqueId.fromUniqueString(roomId),
       roomName: DeviceRoomName(roomName),
@@ -81,6 +81,7 @@ abstract class DeviceDtos implements _$DeviceDtos, DeviceEntityDtoAbstract {
       deviceSecondWiFi: DeviceSecondWiFiName(deviceSecondWiFi),
       deviceMdnsName: DeviceMdnsName(deviceMdnsName),
       lastKnownIp: DeviceLastKnownIp(lastKnownIp),
+      deviceVendor: null,
     );
   }
 }

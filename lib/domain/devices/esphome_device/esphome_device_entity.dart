@@ -1,57 +1,49 @@
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
-import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/old/esphome_dtos.dart';
+import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_entity.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:dartz/dartz.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'esphome_device_entity.freezed.dart';
 
 /// Abstract smart ESPHome that exist inside a computer, the implementations
 /// will be actual ESPHome like blinds lights and more
-@freezed
-abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
-  /// All public field of ESPHome entity
-  const factory ESPHomeDE({
-    /// The smart ESPHome id
-    //
-    required CoreUniqueId? id,
-
-    /// The default name of the ESPHome
-    required DeviceDefaultName? defaultName,
+class ESPHomeDE extends GenericLightDE {
+  ESPHomeDE({
+    required CoreUniqueId uniqueId,
 
     /// Room id that the smart ESPHome located in.
-    required CoreUniqueId? roomId,
+    required CoreUniqueId roomId,
+
+    /// The smart ESPHome type
+    required DeviceType deviceTypes,
+
+    /// The default name of the ESPHome
+    DeviceDefaultName? defaultName,
 
     /// Room name that the smart ESPHome located in.
-    required DeviceRoomName? roomName,
+    DeviceRoomName? roomName,
 
     /// Did the massage arrived or was it just sent.
     /// Will be 'set' (need change) or 'ack' for acknowledge
-    required DeviceState? deviceStateGRPC,
+    DeviceState? deviceStateGRPC,
 
     /// If state didn't change the error description will be found here.
     DeviceStateMassage? stateMassage,
 
     /// Sender ESPHome os type, example: android, iphone, browser
-    required DeviceSenderDeviceOs? senderDeviceOs,
+    DeviceSenderDeviceOs? senderDeviceOs,
 
     /// The sender ESPHome model, example: onePlus 3T
-    required DeviceSenderDeviceModel? senderDeviceModel,
+    DeviceSenderDeviceModel? senderDeviceModel,
 
     /// Last ESPHome sender id that activated the action
-    required DeviceSenderId? senderId,
+    DeviceSenderId? senderId,
 
     /// What action to execute
-    required DeviceAction? deviceActions,
-
-    /// The smart ESPHome type
-    required DeviceType? deviceTypes,
+    DeviceAction? deviceActions,
 
     /// Unique id of the computer that the ESPHome located in
-    required DeviceCompUuid? compUuid,
+    DeviceCompUuid? compUuid,
 
     /// Last known Ip of the computer that the ESPHome located in
     DeviceLastKnownIp? lastKnownIp,
@@ -67,13 +59,32 @@ abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
 
     /// ESPHome key of the switch
     ESPHomeSwitchKey? espHomeSwitchKey,
-  }) = _ESPHomeDE;
+  }) : super(
+          uniqueId: uniqueId,
+          defaultName: defaultName,
+          roomId: roomId,
+          deviceVendor: DeviceVendor(VendorsAndServices.yeelight.toString()),
+          deviceStateGRPC: deviceStateGRPC,
+          roomName: roomName,
+          stateMassage: stateMassage,
+          senderDeviceOs: senderDeviceOs,
+          senderDeviceModel: senderDeviceModel,
+          senderId: senderId,
+          deviceActions: deviceActions,
+          deviceTypes: deviceTypes,
+          compUuid: compUuid,
+          lastKnownIp: lastKnownIp,
+          powerConsumption: powerConsumption,
+          deviceMdnsName: deviceMdnsName,
+          deviceSecondWiFi: deviceSecondWiFi,
+        );
 
-  const ESPHomeDE._();
+  /// ESPHome key of the switch
+  ESPHomeSwitchKey? espHomeSwitchKey;
 
   /// Empty instance of ESPHomeEntity
   factory ESPHomeDE.empty() => ESPHomeDE(
-        id: CoreUniqueId(),
+        uniqueId: CoreUniqueId(),
         defaultName: DeviceDefaultName(''),
         roomId: CoreUniqueId(),
         roomName: DeviceRoomName(''),
@@ -111,30 +122,6 @@ abstract class ESPHomeDE implements _$ESPHomeDE, DeviceEntityAbstract {
 
   @override
   String getDeviceId() {
-    return this.id!.getOrCrash()!;
-  }
-
-  @override
-  DeviceEntityDtoAbstract toInfrastructure() {
-    return EspHomeDtos(
-      deviceDtoClass: (EspHomeDtos).toString(),
-      id: this.id!.getOrCrash(),
-      defaultName: defaultName!.getOrCrash(),
-      roomId: roomId!.getOrCrash(),
-      roomName: roomName!.getOrCrash(),
-      deviceStateGRPC: deviceStateGRPC!.getOrCrash(),
-      stateMassage: stateMassage!.getOrCrash(),
-      senderDeviceOs: senderDeviceOs!.getOrCrash(),
-      senderDeviceModel: senderDeviceModel!.getOrCrash(),
-      senderId: senderId!.getOrCrash(),
-      deviceActions: deviceActions!.getOrCrash(),
-      deviceTypes: deviceTypes!.getOrCrash(),
-      compUuid: compUuid!.getOrCrash(),
-      deviceSecondWiFi: deviceSecondWiFi!.getOrCrash(),
-      deviceMdnsName: deviceMdnsName!.getOrCrash(),
-      lastKnownIp: lastKnownIp!.getOrCrash(),
-      espHomeSwitchKey: espHomeSwitchKey!.getOrCrash(),
-      // serverTimeStamp: FieldValue.serverTimestamp(),
-    );
+    return uniqueId.getOrCrash()!;
   }
 }

@@ -41,7 +41,7 @@ abstract class GenericLightDeviceDtos
   factory GenericLightDeviceDtos.fromDomain(GenericLightDE genericLightDE) {
     return GenericLightDeviceDtos(
       deviceDtoClass: (GenericLightDeviceDtos).toString(),
-      id: genericLightDE.uniqueId!.getOrCrash(),
+      id: genericLightDE.uniqueId.getOrCrash(),
       defaultName: genericLightDE.defaultName!.getOrCrash(),
       roomId: genericLightDE.roomId!.getOrCrash(),
       roomName: genericLightDE.roomName!.getOrCrash(),

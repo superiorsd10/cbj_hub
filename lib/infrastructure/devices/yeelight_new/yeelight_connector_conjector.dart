@@ -4,15 +4,12 @@ import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_entity.dart';
-import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/abstract_device/abstract_company_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_dtos.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight_new/yeelight_1se/yeelight_1se_device_actions.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight_new/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbenum.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:kt_dart/kt.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 
 @singleton
@@ -52,18 +49,6 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   @override
-  Future<Either<CoreFailure, KtList<YeelightDE?>>> getAllYeelight() {
-    // TODO: implement getAllYeelight
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<CoreFailure, KtList<YeelightDtos?>>> getAllYeelightAsDto() {
-    // TODO: implement getAllYeelightAsDto
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
@@ -96,10 +81,9 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       GenericLightDE yeelightDE) async {
     print('Turn Off Yeelight');
 
-    if (companyDevices[yeelightDE.uniqueId!.getOrCrash()]
-        is Yeelight1SeEntity) {
+    if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
       return Yeelight1SeDeviceActions.turnOff(
-          companyDevices[yeelightDE.uniqueId!.getOrCrash()]
+          companyDevices[yeelightDE.uniqueId.getOrCrash()]
               as Yeelight1SeEntity);
     }
     return left(const CoreFailure.unexpected());
@@ -110,10 +94,9 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       GenericLightDE yeelightDE) async {
     print('Turn On Yeelight');
 
-    if (companyDevices[yeelightDE.uniqueId!.getOrCrash()]
-        is Yeelight1SeEntity) {
+    if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
       return Yeelight1SeDeviceActions.turnOn(
-          companyDevices[yeelightDE.uniqueId!.getOrCrash()]
+          companyDevices[yeelightDE.uniqueId.getOrCrash()]
               as Yeelight1SeEntity);
     }
     return left(const CoreFailure.unexpected());
@@ -125,31 +108,6 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       required Map<String, dynamic> fieldsToUpdate,
       String? forceUpdateLocation}) async {
     // TODO: implement updateDatabase
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<CoreFailure, Unit>> updateWithYeelight(
-      {required YeelightDE yeelight, String? forceUpdateLocation}) {
-    // TODO: implement updateWithYeelight
-    throw UnimplementedError();
-  }
-
-  @override
-  Stream<Either<CoreFailure, KtList<YeelightDE?>>> watchAll() {
-    // TODO: implement watchAll
-    throw UnimplementedError();
-  }
-
-  @override
-  Stream<Either<CoreFailure, KtList<YeelightDE?>>> watchLights() {
-    // TODO: implement watchLights
-    throw UnimplementedError();
-  }
-
-  @override
-  Stream<Either<CoreFailure, KtList<YeelightDE?>>> watchUncompleted() {
-    // TODO: implement watchUncompleted
     throw UnimplementedError();
   }
 

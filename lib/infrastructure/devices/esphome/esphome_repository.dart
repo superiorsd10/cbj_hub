@@ -5,7 +5,6 @@ import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
 import 'package:cbj_hub/domain/devices/esphome_device/i_esphome_device_repository.dart';
 import 'package:cbj_hub/infrastructure/aioesphomeapi/aioesphomeapi.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/old/esphome_dtos.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbenum.dart';
 import 'package:dartz/dartz.dart';
 import 'package:kt_dart/kt.dart';
@@ -22,12 +21,6 @@ class ESPHomeRepo implements IESPHomeRepository {
   @override
   Future<Either<CoreFailure, KtList<ESPHomeDE?>>> getAllESPHome() {
     // TODO: implement getAllESPHome
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<CoreFailure, KtList<EspHomeDtos?>>> getAllESPHomeAsDto() {
-    // TODO: implement getAllESPHomeAsDto
     throw UnimplementedError();
   }
 
@@ -174,7 +167,7 @@ class ESPHomeRepo implements IESPHomeRepository {
 
   @override
   Future<void> manageHubRequestsForDevice(ESPHomeDE espHomeDE) async {
-    final ESPHomeDE? device = espHomeDevices[espHomeDE.id!.getOrCrash()];
+    final ESPHomeDE? device = espHomeDevices[espHomeDE.uniqueId.getOrCrash()];
     if (device == null) {
       print('Cant change ESPHome, does not exist');
       return;
@@ -195,10 +188,10 @@ class ESPHomeRepo implements IESPHomeRepository {
   Future<void> executeDeviceAction(ESPHomeDE espHomeDE) async {
     final DeviceActions? actionToPreform =
         EnumHelper.stringToDeviceAction(espHomeDE.deviceActions!.getOrCrash());
-
-    espHomeDevices[espHomeDE.id!.getOrCrash()!] =
-        espHomeDevices[espHomeDE.id!.getOrCrash()!]!
-            .copyWith(deviceActions: espHomeDE.deviceActions);
+    //
+    // espHomeDevices[espHomeDE.uniqueId!.getOrCrash()!] =
+    //     espHomeDevices[espHomeDE.uniqueId!.getOrCrash()!]!
+    //         .copyWith(deviceActions: espHomeDE.deviceActions);
 
     if (actionToPreform == DeviceActions.on) {
       turnOnESPHome(espHomeDE);

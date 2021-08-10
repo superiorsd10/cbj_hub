@@ -1,9 +1,7 @@
 import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/basic_device/device_dtos.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/old/esphome_dtos.dart';
 import 'package:cbj_hub/infrastructure/devices/generic_light_device/generic_light_device_dtos.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_dtos.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 
 class DeviceEntityDtoAbstract {
@@ -25,10 +23,6 @@ class DeviceEntityDtoAbstract {
       deviceEntityDtoAbstract = GenericLightDeviceDtos.fromJson(json);
     } else if (jsonDeviceDtoClass == (DeviceDtos).toString()) {
       deviceEntityDtoAbstract = DeviceDtos.fromJson(json);
-    } else if (jsonDeviceDtoClass == (EspHomeDtos).toString()) {
-      deviceEntityDtoAbstract = EspHomeDtos.fromJson(json);
-    } else if (jsonDeviceDtoClass == (YeelightDtos).toString()) {
-      deviceEntityDtoAbstract = YeelightDtos.fromJson(json);
     } else {
       throw 'DtoClassTypeDoesNotExist';
     }
@@ -42,6 +36,6 @@ class DeviceEntityDtoAbstract {
 
   DeviceEntityAbstract toDomain() {
     print('ToDomain');
-    return DeviceEntityNotAbstract(id: CoreUniqueId());
+    return DeviceEntityNotAbstract(uniqueId: CoreUniqueId());
   }
 }

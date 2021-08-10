@@ -1,6 +1,5 @@
 import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/esphome_device/esphome_device_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/old/esphome_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:kt_dart/kt.dart';
 
@@ -18,8 +17,6 @@ abstract class IESPHomeRepository {
   Future<void> executeDeviceAction(ESPHomeDE espHomeDE);
 
   Future<Either<CoreFailure, KtList<ESPHomeDE?>>> getAllESPHome();
-
-  Future<Either<CoreFailure, KtList<EspHomeDtos?>>> getAllESPHomeAsDto();
 
   Stream<Either<CoreFailure, KtList<ESPHomeDE?>>> watchAll();
 

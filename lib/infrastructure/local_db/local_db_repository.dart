@@ -38,7 +38,8 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     final ESPHomeDE firstRealDeviceTest = ESPHomeDE(
-      id: CoreUniqueId.fromUniqueString('0ecb1040-e724-11eb-8cec-954d01dcce33'),
+      uniqueId:
+          CoreUniqueId.fromUniqueString('0ecb1040-e724-11eb-8cec-954d01dcce33'),
       defaultName: DeviceDefaultName('guy ceiling'),
       roomId: CoreUniqueId(),
       roomName: DeviceRoomName('Guyy Esp1'),
@@ -60,7 +61,7 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     final ESPHomeDE espHome = ESPHomeDE(
-      id: CoreUniqueId(),
+      uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName('test esp2'),
       roomId: CoreUniqueId.fromUniqueString(guyRoomId),
       roomName: DeviceRoomName('Guy'),
@@ -80,7 +81,7 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     final DeviceEntity deviceEntity = DeviceEntity(
-      id: CoreUniqueId(),
+      uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName('DeviceEntity test 1'),
       roomId: CoreUniqueId.fromUniqueString(guyRoomId),
       roomName: DeviceRoomName('Guy'),
@@ -96,10 +97,11 @@ class LocalDbRepository extends ILocalDbRepository {
       powerConsumption: DevicePowerConsumption('0'),
       deviceMdnsName: DeviceMdnsName('CeilingGuy'),
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
+      deviceVendor: null,
     );
 
     final DeviceEntity deviceEntityS = DeviceEntity(
-      id: CoreUniqueId(),
+      uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName('top'),
       roomId: CoreUniqueId(),
       roomName: DeviceRoomName('Omer'),
@@ -115,12 +117,13 @@ class LocalDbRepository extends ILocalDbRepository {
       powerConsumption: DevicePowerConsumption('0'),
       deviceMdnsName: DeviceMdnsName('CeilingGuy'),
       deviceSecondWiFi: DeviceSecondWiFiName('amiuz2'),
+      deviceVendor: null,
     );
 
     return {
       // firstRealDeviceTest.id!.getOrCrash()!: firstRealDeviceTest,
       // espHome.id!.getOrCrash()!: espHome,
-      yeelightDE.uniqueId!.getOrCrash()!: yeelightDE,
+      yeelightDE.uniqueId.getOrCrash()!: yeelightDE,
     };
   }
 
