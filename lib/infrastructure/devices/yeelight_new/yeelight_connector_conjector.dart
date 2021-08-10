@@ -96,9 +96,11 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       GenericLightDE yeelightDE) async {
     print('Turn Off Yeelight');
 
-    if (companyDevices[yeelightDE.id!.getOrCrash()] is Yeelight1SeEntity) {
+    if (companyDevices[yeelightDE.uniqueId!.getOrCrash()]
+        is Yeelight1SeEntity) {
       return Yeelight1SeDeviceActions.turnOff(
-          companyDevices[yeelightDE.id!.getOrCrash()] as Yeelight1SeEntity);
+          companyDevices[yeelightDE.uniqueId!.getOrCrash()]
+              as Yeelight1SeEntity);
     }
     return left(const CoreFailure.unexpected());
   }
@@ -108,9 +110,11 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       GenericLightDE yeelightDE) async {
     print('Turn On Yeelight');
 
-    if (companyDevices[yeelightDE.id!.getOrCrash()] is Yeelight1SeEntity) {
+    if (companyDevices[yeelightDE.uniqueId!.getOrCrash()]
+        is Yeelight1SeEntity) {
       return Yeelight1SeDeviceActions.turnOn(
-          companyDevices[yeelightDE.id!.getOrCrash()] as Yeelight1SeEntity);
+          companyDevices[yeelightDE.uniqueId!.getOrCrash()]
+              as Yeelight1SeEntity);
     }
     return left(const CoreFailure.unexpected());
   }

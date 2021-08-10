@@ -87,3 +87,10 @@ Either<CoreFailure<String>, String> validateDeviceTypeExist(String input) {
   }
   return left(const CoreFailure.deviceTypeDoesNotExist());
 }
+
+Either<CoreFailure<String>, String> validateDeviceVendorExist(String input) {
+  if (EnumHelper.stringToDeviceVendor(input) != null) {
+    return right(input);
+  }
+  return left(const CoreFailure.deviceTypeDoesNotExist());
+}

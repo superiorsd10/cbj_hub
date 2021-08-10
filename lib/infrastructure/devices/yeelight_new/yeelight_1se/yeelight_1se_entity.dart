@@ -1,95 +1,50 @@
-import 'package:cbj_hub/domain/devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/devices/yeelight/yeelight_device_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:dartz/dartz.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 
-class Yeelight1SeEntity implements GenericLightDE {
-  @override
-  // TODO: implement compUuid
-  DeviceCompUuid? get compUuid => throw UnimplementedError();
-
-  @override
-  // TODO: implement copyWith
-  $GenericLightDECopyWith<GenericLightDE> get copyWith =>
-      throw UnimplementedError();
-
-  @override
-  // TODO: implement defaultName
-  DeviceDefaultName? get defaultName => throw UnimplementedError();
-
-  @override
-  // TODO: implement deviceActions
-  DeviceAction? get deviceActions => throw UnimplementedError();
-
-  @override
-  // TODO: implement deviceMdnsName
-  DeviceMdnsName? get deviceMdnsName => throw UnimplementedError();
-
-  @override
-  // TODO: implement deviceSecondWiFi
-  DeviceSecondWiFiName? get deviceSecondWiFi => throw UnimplementedError();
-
-  @override
-  // TODO: implement deviceStateGRPC
-  DeviceState? get deviceStateGRPC => throw UnimplementedError();
-
-  @override
-  // TODO: implement deviceTypes
-  DeviceType? get deviceTypes => throw UnimplementedError();
-
-  @override
-  // TODO: implement failureOption
-  Option<CoreFailure> get failureOption => throw UnimplementedError();
-
-  @override
-  // TODO: implement genericLightSwitchKey
-  GenericLightSwitchKey? get genericLightSwitchKey =>
-      throw UnimplementedError();
-
-  @override
-  String getDeviceId() {
-    // TODO: implement getDeviceId
-    throw UnimplementedError();
-  }
-
-  @override
-  // TODO: implement id
-  CoreUniqueId? get id => throw UnimplementedError();
-
-  @override
-  // TODO: implement lastKnownIp
-  DeviceLastKnownIp? get lastKnownIp => throw UnimplementedError();
-
-  @override
-  // TODO: implement powerConsumption
-  DevicePowerConsumption? get powerConsumption => throw UnimplementedError();
-
-  @override
-  // TODO: implement roomId
-  CoreUniqueId? get roomId => throw UnimplementedError();
-
-  @override
-  // TODO: implement roomName
-  DeviceRoomName? get roomName => throw UnimplementedError();
-
-  @override
-  // TODO: implement senderDeviceModel
-  DeviceSenderDeviceModel? get senderDeviceModel => throw UnimplementedError();
-
-  @override
-  // TODO: implement senderDeviceOs
-  DeviceSenderDeviceOs? get senderDeviceOs => throw UnimplementedError();
-
-  @override
-  // TODO: implement senderId
-  DeviceSenderId? get senderId => throw UnimplementedError();
-
-  @override
-  // TODO: implement stateMassage
-  DeviceStateMassage? get stateMassage => throw UnimplementedError();
+class Yeelight1SeEntity extends GenericLightDE {
+  Yeelight1SeEntity({
+    required this.uniqueId,
+    required this.defaultName,
+    required this.roomId,
+    required this.roomName,
+    required this.deviceStateGRPC,
+    required this.stateMassage,
+    required this.senderDeviceOs,
+    required this.senderDeviceModel,
+    required this.senderId,
+    required this.deviceActions,
+    required this.deviceTypes,
+    required this.compUuid,
+    required this.lastKnownIp,
+    this.powerConsumption,
+    this.deviceMdnsName,
+    this.deviceSecondWiFi,
+    this.genericLightSwitchKey,
+    required this.yeelightDeviceId,
+    required this.yeelightPort,
+  }) : super(
+          uniqueId: uniqueId,
+          defaultName: defaultName,
+          roomId: roomId,
+          roomName: roomName,
+          deviceStateGRPC: deviceStateGRPC,
+          stateMassage: stateMassage,
+          senderDeviceOs: senderDeviceOs,
+          senderDeviceModel: senderDeviceModel,
+          senderId: senderId,
+          deviceActions: deviceActions,
+          deviceVendor: DeviceVendor(VendorsAndServices.yeelight.toString()),
+          deviceTypes: deviceTypes,
+          compUuid: compUuid,
+          lastKnownIp: lastKnownIp,
+          powerConsumption: powerConsumption,
+          deviceMdnsName: deviceMdnsName,
+          deviceSecondWiFi: deviceSecondWiFi,
+          genericLightSwitchKey: genericLightSwitchKey,
+        );
 
   /// Yeelight device unique id that came withe the device
   YeelightDeviceId? yeelightDeviceId;
@@ -98,8 +53,53 @@ class Yeelight1SeEntity implements GenericLightDE {
   YeelightPort? yeelightPort;
 
   @override
-  DeviceEntityDtoAbstract toInfrastructure() {
-    // TODO: implement toInfrastructure
-    throw UnimplementedError();
-  }
+  DeviceCompUuid? compUuid;
+
+  @override
+  DeviceDefaultName? defaultName;
+
+  @override
+  DeviceAction? deviceActions;
+
+  @override
+  DeviceMdnsName? deviceMdnsName;
+
+  @override
+  DeviceSecondWiFiName? deviceSecondWiFi;
+
+  @override
+  DeviceState? deviceStateGRPC;
+
+  @override
+  DeviceType? deviceTypes;
+
+  @override
+  GenericLightSwitchKey? genericLightSwitchKey;
+
+  @override
+  DeviceLastKnownIp? lastKnownIp;
+
+  @override
+  DevicePowerConsumption? powerConsumption;
+
+  @override
+  CoreUniqueId? roomId;
+
+  @override
+  DeviceRoomName? roomName;
+
+  @override
+  DeviceSenderDeviceModel? senderDeviceModel;
+
+  @override
+  DeviceSenderDeviceOs? senderDeviceOs;
+
+  @override
+  DeviceSenderId? senderId;
+
+  @override
+  DeviceStateMassage? stateMassage;
+
+  @override
+  CoreUniqueId? uniqueId;
 }
