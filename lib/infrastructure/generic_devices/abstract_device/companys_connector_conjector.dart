@@ -1,5 +1,5 @@
-import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/devices/generic_light_device/generic_light_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 
@@ -27,13 +27,18 @@ class CompanysConnectorConjector {
 
   static addDeviceToItsRepo(
       MapEntry<String, DeviceEntityAbstract> deviceEntityAbstract) {
-    if (deviceEntityAbstract.value.deviceVendor!.getOrCrash() ==
+    if (deviceEntityAbstract.value.deviceVendor.getOrCrash() ==
         VendorsAndServices.yeelight.toString()) {
       final MapEntry<String, DeviceEntityAbstract> yeelightEntry =
           MapEntry<String, DeviceEntityAbstract>(
               deviceEntityAbstract.key, deviceEntityAbstract.value);
       YeelightConnectorConjector.companyDevices.addEntries([yeelightEntry]);
-    } else {
+    }
+    // else if (deviceEntityAbstract.value.deviceVendor!.getOrCrash() ==
+    //     VendorsAndServices.tasmota.toString()) {
+    //   print('Call tasmota repo');
+    // }
+    else {
       print('Cannot add device entity to its repo, type not supported');
     }
   }
