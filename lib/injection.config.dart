@@ -14,8 +14,10 @@ import 'domain/saved_devices/i_saved_devices_repo.dart' as _i9;
 import 'domain/server_for_cbj_app/i_server_for_cbj_app_repository.dart' as _i11;
 import 'infrastructure/app_communication/app_communication_repository.dart'
     as _i4;
-import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+import 'infrastructure/devices/tasmota/tasmota_connector_conjector.dart'
     as _i13;
+import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+    as _i14;
 import 'infrastructure/local_db/local_db_repository.dart' as _i6;
 import 'infrastructure/mqtt_server/mqtt_server_repository.dart' as _i8;
 import 'infrastructure/saved_devices/saved_devices_repo.dart' as _i10;
@@ -34,7 +36,9 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i9.ISavedDevicesRepo>(() => _i10.SavedDevicesRepo());
   gh.lazySingleton<_i11.IServerForCbjAppRepository>(
       () => _i12.ServerForCbjAppRepository());
-  gh.singleton<_i13.YeelightConnectorConjector>(
-      _i13.YeelightConnectorConjector());
+  gh.singleton<_i13.TasmotaConnectorConjector>(
+      _i13.TasmotaConnectorConjector());
+  gh.singleton<_i14.YeelightConnectorConjector>(
+      _i14.YeelightConnectorConjector());
   return get;
 }
