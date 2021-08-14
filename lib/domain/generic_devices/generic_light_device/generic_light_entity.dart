@@ -24,7 +24,7 @@ class GenericLightDE extends DeviceEntityAbstract {
     DevicePowerConsumption? powerConsumption,
     required this.lightSwitchState,
   }) : super(
-    uniqueId: uniqueId,
+          uniqueId: uniqueId,
           defaultName: defaultName,
           roomId: roomId,
           deviceTypes: DeviceType(DeviceTypes.light.toString()),

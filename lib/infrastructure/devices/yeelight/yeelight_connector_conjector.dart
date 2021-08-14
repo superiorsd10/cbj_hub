@@ -4,6 +4,7 @@ import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_device_actions.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbenum.dart';
@@ -35,15 +36,21 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       final GenericLightDE yeelightDELight = yeelightDE;
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
           yeelightDELight.lightSwitchState!.getOrCrash());
-      //
-      // companyDevices[yeelightDELight.id!.getOrCrash()!] =
-      //     companyDevices[yeelightDELight.id!.getOrCrash()!]!
-      //         .copyWith(deviceActions: yeelightDELight.deviceActions);
+
+      companyDevices[yeelightDELight.uniqueId.getOrCrash()!] =
+          (companyDevices[yeelightDELight.uniqueId.getOrCrash()!]!
+              as GenericLightDE)
+            ..lightSwitchState =
+                GenericLightSwitchState(actionToPreform.toString());
 
       if (actionToPreform == DeviceActions.on) {
-        turnOnYeelight(yeelightDELight);
+        (await turnOnYeelight(yeelightDELight)).fold(
+            (l) => print('Error turning light on'),
+            (r) => print('Light turn on success'));
       } else if (actionToPreform == DeviceActions.off) {
-        turnOffYeelight(yeelightDELight);
+        (await turnOffYeelight(yeelightDELight)).fold(
+            (l) => print('Error turning light off'),
+            (r) => print('Light turn off success'));
       }
     }
   }
@@ -96,7 +103,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
 
     if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
       return Yeelight1SeDeviceActions.turnOn(
-          companyDevices[yeelightDE.uniqueId.getOrCrash()]
+          companyDevices[yeelightDE.uniqueId.getOrCrash()]!
               as Yeelight1SeEntity);
     }
     return left(const CoreFailure.unexpected());

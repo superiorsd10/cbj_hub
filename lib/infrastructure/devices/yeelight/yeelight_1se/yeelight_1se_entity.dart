@@ -26,7 +26,7 @@ class Yeelight1SeEntity extends GenericLightDE {
     this.deviceMdnsName,
     this.lastKnownIp,
   }) : super(
-    uniqueId: uniqueId,
+          uniqueId: uniqueId,
           defaultName: defaultName,
           roomId: roomId,
           lightSwitchState: lightSwitchState,

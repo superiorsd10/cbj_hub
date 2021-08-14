@@ -7,7 +7,6 @@ import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_en
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'generic_light_device_dtos.freezed.dart';
-
 part 'generic_light_device_dtos.g.dart';
 
 @freezed
