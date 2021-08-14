@@ -5,6 +5,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_device_actions.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:dartz/dartz.dart';
@@ -41,13 +43,15 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
                 GenericLightSwitchState(actionToPreform.toString());
 
       if (actionToPreform == DeviceActions.on) {
-        (await turnOntasmota(tasmotaDELight)).fold(
-            (l) => print('Error turning light on'),
-            (r) => print('Light turn on success'));
+        (await turnOntasmota(
+                companyDevices[tasmotaDELight.uniqueId.getOrCrash()!]!))
+            .fold((l) => print('Error turning light on'),
+                (r) => print('Light turn on success'));
       } else if (actionToPreform == DeviceActions.off) {
-        (await turnOfftasmota(tasmotaDELight)).fold(
-            (l) => print('Error turning light off'),
-            (r) => print('Light turn off success'));
+        (await turnOfftasmota(
+                companyDevices[tasmotaDELight.uniqueId.getOrCrash()!]!))
+            .fold((l) => print('Error turning light off'),
+                (r) => print('Light turn off success'));
       }
     }
   }
@@ -82,14 +86,24 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOfftasmota(
-      GenericLightDE tasmotaDE) async {
-    throw UnimplementedError();
+      DeviceEntityAbstract tasmotaDE) async {
+    if (tasmotaDE is TasmotaLedEntity) {
+      return Yeelight1SeDeviceActions.turnOff(tasmotaDE);
+    } else {
+      print('tasmota type is not supported to turn ON');
+    }
+    return left(const CoreFailure.unexpected());
   }
 
   @override
   Future<Either<CoreFailure, Unit>> turnOntasmota(
-      GenericLightDE tasmotaDE) async {
-    throw UnimplementedError();
+      DeviceEntityAbstract tasmotaDE) async {
+    if (tasmotaDE is TasmotaLedEntity) {
+      return Yeelight1SeDeviceActions.turnOn(tasmotaDE);
+    } else {
+      print('tasmota type is not supported to turn ON');
+    }
+    return left(const CoreFailure.unexpected());
   }
 
   @override

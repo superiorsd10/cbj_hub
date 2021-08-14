@@ -1,93 +1,36 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
-import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_device_value_objects.dart';
-import 'package:collection/collection.dart';
+import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_entity.dart';
+import 'package:cbj_hub/injection.dart';
 import 'package:dartz/dartz.dart';
-import 'package:yeedart/yeedart.dart';
 
 class Yeelight1SeDeviceActions {
   static Future<Either<CoreFailure, Unit>> turnOn(
-      Yeelight1SeEntity yeelight1seEntity) async {
+      TasmotaLedEntity tasmotaLedEntity) async {
+    //mqtt
+    // cmnd/tasmota_D663A6/Power
+    // payload
+    // ON
+
     try {
-      try {
-        final device = Device(
-            address:
-                InternetAddress(yeelight1seEntity.lastKnownIp!.getOrCrash()),
-            port: int.parse(yeelight1seEntity.yeelightPort!.getOrCrash()));
-
-        await device.turnOn();
-        device.disconnect();
-
-        return right(unit);
-      } catch (e) {
-        await Future.delayed(const Duration(milliseconds: 150));
-
-        final responses = await Yeelight.discover();
-
-        final response = responses.firstWhereOrNull((element) =>
-            element.id.toString() ==
-            yeelight1seEntity.yeelightDeviceId!.getOrCrash());
-        if (response == null) {
-          print('Device cant be discovered');
-          return left(const CoreFailure.unexpected());
-        }
-
-        final device = Device(address: response.address, port: response.port!);
-        yeelight1seEntity
-          ..lastKnownIp = DeviceLastKnownIp(response.address.address.toString())
-          ..yeelightPort = YeelightPort(response.port!.toString());
-
-        await device.turnOn();
-        device.disconnect();
-
-        return right(unit);
-      }
+      getIt<IMqttServerRepository>().publishMessage(
+          'cmnd/${tasmotaLedEntity.tasmotaDeviceTopicName.getOrCrash()}/Power',
+          'ON');
+      return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
   }
 
   static Future<Either<CoreFailure, Unit>> turnOff(
-      Yeelight1SeEntity yeelight1seEntity) async {
+      TasmotaLedEntity tasmotaLedEntity) async {
     try {
-      try {
-        final device = Device(
-            address:
-                InternetAddress(yeelight1seEntity.lastKnownIp!.getOrCrash()),
-            port: int.parse(yeelight1seEntity.yeelightPort!.getOrCrash()));
-
-        await device.turnOff();
-        device.disconnect();
-
-        return right(unit);
-      } catch (e) {
-        await Future.delayed(const Duration(milliseconds: 150));
-        final responses = await Yeelight.discover();
-
-        final response = responses.firstWhereOrNull((element) =>
-            element.id.toString() ==
-            yeelight1seEntity.yeelightDeviceId!.getOrCrash());
-        if (response == null) {
-          print('Device cant be discovered');
-
-          return left(const CoreFailure.unexpected());
-        }
-
-        final device = Device(address: response.address, port: response.port!);
-
-        yeelight1seEntity
-          ..lastKnownIp = DeviceLastKnownIp(response.address.address.toString())
-          ..yeelightPort = YeelightPort(response.port!.toString());
-
-        await device.turnOff();
-        device.disconnect();
-
-        return right(unit);
-      }
+      getIt<IMqttServerRepository>().publishMessage(
+          'cmnd/${tasmotaLedEntity.tasmotaDeviceTopicName.getOrCrash()}/Power',
+          'OFF');
+      return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
