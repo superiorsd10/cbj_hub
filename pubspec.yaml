@@ -8,9 +8,9 @@ environment:
 
 dependencies:
   # Contains utility classes in the style of dart:async to work with asynchronous computations.
-  async: ^2.8.1
+  async: ^2.8.2
   # Functional programming thingies, let you use multiple return types
-  dartz: ^0.10.0-nullsafety.2
+  dartz: ^0.10.0
   # Allow returning more than one type of object
   equatable: ^2.0.3
   # Annotations for freezed
@@ -18,7 +18,7 @@ dependencies:
   # For the injection, allow accessing an object from anywhere in an App
   get_it: ^7.2.0
   # High performance, open-source universal RPC framework
-  grpc: ^3.0.0
+  grpc: ^3.0.1
   # Convenient code generator for get_it
   injectable: ^1.4.1
   # Defines the annotations used by json_serializable to create code for JSON serialization and deserialization.
@@ -30,7 +30,7 @@ dependencies:
   # Collection of lint rules for Dart and Flutter projects
   lint: ^1.5.3
   # A server and browser based MQTT client for Dart.
-  mqtt_client: ^9.4.1
+  mqtt_client: ^9.5.0
   # Service discovery over multicast DNS (mDNS), Bonjour, and Avahi.
   multicast_dns: ^0.3.0
   # Provides runtime support for a Dart implementation of protobufs.
@@ -52,7 +52,7 @@ dev_dependencies:
   # Injectable is a convenient code generator for get_it.
   injectable_generator: ^1.4.1
   # Library for mocks
-  mockito: ^5.0.11
+  mockito: ^5.0.14
   # The Dart analyzer settings and best practices used internally at Google.
   pedantic: ^1.11.1
   # A full featured library for writing and running Dart tests across platforms.
