@@ -88,7 +88,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
   Future<Either<CoreFailure, Unit>> turnOfftasmota(
       DeviceEntityAbstract tasmotaDE) async {
     if (tasmotaDE is TasmotaLedEntity) {
-      return Yeelight1SeDeviceActions.turnOff(tasmotaDE);
+      return TasmotaDeviceActions.turnOff(tasmotaDE);
     } else {
       print('tasmota type is not supported to turn ON');
     }
@@ -99,7 +99,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
   Future<Either<CoreFailure, Unit>> turnOntasmota(
       DeviceEntityAbstract tasmotaDE) async {
     if (tasmotaDE is TasmotaLedEntity) {
-      return Yeelight1SeDeviceActions.turnOn(tasmotaDE);
+      return TasmotaDeviceActions.turnOn(tasmotaDE);
     } else {
       print('tasmota type is not supported to turn ON');
     }

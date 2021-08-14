@@ -6,14 +6,9 @@ import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_e
 import 'package:cbj_hub/injection.dart';
 import 'package:dartz/dartz.dart';
 
-class Yeelight1SeDeviceActions {
+class TasmotaDeviceActions {
   static Future<Either<CoreFailure, Unit>> turnOn(
       TasmotaLedEntity tasmotaLedEntity) async {
-    //mqtt
-    // cmnd/tasmota_D663A6/Power
-    // payload
-    // ON
-
     try {
       getIt<IMqttServerRepository>().publishMessage(
           'cmnd/${tasmotaLedEntity.tasmotaDeviceTopicName.getOrCrash()}/Power',

@@ -5,13 +5,13 @@ import 'dart:typed_data';
 
 import 'package:cbj_hub/infrastructure/gen/aioesphomeapi/protoc_as_dart/aioesphomeapi/api.pbserver.dart';
 
-class AioEspHomeApi {
-  AioEspHomeApi(this.fSocket);
+class EspHomeApi {
+  EspHomeApi(this.fSocket);
 
-  factory AioEspHomeApi.createWithAddress(String addressOfServer) {
+  factory EspHomeApi.createWithAddress(String addressOfServer) {
     final Future<Socket> socket = Socket.connect(addressOfServer, 6053);
 
-    return AioEspHomeApi(socket);
+    return EspHomeApi(socket);
   }
 
   Future<Socket> fSocket;
