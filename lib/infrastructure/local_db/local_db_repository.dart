@@ -2,6 +2,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abs
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
+import 'package:cbj_hub/infrastructure/devices/esphome/esphome_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/esphome/esphome_light/esphome_light_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
@@ -15,7 +17,26 @@ class LocalDbRepository extends ILocalDbRepository {
   Map<String, DeviceEntityAbstract> getSmartDevicesFromDb() {
     final String guyRoomId = CoreUniqueId().getOrCrash()!;
 
-    final TasmotaLedEntity tasmotaDE = TasmotaLedEntity(
+    final ESPHomeLightEntity espHomeLightDE = ESPHomeLightEntity(
+      uniqueId: CoreUniqueId(),
+      defaultName: DeviceDefaultName('ESPHome test 1'),
+      roomId: CoreUniqueId(),
+      roomName: DeviceRoomName('Ami'),
+      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
+      senderDeviceOs: DeviceSenderDeviceOs('ESPHome'),
+      senderDeviceModel: DeviceSenderDeviceModel('LED'),
+      senderId: DeviceSenderId(),
+      compUuid: DeviceCompUuid('gasd34asd233asfdg'),
+      stateMassage: DeviceStateMassage('Hello World'),
+      powerConsumption: DevicePowerConsumption('0'),
+      lightSwitchState:
+          GenericLightSwitchState(DeviceActions.actionNotSupported.toString()),
+      espHomeSwitchKey: ESPHomeSwitchKey('1711856045'),
+      deviceMdnsName: DeviceMdnsName('livingroom'),
+      lastKnownIp: DeviceLastKnownIp('192.168.31.62'),
+    );
+
+    final TasmotaLedEntity tasmotaLedDE = TasmotaLedEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName('Tasmota test 1'),
       roomId: CoreUniqueId(),
@@ -53,10 +74,9 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     return {
-      // firstRealDeviceTest.id!.getOrCrash()!: firstRealDeviceTest,
-      // espHome.id!.getOrCrash()!: espHome,
       yeelightDE.uniqueId.getOrCrash()!: yeelightDE,
-      tasmotaDE.uniqueId.getOrCrash()!: tasmotaDE,
+      tasmotaLedDE.uniqueId.getOrCrash()!: tasmotaLedDE,
+      espHomeLightDE.uniqueId.getOrCrash()!: espHomeLightDE,
     };
   }
 

@@ -1,4 +1,5 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/esphome/esphome_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
@@ -14,6 +15,9 @@ class CompanysConnectorConjector {
             .manageHubRequestsForDevice(deviceEntityAbstract);
       } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
         TasmotaConnectorConjector()
+            .manageHubRequestsForDevice(deviceEntityAbstract);
+      } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
+        ESPHomeConnectorConjector()
             .manageHubRequestsForDevice(deviceEntityAbstract);
       } else {
         print('Cannot send device changes to its repo, company not supported');
@@ -43,6 +47,8 @@ class CompanysConnectorConjector {
       YeelightConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
       TasmotaConnectorConjector.companyDevices.addEntries([devicesEntry]);
+    } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
+      ESPHomeConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else {
       print('Cannot add device entity to its repo, type not supported');
     }
