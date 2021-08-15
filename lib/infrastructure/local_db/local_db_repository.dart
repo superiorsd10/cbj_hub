@@ -74,8 +74,8 @@ class LocalDbRepository extends ILocalDbRepository {
     );
 
     return {
-      yeelightDE.uniqueId.getOrCrash()!: yeelightDE,
-      tasmotaLedDE.uniqueId.getOrCrash()!: tasmotaLedDE,
+      // yeelightDE.uniqueId.getOrCrash()!: yeelightDE,
+      // tasmotaLedDE.uniqueId.getOrCrash()!: tasmotaLedDE,
       espHomeLightDE.uniqueId.getOrCrash()!: espHomeLightDE,
     };
   }

@@ -92,6 +92,13 @@ class MqttServerRepository extends IMqttServerRepository {
   }
 
   @override
+  Stream<List<MqttReceivedMessage<MqttMessage?>>> streamOfChosenSubscription(
+      String topicPath) async* {
+    await connect();
+    yield* MqttClientTopicFilter(topicPath, client.updates).updates;
+  }
+
+  @override
   Future<void> allHubDevicesSubscriptions() async {
     streamOfAllDevicesHubSubscriptions().listen(
         (List<MqttReceivedMessage<MqttMessage?>> mqttPublishMessage) async {
