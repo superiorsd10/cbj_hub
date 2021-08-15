@@ -1,4 +1,4 @@
-import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 
 abstract class ISavedDevicesRepo {
   /// Add new device to saved devices list

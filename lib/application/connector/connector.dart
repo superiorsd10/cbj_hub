@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
-import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
-import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/devices/abstract_device/general_devices_repo.dart';
+import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:rxdart/rxdart.dart';
@@ -35,7 +35,7 @@ class Connector {
     getIt<IMqttServerRepository>().allHubDevicesSubscriptions();
     // appCommunication.sendToApp();
 
-    GeneralDevicesRepo.updateAllDevicesReposWithDeviceChanges(
+    CompanysConnectorConjector.updateAllDevicesReposWithDeviceChanges(
         ConnectorDevicesStreamFromMqtt.fromMqttStream);
 
     ConnectorDevicesStreamFromMqtt.fromMqttStream.listen((deviceFromMqtt) {

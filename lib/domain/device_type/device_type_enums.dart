@@ -20,6 +20,10 @@ class EnumHelper {
     return deviceType.toString().replaceAll('DeviceType.', '');
   }
 
+  static String deviceVendorToString(VendorsAndServices vendorsAndServices) {
+    return vendorsAndServices.toString().replaceAll('VendorsAndServices.', '');
+  }
+
   static DeviceTypes? stringToDt(String deviceTypeAsString) {
     String deviceTypeAsStringTemp = deviceTypeAsString;
     if (deviceTypeAsStringTemp.contains('Object')) {
@@ -28,6 +32,20 @@ class EnumHelper {
     }
     for (final DeviceTypes deviceType in DeviceTypes.values) {
       if (dTToString(deviceType) == deviceTypeAsStringTemp) {
+        return deviceType;
+      }
+    }
+    return null;
+  }
+
+  static VendorsAndServices? stringToDeviceVendor(String deviceVendorAsString) {
+    String deviceTypeAsStringTemp = deviceVendorAsString;
+    if (deviceTypeAsStringTemp.contains('Object')) {
+      deviceTypeAsStringTemp = deviceTypeAsStringTemp.substring(
+          0, deviceTypeAsStringTemp.indexOf('Object'));
+    }
+    for (final VendorsAndServices deviceType in VendorsAndServices.values) {
+      if (deviceVendorToString(deviceType) == deviceTypeAsStringTemp) {
         return deviceType;
       }
     }
