@@ -77,7 +77,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
           device.lightSwitchState) {
         executeDeviceAction(tasmotaDE);
       } else {
-        print('No changes for Yeelight');
+        print('No changes for Tasmota');
       }
       return;
     }
