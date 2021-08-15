@@ -17,6 +17,10 @@ abstract class IMqttServerRepository {
   Stream<List<MqttReceivedMessage<MqttMessage?>>>
       streamOfAllDevicesHubSubscriptions();
 
+  /// Stream of chosen topic, example tasmota discover new devices topic
+  Stream<List<MqttReceivedMessage<MqttMessage?>>> streamOfChosenSubscription(
+      String topicPath);
+
   /// Get hub subscription and for each device change it will call method to
   /// notify the needed devices
   Future<void> allHubDevicesSubscriptions();

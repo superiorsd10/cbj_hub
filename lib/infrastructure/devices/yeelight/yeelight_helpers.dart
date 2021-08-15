@@ -12,8 +12,8 @@ class YeelightHelpers {
     final Yeelight1SeEntity yeelightDE = Yeelight1SeEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName('Yeelight test 2'),
-      roomId: CoreUniqueId(),
-      roomName: DeviceRoomName('Guy'),
+      roomId: CoreUniqueId.newDevicesRoom(),
+      roomName: DeviceRoomName(' '),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('yeelight'),
       senderDeviceModel: DeviceSenderDeviceModel('1SE'),

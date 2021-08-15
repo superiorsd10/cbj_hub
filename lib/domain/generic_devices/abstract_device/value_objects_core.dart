@@ -48,6 +48,10 @@ class CoreUniqueId extends ValueObjectCore<String?> {
     return CoreUniqueId._(right(uniqueId));
   }
 
+  factory CoreUniqueId.newDevicesRoom() {
+    return CoreUniqueId._(right('00000000-0000-0000-0000-000000000000'));
+  }
+
   const CoreUniqueId._(this.value);
 
   @override

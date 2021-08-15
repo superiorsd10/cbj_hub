@@ -74,19 +74,19 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
           yeelightDELight.lightSwitchState!.getOrCrash());
 
       companyDevices[yeelightDELight.uniqueId.getOrCrash()!] =
-      (companyDevices[yeelightDELight.uniqueId.getOrCrash()!]!
-      as GenericLightDE)
-        ..lightSwitchState =
-        GenericLightSwitchState(actionToPreform.toString());
+          (companyDevices[yeelightDELight.uniqueId.getOrCrash()!]!
+              as GenericLightDE)
+            ..lightSwitchState =
+                GenericLightSwitchState(actionToPreform.toString());
 
       if (actionToPreform == DeviceActions.on) {
         (await turnOnYeelight(yeelightDELight)).fold(
-                (l) => print('Error turning light on'),
-                (r) => print('Light turn on success'));
+            (l) => print('Error turning light on'),
+            (r) => print('Light turn on success'));
       } else if (actionToPreform == DeviceActions.off) {
         (await turnOffYeelight(yeelightDELight)).fold(
-                (l) => print('Error turning light off'),
-                (r) => print('Light turn off success'));
+            (l) => print('Error turning light off'),
+            (r) => print('Light turn off success'));
       }
     }
   }
@@ -123,33 +123,36 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOffYeelight(GenericLightDE yeelightDE) async {
+  Future<Either<CoreFailure, Unit>> turnOffYeelight(
+      GenericLightDE yeelightDE) async {
     print('Turn Off Yeelight');
 
     if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
       return Yeelight1SeDeviceActions.turnOff(
           companyDevices[yeelightDE.uniqueId.getOrCrash()]
-          as Yeelight1SeEntity);
+              as Yeelight1SeEntity);
     }
     return left(const CoreFailure.unexpected());
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOnYeelight(GenericLightDE yeelightDE) async {
+  Future<Either<CoreFailure, Unit>> turnOnYeelight(
+      GenericLightDE yeelightDE) async {
     print('Turn On Yeelight');
 
     if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
       return Yeelight1SeDeviceActions.turnOn(
           companyDevices[yeelightDE.uniqueId.getOrCrash()]!
-          as Yeelight1SeEntity);
+              as Yeelight1SeEntity);
     }
     return left(const CoreFailure.unexpected());
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> updateDatabase({required String pathOfField,
-    required Map<String, dynamic> fieldsToUpdate,
-    String? forceUpdateLocation}) async {
+  Future<Either<CoreFailure, Unit>> updateDatabase(
+      {required String pathOfField,
+      required Map<String, dynamic> fieldsToUpdate,
+      String? forceUpdateLocation}) async {
     // TODO: implement updateDatabase
     throw UnimplementedError();
   }
@@ -168,8 +171,8 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       // Note that duplicate messages may come through, especially if any
       // other mDNS queries are running elsewhere on the machine.
       await for (final SrvResourceRecord srv
-      in client.lookup<SrvResourceRecord>(
-          ResourceRecordQuery.service(ptr.domainName))) {
+          in client.lookup<SrvResourceRecord>(
+              ResourceRecordQuery.service(ptr.domainName))) {
         // Domain name will be something like "io.flutter.example@some-iphone.local._dartobservatory._tcp.local"
         final String bundleId =
             ptr.domainName; //.substring(0, ptr.domainName.indexOf('@'));
