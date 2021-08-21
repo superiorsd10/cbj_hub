@@ -19,6 +19,14 @@ class Yeelight1SeDeviceActions {
                 InternetAddress(yeelight1seEntity.lastKnownIp!.getOrCrash()),
             port: int.parse(yeelight1seEntity.yeelightPort!.getOrCrash()));
 
+        device.adjustBrightness(
+            percentage:
+                int.parse(yeelight1seEntity.lightBrightness!.getOrCrash()),
+            duration: const Duration(seconds: 50));
+        // device.setBrightness(brightness: brightness)
+        device.setColorTemperature(
+            colorTemperature: int.parse(
+                yeelight1seEntity.lightColorTemperature!.getOrCrash()));
         await device.turnOn();
         device.disconnect();
 
@@ -84,6 +92,101 @@ class Yeelight1SeDeviceActions {
           ..yeelightPort = YeelightPort(response.port!.toString());
 
         await device.turnOff();
+        device.disconnect();
+
+        return right(unit);
+      }
+    } catch (e) {
+      return left(const CoreFailure.unexpected());
+    }
+  }
+
+  static Future<Either<CoreFailure, Unit>> adjustBrightness(
+      Yeelight1SeEntity yeelight1seEntity) async {
+    try {
+      try {
+        final device = Device(
+            address:
+                InternetAddress(yeelight1seEntity.lastKnownIp!.getOrCrash()),
+            port: int.parse(yeelight1seEntity.yeelightPort!.getOrCrash()));
+
+        await device.adjustBrightness(
+            percentage:
+                int.parse(yeelight1seEntity.lightBrightness!.getOrCrash()),
+            duration: const Duration(seconds: 50));
+
+        device.disconnect();
+
+        return right(unit);
+      } catch (e) {
+        await Future.delayed(const Duration(milliseconds: 150));
+
+        final responses = await Yeelight.discover();
+
+        final response = responses.firstWhereOrNull((element) =>
+            element.id.toString() ==
+            yeelight1seEntity.yeelightDeviceId!.getOrCrash());
+        if (response == null) {
+          print('Device cant be discovered');
+          return left(const CoreFailure.unexpected());
+        }
+
+        final device = Device(address: response.address, port: response.port!);
+        yeelight1seEntity
+          ..lastKnownIp = DeviceLastKnownIp(response.address.address.toString())
+          ..yeelightPort = YeelightPort(response.port!.toString());
+
+        await device.adjustBrightness(
+            percentage:
+                int.parse(yeelight1seEntity.lightBrightness!.getOrCrash()),
+            duration: const Duration(seconds: 50));
+
+        device.disconnect();
+
+        return right(unit);
+      }
+    } catch (e) {
+      return left(const CoreFailure.unexpected());
+    }
+  }
+
+  static Future<Either<CoreFailure, Unit>> changeColorTemperature(
+      Yeelight1SeEntity yeelight1seEntity) async {
+    try {
+      try {
+        final device = Device(
+            address:
+                InternetAddress(yeelight1seEntity.lastKnownIp!.getOrCrash()),
+            port: int.parse(yeelight1seEntity.yeelightPort!.getOrCrash()));
+
+        await device.setColorTemperature(
+            colorTemperature: int.parse(
+                yeelight1seEntity.lightColorTemperature!.getOrCrash()));
+        device.disconnect();
+
+        return right(unit);
+      } catch (e) {
+        await Future.delayed(const Duration(milliseconds: 150));
+
+        final responses = await Yeelight.discover();
+
+        final response = responses.firstWhereOrNull((element) =>
+            element.id.toString() ==
+            yeelight1seEntity.yeelightDeviceId!.getOrCrash());
+        if (response == null) {
+          print('Device cant be discovered');
+          return left(const CoreFailure.unexpected());
+        }
+
+        final device = Device(address: response.address, port: response.port!);
+        yeelight1seEntity
+          ..lastKnownIp = DeviceLastKnownIp(response.address.address.toString())
+          ..yeelightPort = YeelightPort(response.port!.toString());
+
+        await device.setColorTemperature(
+            colorTemperature: int.parse(
+                yeelight1seEntity.lightColorTemperature!.getOrCrash()));
+
         device.disconnect();
 
         return right(unit);

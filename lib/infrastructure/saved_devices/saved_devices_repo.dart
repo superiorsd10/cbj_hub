@@ -1,3 +1,4 @@
+import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
@@ -14,7 +15,15 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
   @override
   String addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {
-    allDevices[deviceEntity.getDeviceId()] = deviceEntity;
+    if (allDevices[deviceEntity.getDeviceId()] != null) {
+      allDevices[deviceEntity.getDeviceId()] = deviceEntity;
+    } else {
+      allDevices[deviceEntity.getDeviceId()] = deviceEntity;
+
+      ConnectorStreamToMqtt.toMqttController.sink.add(
+          MapEntry<String, DeviceEntityAbstract>(deviceEntity.getDeviceId(),
+              allDevices[deviceEntity.getDeviceId()]!));
+    }
 
     return 'add or updated success';
   }
