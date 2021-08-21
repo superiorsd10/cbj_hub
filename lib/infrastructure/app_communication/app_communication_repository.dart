@@ -4,6 +4,7 @@ import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
@@ -79,18 +80,29 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       return;
     }
 
+    MapEntry<String, DeviceEntityAbstract> deviceFromApp;
+
     if (savedDeviceEntity is GenericLightDE) {
       final GenericLightDE savedDeviceEntityFromApp =
           deviceEntityFromApp as GenericLightDE;
       savedDeviceEntity.lightSwitchState =
           savedDeviceEntityFromApp.lightSwitchState;
 
-      final MapEntry<String, DeviceEntityAbstract> deviceFromApp =
+      deviceFromApp =
           MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
-      ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
+    } else if (savedDeviceEntity is GenericRgbwLightDE) {
+      final GenericRgbwLightDE savedDeviceEntityFromApp =
+          deviceEntityFromApp as GenericRgbwLightDE;
+      savedDeviceEntity.lightSwitchState =
+          savedDeviceEntityFromApp.lightSwitchState;
+
+      deviceFromApp =
+          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
     } else {
       print('Cant find device from app type');
+      return;
     }
+    ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
   }
 }
 
