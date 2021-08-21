@@ -1,6 +1,6 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
@@ -25,8 +25,12 @@ class YeelightHelpers {
       powerConsumption: DevicePowerConsumption('0'),
       yeelightDeviceId: YeelightDeviceId(yeelightDevice.id.toString()),
       yeelightPort: YeelightPort(yeelightDevice.port.toString()),
-      lightSwitchState:
-          GenericLightSwitchState(DeviceActions.actionNotSupported.toString()),
+      lightSwitchState: GenericRgbwLightSwitchState(
+          DeviceActions.actionNotSupported.toString()),
+      lightColorTemperature: GenericRgbwLightColorTemperature(
+          yeelightDevice.colorTemperature.toString()),
+      lightBrightness:
+          GenericRgbwLightBrightness(yeelightDevice.brightness.toString()),
     );
 
     return yeelightDE;

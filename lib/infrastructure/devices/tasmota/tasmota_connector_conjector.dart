@@ -9,7 +9,6 @@ import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_ligh
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_device_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_device_actions.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
@@ -166,7 +165,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
     final GenericLightDE? device =
         companyDevices[tasmotaDE.getDeviceId()] as GenericLightDE;
     if (device == null) {
-      print('Cant change Yeelight, does not exist');
+      print('Cant change tasmota, does not exist');
       return;
     }
 
@@ -186,7 +185,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
   Future<Either<CoreFailure, Unit>> turnOfftasmota(
       DeviceEntityAbstract tasmotaDE) async {
     if (tasmotaDE is TasmotaLedEntity) {
-      return TasmotaDeviceActions.turnOff(tasmotaDE);
+      return tasmotaDE.turnOffLight();
     } else {
       print('tasmota type is not supported to turn ON');
     }
@@ -197,7 +196,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
   Future<Either<CoreFailure, Unit>> turnOntasmota(
       DeviceEntityAbstract tasmotaDE) async {
     if (tasmotaDE is TasmotaLedEntity) {
-      return TasmotaDeviceActions.turnOn(tasmotaDE);
+      return tasmotaDE.turnOnLight();
     } else {
       print('tasmota type is not supported to turn ON');
     }

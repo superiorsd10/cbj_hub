@@ -65,6 +65,7 @@ class CommonBashCommandsD implements SystemCommandsBaseClassD {
 
   @override
   Future<String> getAllEtcReleaseFilesText() async {
+    /// TODO: need to be replaced with echo $(cat /proc/device-tree/model) for nanopi
     String etcReleaseFiles = '';
 
     try {
