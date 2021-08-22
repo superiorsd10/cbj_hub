@@ -1,17 +1,10 @@
 import 'dart:async';
 
-import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_device_actions.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_helpers.dart';
-import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbenum.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
@@ -69,56 +62,6 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   @override
-  Future<void> executeDeviceAction(DeviceEntityAbstract yeelightDE) async {
-    if (yeelightDE is GenericLightDE) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          yeelightDE.lightSwitchState!.getOrCrash());
-
-      companyDevices[yeelightDE.uniqueId.getOrCrash()!] =
-          (companyDevices[yeelightDE.uniqueId.getOrCrash()!]! as GenericLightDE)
-            ..lightSwitchState =
-                GenericLightSwitchState(actionToPreform.toString());
-
-      if (actionToPreform == DeviceActions.on) {
-        (await turnOnYeelight(yeelightDE)).fold(
-            (l) => print('Error turning light on'),
-            (r) => print('Light turn on success'));
-      } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffYeelight(yeelightDE)).fold(
-            (l) => print('Error turning light off'),
-            (r) => print('Light turn off success'));
-      }
-    } else if (yeelightDE is GenericRgbwLightDE) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          yeelightDE.lightSwitchState!.getOrCrash());
-
-      companyDevices[yeelightDE.uniqueId.getOrCrash()!] =
-          (companyDevices[yeelightDE.uniqueId.getOrCrash()!]!
-              as GenericRgbwLightDE)
-            ..lightSwitchState =
-                GenericRgbwLightSwitchState(actionToPreform.toString());
-
-      if (actionToPreform == DeviceActions.on) {
-        (await turnOnYeelight(yeelightDE)).fold(
-            (l) => print('Error turning light on'),
-            (r) => print('Light turn on success'));
-      } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffYeelight(yeelightDE)).fold(
-            (l) => print('Error turning light off'),
-            (r) => print('Light turn off success'));
-      }
-      // else if (){
-      //   (await adjustBrightnessYeelight(yeelightDE)).fold(
-      //           (l) => print('Error adjusting brightness'),
-      //           (r) => print('Adjusting brightness success'));
-      //
-      // }
-    } else {
-      print("Can't executeDeviceAction for yeelight");
-    }
-  }
-
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
@@ -129,87 +72,12 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       DeviceEntityAbstract yeelightDE) async {
     final DeviceEntityAbstract? device =
         companyDevices[yeelightDE.getDeviceId()];
-    if (device is GenericLightDE) {
-      final GenericLightDE deviceAsLight = device;
 
-      if (yeelightDE.getDeviceId() == deviceAsLight.getDeviceId()) {
-        if ((yeelightDE as GenericLightDE).lightSwitchState !=
-            deviceAsLight.lightSwitchState) {
-          executeDeviceAction(yeelightDE);
-        } else {
-          print('No changes for Yeelight');
-        }
-        return;
-      }
-    }
-    if (device is GenericRgbwLightDE) {
-      final GenericRgbwLightDE deviceAsLight = device;
-
-      if (yeelightDE.getDeviceId() == deviceAsLight.getDeviceId()) {
-        if ((yeelightDE as GenericRgbwLightDE).lightSwitchState !=
-            deviceAsLight.lightSwitchState) {
-          executeDeviceAction(yeelightDE);
-        } else {
-          print('No changes for Yeelight');
-        }
-        return;
-      }
+    if (device is Yeelight1SeEntity) {
+      device.executeDeviceAction(yeelightDE);
     } else {
-      print('Cant change Yeelight, does not exist');
-      return;
+      print('Yeelight device type does not exist');
     }
-
-    print('manageHubRequestsForDevice in Yeelight');
-  }
-
-  @override
-  Future<Either<CoreFailure, Unit>> turnOffYeelight(
-      DeviceEntityAbstract yeelightDE) async {
-    print('Turn Off Yeelight');
-
-    if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
-      return Yeelight1SeDeviceActions.turnOff(
-          companyDevices[yeelightDE.uniqueId.getOrCrash()]
-              as Yeelight1SeEntity);
-    }
-    return left(const CoreFailure.unexpected());
-  }
-
-  @override
-  Future<Either<CoreFailure, Unit>> turnOnYeelight(
-      DeviceEntityAbstract yeelightDE) async {
-    print('Turn On Yeelight');
-
-    if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
-      return Yeelight1SeDeviceActions.turnOn(
-          companyDevices[yeelightDE.uniqueId.getOrCrash()]!
-              as Yeelight1SeEntity);
-    }
-    return left(const CoreFailure.unexpected());
-  }
-
-  Future<Either<CoreFailure, Unit>> changeColorTemperatureYeelight(
-      DeviceEntityAbstract yeelightDE) async {
-    print('Turn On Yeelight');
-
-    if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
-      return Yeelight1SeDeviceActions.changeColorTemperature(
-          companyDevices[yeelightDE.uniqueId.getOrCrash()]!
-              as Yeelight1SeEntity);
-    }
-    return left(const CoreFailure.unexpected());
-  }
-
-  Future<Either<CoreFailure, Unit>> adjustBrightnessYeelight(
-      DeviceEntityAbstract yeelightDE) async {
-    print('Turn On Yeelight');
-
-    if (companyDevices[yeelightDE.uniqueId.getOrCrash()] is Yeelight1SeEntity) {
-      return Yeelight1SeDeviceActions.adjustBrightness(
-          companyDevices[yeelightDE.uniqueId.getOrCrash()]!
-              as Yeelight1SeEntity);
-    }
-    return left(const CoreFailure.unexpected());
   }
 
   @override

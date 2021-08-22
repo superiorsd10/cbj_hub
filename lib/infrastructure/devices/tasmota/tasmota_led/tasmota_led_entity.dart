@@ -1,4 +1,5 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
@@ -41,8 +42,15 @@ class TasmotaLedEntity extends GenericLightDE {
 
   TasmotaDeviceTopicName tasmotaDeviceTopicName;
 
+  /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction() async {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction(
+      DeviceEntityAbstract newEntity) async {
+    if (newEntity is! TasmotaLedEntity) {
+      return left(const CoreFailure.actionExcecuter(
+          failedValue: 'Not the correct type'));
+    }
+
     print('Please override this method in the non generic implementation');
     return left(const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist'));
@@ -68,9 +76,5 @@ class TasmotaLedEntity extends GenericLightDE {
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
-
-    print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
   }
 }
