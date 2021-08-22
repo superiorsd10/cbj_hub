@@ -1,3 +1,4 @@
+import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
@@ -46,14 +47,28 @@ class TasmotaLedEntity extends GenericLightDE {
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
-    if (newEntity is! TasmotaLedEntity) {
+    if (newEntity is! GenericLightDE) {
       return left(const CoreFailure.actionExcecuter(
           failedValue: 'Not the correct type'));
     }
 
-    print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    if (newEntity.lightSwitchState!.getOrCrash() !=
+        lightSwitchState!.getOrCrash()) {
+      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash());
+
+      if (actionToPreform == DeviceActions.on) {
+        (await turnOnLight()).fold((l) => print('Error turning light on'),
+            (r) => print('Light turn on success'));
+      } else if (actionToPreform == DeviceActions.off) {
+        (await turnOffLight()).fold((l) => print('Error turning light off'),
+            (r) => print('Light turn off success'));
+      } else {
+        print('actionToPreform is not set correctly');
+      }
+    }
+
+    return right(unit);
   }
 
   @override
