@@ -1,9 +1,11 @@
+import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/generic_rgbw_light_device/generic_rgbw_light_device_dtos.dart';
+import 'package:dartz/dartz.dart';
 
 /// Abstract smart GenericLight that exist inside a computer, the
 /// implementations will be actual GenericLight like blinds lights and more
@@ -116,5 +118,27 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
       lightBrightness: lightBrightness!.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
+  }
+
+  /// Please override the following methods
+  Future<Either<CoreFailure, Unit>> executeDeviceAction(
+      DeviceEntityAbstract newEntity) async {
+    print('Please override this method in the non generic implementation');
+    return left(const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist'));
+  }
+
+  /// Please override the following methods
+  Future<Either<CoreFailure, Unit>> turnOnLight() async {
+    print('Please override this method in the non generic implementation');
+    return left(const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist'));
+  }
+
+  /// Please override the following methods
+  Future<Either<CoreFailure, Unit>> turnOffLight() async {
+    print('Please override this method in the non generic implementation');
+    return left(const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist'));
   }
 }

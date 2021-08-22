@@ -1,4 +1,6 @@
+import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
@@ -41,15 +43,38 @@ class TasmotaLedEntity extends GenericLightDE {
 
   TasmotaDeviceTopicName tasmotaDeviceTopicName;
 
+  /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction() async {
-    print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+  Future<Either<CoreFailure, Unit>> executeDeviceAction(
+      DeviceEntityAbstract newEntity) async {
+    if (newEntity is! GenericLightDE) {
+      return left(const CoreFailure.actionExcecuter(
+          failedValue: 'Not the correct type'));
+    }
+
+    if (newEntity.lightSwitchState!.getOrCrash() !=
+        lightSwitchState!.getOrCrash()) {
+      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash());
+
+      if (actionToPreform == DeviceActions.on) {
+        (await turnOnLight()).fold((l) => print('Error turning light on'),
+            (r) => print('Light turn on success'));
+      } else if (actionToPreform == DeviceActions.off) {
+        (await turnOffLight()).fold((l) => print('Error turning light off'),
+            (r) => print('Light turn off success'));
+      } else {
+        print('actionToPreform is not set correctly');
+      }
+    }
+
+    return right(unit);
   }
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
+    lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
+
     try {
       getIt<IMqttServerRepository>().publishMessage(
           'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power', 'ON');
@@ -61,6 +86,8 @@ class TasmotaLedEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
+    lightSwitchState = GenericLightSwitchState(DeviceActions.off.toString());
+
     try {
       getIt<IMqttServerRepository>().publishMessage(
           'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power', 'OFF');
@@ -68,9 +95,5 @@ class TasmotaLedEntity extends GenericLightDE {
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
-
-    print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
   }
 }

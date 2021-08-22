@@ -107,7 +107,8 @@ class GenericLightDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> executeDeviceAction() async {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction(
+      DeviceEntityAbstract newEntity) async {
     print('Please override this method in the non generic implementation');
     return left(const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist'));
