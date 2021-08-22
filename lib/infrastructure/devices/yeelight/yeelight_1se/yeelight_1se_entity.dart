@@ -75,14 +75,16 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
           newEntity.lightSwitchState!.getOrCrash());
 
-      if (actionToPreform == DeviceActions.on) {
-        (await turnOnLight()).fold((l) => print('Error turning light on'),
-            (r) => print('Light turn on success'));
-      } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffLight()).fold((l) => print('Error turning light off'),
-            (r) => print('Light turn off success'));
-      } else {
-        print('actionToPreform is not set correctly');
+      if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
+        if (actionToPreform == DeviceActions.on) {
+          (await turnOnLight()).fold((l) => print('Error turning light on'),
+              (r) => print('Light turn on success'));
+        } else if (actionToPreform == DeviceActions.off) {
+          (await turnOffLight()).fold((l) => print('Error turning light off'),
+              (r) => print('Light turn off success'));
+        } else {
+          print('actionToPreform is not set correctly');
+        }
       }
     }
 
@@ -91,6 +93,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
+    lightSwitchState = GenericRgbwLightSwitchState(DeviceActions.on.toString());
     try {
       try {
         final device = Device(
@@ -135,6 +138,9 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
+    lightSwitchState =
+        GenericRgbwLightSwitchState(DeviceActions.off.toString());
+
     try {
       try {
         final device = Device(
@@ -174,6 +180,8 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
   static Future<Either<CoreFailure, Unit>> adjustBrightness(
       Yeelight1SeEntity yeelight1seEntity) async {
+    // lightBrightness = GenericRgbwLightBrightness();
+
     try {
       try {
         final device = Device(

@@ -78,6 +78,8 @@ class ESPHomeLightEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
+    lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
+
     try {
       print('Turn on ESPHome device');
       EspHomeApi espHomeApi;
@@ -107,6 +109,8 @@ class ESPHomeLightEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
+    lightSwitchState = GenericLightSwitchState(DeviceActions.off.toString());
+
     try {
       try {
         print('Turn off ESPHome device');
