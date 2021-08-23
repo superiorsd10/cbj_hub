@@ -61,6 +61,9 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
   DeviceMdnsName? deviceMdnsName;
 
+  /// Yeelight package object require to close previews request before new one
+  Device? device;
+
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
@@ -96,18 +99,14 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
     lightSwitchState = GenericRgbwLightSwitchState(DeviceActions.on.toString());
     try {
       try {
-        final device = Device(
+        device?.disconnect();
+
+        device = Device(
             address: InternetAddress(lastKnownIp!.getOrCrash()),
             port: int.parse(yeelightPort!.getOrCrash()));
 
-        device.adjustBrightness(
-            percentage: int.parse(lightBrightness!.getOrCrash()),
-            duration: const Duration(seconds: 50));
-        // device.setBrightness(brightness: brightness)
-        device.setColorTemperature(
-            colorTemperature: int.parse(lightColorTemperature!.getOrCrash()));
-        await device.turnOn();
-        device.disconnect();
+        await device!.turnOn();
+        device!.disconnect();
 
         return right(unit);
       } catch (e) {
@@ -121,13 +120,14 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           print('Device cant be discovered');
           return left(const CoreFailure.unexpected());
         }
+        device?.disconnect();
 
-        final device = Device(address: response.address, port: response.port!);
+        device = Device(address: response.address, port: response.port!);
         lastKnownIp = DeviceLastKnownIp(response.address.address.toString());
         yeelightPort = YeelightPort(response.port!.toString());
 
-        await device.turnOn();
-        device.disconnect();
+        await device!.turnOn();
+        device!.disconnect();
 
         return right(unit);
       }
@@ -143,12 +143,14 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
     try {
       try {
-        final device = Device(
+        device?.disconnect();
+
+        device = Device(
             address: InternetAddress(lastKnownIp!.getOrCrash()),
             port: int.parse(yeelightPort!.getOrCrash()));
 
-        await device.turnOff();
-        device.disconnect();
+        await device!.turnOff();
+        device!.disconnect();
 
         return right(unit);
       } catch (e) {
@@ -163,13 +165,15 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           return left(const CoreFailure.unexpected());
         }
 
-        final device = Device(address: response.address, port: response.port!);
+        device?.disconnect();
+
+        device = Device(address: response.address, port: response.port!);
 
         lastKnownIp = DeviceLastKnownIp(response.address.address.toString());
         yeelightPort = YeelightPort(response.port!.toString());
 
-        await device.turnOff();
-        device.disconnect();
+        await device!.turnOff();
+        device!.disconnect();
 
         return right(unit);
       }
@@ -184,6 +188,8 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
     try {
       try {
+        // device?.disconnect();
+
         final device = Device(
             address:
                 InternetAddress(yeelight1seEntity.lastKnownIp!.getOrCrash()),
@@ -198,6 +204,8 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
         return right(unit);
       } catch (e) {
+        // device?.disconnect();
+
         await Future.delayed(const Duration(milliseconds: 150));
 
         final responses = await Yeelight.discover();
@@ -233,6 +241,8 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       Yeelight1SeEntity yeelight1seEntity) async {
     try {
       try {
+        // device?.disconnect();
+
         final device = Device(
             address:
                 InternetAddress(yeelight1seEntity.lastKnownIp!.getOrCrash()),
@@ -245,6 +255,8 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
         return right(unit);
       } catch (e) {
+        // device?.disconnect();
+
         await Future.delayed(const Duration(milliseconds: 150));
 
         final responses = await Yeelight.discover();
