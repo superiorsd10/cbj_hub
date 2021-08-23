@@ -1,7 +1,6 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_value_objects.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_api_object.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_v2/switcher_v2_entity.dart';
@@ -26,8 +25,8 @@ class SwitcherHelpers {
         lastKnownIp: DeviceLastKnownIp(switcherDevice.ipAddress),
         stateMassage: DeviceStateMassage('Hello World'),
         powerConsumption: DevicePowerConsumption('0'),
-        blindsSwitchState:
-        GenericBlindsSwitchState(DeviceActions.actionNotSupported.toString()),
+        boilerSwitchState:
+        GenericBoilerSwitchState(DeviceActions.actionNotSupported.toString()),
         switcherDeviceId: SwitcherDeviceId(switcherDevice.deviceId),
       );
 

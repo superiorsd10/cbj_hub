@@ -1,6 +1,7 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/generic_blinds_device/generic_blinds_device_dtos.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/generic_boiler_device/generic_boiler_device_dtos.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/generic_light_device/generic_light_device_dtos.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/generic_rgbw_light_device/generic_rgbw_light_device_dtos.dart';
 
@@ -27,6 +28,9 @@ class DeviceEntityDtoAbstract {
     } else if (jsonDeviceDtoClass == (GenericBlindsDeviceDtos).toString() ||
         json['deviceTypes'] == DeviceTypes.blinds.toString()) {
       deviceEntityDtoAbstract = GenericBlindsDeviceDtos.fromJson(json);
+    } else if (jsonDeviceDtoClass == (GenericBoilerDeviceDtos).toString() ||
+        json['deviceTypes'] == DeviceTypes.boiler.toString()) {
+      deviceEntityDtoAbstract = GenericBoilerDeviceDtos.fromJson(json);
     } else {
       throw 'DtoClassTypeDoesNotExist';
     }
