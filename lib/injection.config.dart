@@ -16,10 +16,12 @@ import 'infrastructure/app_communication/app_communication_repository.dart'
     as _i4;
 import 'infrastructure/devices/esphome/esphome_connector_conjector.dart'
     as _i13;
-import 'infrastructure/devices/tasmota/tasmota_connector_conjector.dart'
+import 'infrastructure/devices/switcher/switcher_connector_conjector.dart'
     as _i14;
-import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+import 'infrastructure/devices/tasmota/tasmota_connector_conjector.dart'
     as _i15;
+import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+    as _i16;
 import 'infrastructure/local_db/local_db_repository.dart' as _i6;
 import 'infrastructure/mqtt_server/mqtt_server_repository.dart' as _i8;
 import 'infrastructure/saved_devices/saved_devices_repo.dart' as _i10;
@@ -40,9 +42,11 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       () => _i12.ServerForCbjAppRepository());
   gh.singleton<_i13.ESPHomeConnectorConjector>(
       _i13.ESPHomeConnectorConjector());
-  gh.singleton<_i14.TasmotaConnectorConjector>(
-      _i14.TasmotaConnectorConjector());
-  gh.singleton<_i15.YeelightConnectorConjector>(
-      _i15.YeelightConnectorConjector());
+  gh.singleton<_i14.SwitcherConnectorConjector>(
+      _i14.SwitcherConnectorConjector());
+  gh.singleton<_i15.TasmotaConnectorConjector>(
+      _i15.TasmotaConnectorConjector());
+  gh.singleton<_i16.YeelightConnectorConjector>(
+      _i16.YeelightConnectorConjector());
   return get;
 }
