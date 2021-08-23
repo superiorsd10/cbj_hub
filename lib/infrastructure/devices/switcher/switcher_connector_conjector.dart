@@ -22,8 +22,6 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
 
   Future<void> _discoverNewDevices() async {
     SwitcherDiscover.discoverDevices().listen((switcherApiObject) {
-      print('Event Switcher discoverNewDevices');
-
       for (DeviceEntityAbstract savedDevice in companyDevices.values) {
         savedDevice = savedDevice as SwitcherV2Entity;
 
@@ -33,15 +31,20 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
         }
       }
 
-      final DeviceEntityAbstract addDevice =
+      final DeviceEntityAbstract? addDevice =
           SwitcherHelpers.addDiscoverdDevice(switcherApiObject);
+      if(addDevice == null){
+        return;
+      }
       CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
       final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
           MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
       companyDevices.addEntries([deviceAsEntry]);
 
       CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-      print('New switcher devices where add');
+      print('New switcher devices where add with id: '
+          '${switcherApiObject.deviceId} and '
+          'type:${switcherApiObject.deviceType}');
     });
   }
 

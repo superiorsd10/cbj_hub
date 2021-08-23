@@ -49,7 +49,8 @@ class SwitcherApiObject {
       hexData.add(byte.toRadixString(16));
     }
 
-    final String hexModel = hexData.sublist(75, 76).toString();
+    // TODO: Fix Switcher Runner (blinds) is being recognized as switcherV2Esp
+    final String hexModel = hexData.sublist(75, 76)[0];
 
     if (hexModel == '0f') {
       sDevicesTypes = SwitcherDevicesTypes.switcherMini;
@@ -57,12 +58,14 @@ class SwitcherApiObject {
       sDevicesTypes = SwitcherDevicesTypes.switcherPowerPlug;
     } else if (hexModel == '0b') {
       sDevicesTypes = SwitcherDevicesTypes.switcherTouch;
-    } else if (hexModel == 's7') {
-      sDevicesTypes = SwitcherDevicesTypes.switcherV2_esp;
+    } else if (hexModel == 'a7') {
+      sDevicesTypes = SwitcherDevicesTypes.switcherV2Esp;
     } else if (hexModel == 'a1') {
       sDevicesTypes = SwitcherDevicesTypes.switcherV2qualcomm;
     } else if (hexModel == '17') {
       sDevicesTypes = SwitcherDevicesTypes.switcherV4;
+    } else {
+      print('New device type? hexModel:$hexModel');
     }
 
     return sDevicesTypes;
@@ -145,7 +148,7 @@ enum SwitcherDevicesTypes {
   switcherMini,
   switcherPowerPlug,
   switcherTouch,
-  switcherV2_esp,
+  switcherV2Esp,
   switcherV2qualcomm,
   switcherV4,
 }
