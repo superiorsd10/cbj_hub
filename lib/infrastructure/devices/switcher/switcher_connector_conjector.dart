@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_discover.dart';
+import 'package:cbj_hub/infrastructure/devices/switcher/switcher_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/switcher/switcher_v2/switcher_v2_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:multicast_dns/multicast_dns.dart';
-import 'package:yeedart/yeedart.dart';
 
 @singleton
-class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
-  YeelightConnectorConjector() {
+class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
+  SwitcherConnectorConjector() {
     _discoverNewDevices();
   }
 
@@ -21,43 +21,38 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> _discoverNewDevices() async {
-    while (true) {
-      final responses = await Yeelight.discover();
-      for (final DiscoveryResponse yeelightDevice in responses) {
-        bool deviceExist = false;
-        for (DeviceEntityAbstract savedDevice in companyDevices.values) {
-          savedDevice = savedDevice as Yeelight1SeEntity;
+    SwitcherDiscover.discoverDevices().listen((switcherApiObject) {
+      print('Event Switcher discoverNewDevices');
 
-          if (yeelightDevice.id.toString() ==
-              savedDevice.yeelightDeviceId!.getOrCrash()) {
-            deviceExist = true;
-            break;
-          }
-        }
-        if (!deviceExist) {
-          final DeviceEntityAbstract addDevice =
-              YeelightHelpers.addDiscoverdDevice(yeelightDevice);
-          CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-          final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
-              MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
-          companyDevices.addEntries([deviceAsEntry]);
+      for (DeviceEntityAbstract savedDevice in companyDevices.values) {
+        savedDevice = savedDevice as SwitcherV2Entity;
 
-          CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-          print('New yeelight devices where add');
+        if (switcherApiObject.deviceId.toString() ==
+            savedDevice.switcherDeviceId!.getOrCrash()) {
+          return;
         }
       }
-      await Future.delayed(const Duration(minutes: 3));
-    }
+
+      final DeviceEntityAbstract addDevice =
+          SwitcherHelpers.addDiscoverdDevice(switcherApiObject);
+      CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+      final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
+          MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
+      companyDevices.addEntries([deviceAsEntry]);
+
+      CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+      print('New switcher devices where add');
+    });
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract yeelight) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract switcher) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract yeelight) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract switcher) {
     // TODO: implement delete
     throw UnimplementedError();
   }
@@ -70,14 +65,14 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
 
   @override
   Future<void> manageHubRequestsForDevice(
-      DeviceEntityAbstract yeelightDE) async {
+      DeviceEntityAbstract switcherDE) async {
     final DeviceEntityAbstract? device =
-        companyDevices[yeelightDE.getDeviceId()];
+        companyDevices[switcherDE.getDeviceId()];
 
-    if (device is Yeelight1SeEntity) {
-      device.executeDeviceAction(yeelightDE);
+    if (device is SwitcherV2Entity) {
+      device.executeDeviceAction(switcherDE);
     } else {
-      print('Yeelight device type does not exist');
+      print('Switcher device type does not exist');
     }
   }
 
