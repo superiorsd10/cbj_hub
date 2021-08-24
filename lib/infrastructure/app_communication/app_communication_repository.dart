@@ -19,12 +19,21 @@ import 'package:rxdart/rxdart.dart';
 @LazySingleton(as: IAppCommunicationRepository)
 class AppCommunicationRepository extends IAppCommunicationRepository {
   AppCommunicationRepository() {
+    if(currentEnv == Env.prod){
+      hubPort = 60055;
+    } else {
+      hubPort = 50055;
+    }
     startLocalServer();
   }
 
+  /// Port to connect to the cbj hub, will change according to the current
+  /// running environment
+  late int hubPort;
+
   Future startLocalServer() async {
     final server = Server([HubAppServer()]);
-    await server.serve(port: 50055);
+    await server.serve(port: hubPort);
     print('Hub Server listening for apps clients on port ${server.port}...');
   }
 

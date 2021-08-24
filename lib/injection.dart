@@ -4,9 +4,14 @@ import 'package:injectable/injectable.dart';
 
 final getIt = GetIt.instance;
 
+/// Saves the current environment for manual use
+late String currentEnv;
+
 @injectableInit
-Future<void> configureInjection(String environment) async =>
-    $initGetIt(getIt, environment: environment);
+Future<void> configureInjection(String environment) async {
+  currentEnv = environment;
+  $initGetIt(getIt, environment: environment);
+}
 
 abstract class Env {
   static const String test = 'test';
