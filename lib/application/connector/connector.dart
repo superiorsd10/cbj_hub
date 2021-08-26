@@ -29,8 +29,11 @@ class Connector {
           (MapEntry<String, DeviceEntityAbstract> a) => a.key == deviceId));
     }
 
-    final IAppCommunicationRepository appCommunication =
-        getIt<IAppCommunicationRepository>();
+    Future.delayed(const Duration(milliseconds: 3000)).whenComplete(() {
+      print('Go');
+      IAppCommunicationRepository appCommunication =
+          getIt<IAppCommunicationRepository>();
+    });
 
     getIt<IMqttServerRepository>().allHubDevicesSubscriptions();
     // appCommunication.sendToApp();

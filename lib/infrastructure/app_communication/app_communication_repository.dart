@@ -19,13 +19,29 @@ import 'package:rxdart/rxdart.dart';
 @LazySingleton(as: IAppCommunicationRepository)
 class AppCommunicationRepository extends IAppCommunicationRepository {
   AppCommunicationRepository() {
+    if(currentEnv == Env.prod){
+      hubPort = 60055;
+    } else {
+      hubPort = 50055;
+    }
     startLocalServer();
+    startRemotePipesConnection();
   }
+
+  /// Port to connect to the cbj hub, will change according to the current
+  /// running environment
+  late int hubPort;
 
   Future startLocalServer() async {
     final server = Server([HubAppServer()]);
-    await server.serve(port: 50055);
+    await server.serve(port: hubPort);
     print('Hub Server listening for apps clients on port ${server.port}...');
+  }
+
+  Future startRemotePipesConnection() async {
+    // RemotePipesClient.createStreamWithHub('', 50051);
+    // RemotePipesClient.createStreamWithHub('127.0.0.1', 50051);
+    print('Creating connection with remote pipes');
   }
 
   @override
@@ -42,7 +58,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           .forEach((String id, deviceEntityToSend) {
         final DeviceEntityDtoAbstract deviceDtoAbstract =
             DeviceHelper.convertDomainToDto(deviceEntityToSend);
-        AppClientStream.streamRequestsFromAPp.sink.add(deviceDtoAbstract);
+        HubRequestsToApp.streamRequestsToApp.sink.add(deviceDtoAbstract);
       });
 
       // print('Will send the topic "${event.payload.variableHeader?.topicName}" '
@@ -104,11 +120,30 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     }
     ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
   }
+
+  static Future<void> sendAllDevicesToHubRequestsStream() async {
+    (await getIt<ISavedDevicesRepo>().getAllDevices())
+        .map((String id, DeviceEntityAbstract d) {
+      HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
+      return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
+    });
+  }
 }
 
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
-class AppClientStream {
-  static BehaviorSubject<DeviceEntityDtoAbstract> streamRequestsFromAPp =
+class HubRequestsToApp {
+  static BehaviorSubject<DeviceEntityDtoAbstract> streamRequestsToApp =
       BehaviorSubject<DeviceEntityDtoAbstract>();
+}
+
+/// Requests and updates from app to the hub
+class AppRequestsToHub {
+  /// Stream controller of the requests from the hub
+  static final hubRequestsStreamController =
+      StreamController<RequestsAndStatusFromHub>();
+
+  /// Stream of the requests from the hub
+  static Stream<RequestsAndStatusFromHub> get hubRequestsStream =>
+      hubRequestsStreamController.stream;
 }
