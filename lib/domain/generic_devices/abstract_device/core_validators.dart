@@ -1,5 +1,5 @@
-import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
+import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:dartz/dartz.dart';
 
 Either<CoreFailure<String>, String> validateDeviceNotEmpty(String input) {

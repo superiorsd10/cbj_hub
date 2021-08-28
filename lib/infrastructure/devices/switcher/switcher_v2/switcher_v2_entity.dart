@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:cbj_hub/domain/device_type/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_device_value_objects.dart';
