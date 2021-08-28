@@ -25,9 +25,10 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   Future<void> discoverNewDevices() async {
-    //TODO: We need to write to mqtt massage that will make all the tasmota
-    // devices repost in discovery. Currently we recognize only the tasmota
-    // devices that coming online after the program got turned on.
+    /// Make all tasmota devices repost themselves under discovery
+    getIt<IMqttServerRepository>()
+        .publishMessage('cmnd/tasmotas/SetOption19', '0');
+
     getIt<IMqttServerRepository>()
         .streamOfChosenSubscription('tasmota/discovery/#')
         .listen((mqttPublishMessage) async {
