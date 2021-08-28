@@ -1,17 +1,17 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/generic_devices/generic_light_device/generic_light_device_dtos.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/generic_boiler_device/generic_boiler_device_dtos.dart';
 import 'package:dartz/dartz.dart';
 
-/// Abstract smart GenericLight that exist inside a computer, the
-/// implementations will be actual GenericLight like blinds lights and more
-class GenericLightDE extends DeviceEntityAbstract {
-  /// All public field of GenericLight entity
-  GenericLightDE({
+/// Abstract smart GenericBoiler that exist inside a computer, the
+/// implementations will be actual GenericBoiler like boiler boilers and more
+class GenericBoilerDE extends DeviceEntityAbstract {
+  /// All public field of GenericBoiler entity
+  GenericBoilerDE({
     required CoreUniqueId uniqueId,
     required CoreUniqueId roomId,
     required DeviceVendor deviceVendor,
@@ -24,12 +24,12 @@ class GenericLightDE extends DeviceEntityAbstract {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     DevicePowerConsumption? powerConsumption,
-    required this.lightSwitchState,
+    required this.boilerSwitchState,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
           roomId: roomId,
-          deviceTypes: DeviceType(DeviceTypes.light.toString()),
+          deviceTypes: DeviceType(DeviceTypes.boiler.toString()),
           deviceVendor: deviceVendor,
           deviceStateGRPC: deviceStateGRPC,
           compUuid: compUuid,
@@ -40,11 +40,11 @@ class GenericLightDE extends DeviceEntityAbstract {
           stateMassage: stateMassage,
         );
 
-  /// State of the light on/off
-  GenericLightSwitchState? lightSwitchState;
+  /// State of the boiler on/off
+  GenericBoilerSwitchState? boilerSwitchState;
 
-  /// Empty instance of GenericLightEntity
-  factory GenericLightDE.empty() => GenericLightDE(
+  /// Empty instance of GenericBoilerEntity
+  factory GenericBoilerDE.empty() => GenericBoilerDE(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName(''),
       roomId: CoreUniqueId(),
@@ -57,7 +57,7 @@ class GenericLightDE extends DeviceEntityAbstract {
       deviceVendor: DeviceVendor(''),
       compUuid: DeviceCompUuid(''),
       powerConsumption: DevicePowerConsumption(''),
-      lightSwitchState: GenericLightSwitchState(DeviceActions.off.toString()));
+      boilerSwitchState: GenericBoilerSwitchState(DeviceActions.off.toString()));
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
@@ -87,8 +87,8 @@ class GenericLightDE extends DeviceEntityAbstract {
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
-    return GenericLightDeviceDtos(
-      deviceDtoClass: (GenericLightDeviceDtos).toString(),
+    return GenericBoilerDeviceDtos(
+      deviceDtoClass: (GenericBoilerDeviceDtos).toString(),
       id: uniqueId.getOrCrash(),
       defaultName: defaultName.getOrCrash(),
       roomId: roomId.getOrCrash(),
@@ -100,7 +100,7 @@ class GenericLightDE extends DeviceEntityAbstract {
       senderId: senderId.getOrCrash(),
       deviceTypes: deviceTypes.getOrCrash(),
       compUuid: compUuid.getOrCrash(),
-      lightSwitchState: lightSwitchState!.getOrCrash(),
+      boilerSwitchState: boilerSwitchState!.getOrCrash(),
       deviceVendor: deviceVendor.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
@@ -115,14 +115,14 @@ class GenericLightDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> turnOnLight() async {
+  Future<Either<CoreFailure, Unit>> turnOnBoiler() async {
     print('Please override this method in the non generic implementation');
     return left(const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist'));
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> turnOffLight() async {
+  Future<Either<CoreFailure, Unit>> turnOffBoiler() async {
     print('Please override this method in the non generic implementation');
     return left(const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist'));

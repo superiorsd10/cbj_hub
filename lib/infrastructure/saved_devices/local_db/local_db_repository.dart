@@ -1,7 +1,8 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
-import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
+import 'package:cbj_hub/domain/saved_devices/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_light/esphome_light_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_device_value_objects.dart';
@@ -69,8 +70,10 @@ class LocalDbRepository extends ILocalDbRepository {
       powerConsumption: DevicePowerConsumption('0'),
       yeelightDeviceId: YeelightDeviceId('249185746'),
       yeelightPort: YeelightPort('55443'),
-      lightSwitchState:
-          GenericLightSwitchState(DeviceActions.actionNotSupported.toString()),
+      lightSwitchState: GenericRgbwLightSwitchState(
+          DeviceActions.actionNotSupported.toString()),
+      lightColorTemperature: GenericRgbwLightColorTemperature(''),
+      lightBrightness: GenericRgbwLightBrightness('90'),
     );
 
     return {
