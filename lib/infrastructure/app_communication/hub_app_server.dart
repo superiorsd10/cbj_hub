@@ -1,10 +1,8 @@
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
-import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/infrastructure/app_communication/app_communication_repository.dart';
-import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:grpc/service_api.dart';
 
@@ -22,21 +20,10 @@ class HubAppServer extends CbjHubServiceBase {
 
       getIt<IAppCommunicationRepository>().getFromApp(request);
 
-      final Map<String, String> allDevices = getIt<ILocalDbRepository>()
-          .getSmartDevices()
-          .map((String id, DeviceEntityAbstract d) {
-        return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
-      });
+      // For the app to receive all current devices
+      AppCommunicationRepository.sendAllDevicesToHubRequestsStream();
 
-      /// Each first connection to the server send all saved devices
-      for (final String responseToHub in allDevices.values) {
-        yield RequestsAndStatusFromHub(
-          sendingType: SendingType.deviceType,
-          allRemoteCommands: responseToHub,
-        );
-      }
-
-      yield* AppClientStream.streamRequestsFromAPp
+      yield* HubRequestsToApp.streamRequestsToApp
           .map((DeviceEntityDtoAbstract deviceEntityDto) =>
               RequestsAndStatusFromHub(
                 sendingType: SendingType.deviceType,

@@ -1,7 +1,7 @@
-import 'package:cbj_hub/application/conector/conector.dart';
-import 'package:cbj_hub/domain/devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/application/connector/connector.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
-import 'package:cbj_hub/infrastructure/devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -92,6 +92,13 @@ class MqttServerRepository extends IMqttServerRepository {
   }
 
   @override
+  Stream<List<MqttReceivedMessage<MqttMessage?>>> streamOfChosenSubscription(
+      String topicPath) async* {
+    await connect();
+    yield* MqttClientTopicFilter(topicPath, client.updates).updates;
+  }
+
+  @override
   Future<void> allHubDevicesSubscriptions() async {
     streamOfAllDevicesHubSubscriptions().listen(
         (List<MqttReceivedMessage<MqttMessage?>> mqttPublishMessage) async {
@@ -103,7 +110,7 @@ class MqttServerRepository extends IMqttServerRepository {
       final String deviceId = topicsSplitted[2];
       final String deviceDeviceTypeThatChanged = topicsSplitted[3];
 
-      Conector.updateDevicesFromMqttDeviceChange(MapEntry(deviceId,
+      Connector.updateDevicesFromMqttDeviceChange(MapEntry(deviceId,
           {deviceDeviceTypeThatChanged: mqttPublishMessage[0].payload}));
     });
   }
