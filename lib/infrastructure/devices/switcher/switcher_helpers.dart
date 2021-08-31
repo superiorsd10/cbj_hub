@@ -9,14 +9,13 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 class SwitcherHelpers {
   static DeviceEntityAbstract? addDiscoverdDevice(
       SwitcherApiObject switcherDevice) {
-
-    if(switcherDevice.deviceType == SwitcherDevicesTypes.switcherV2Esp ||
+    if (switcherDevice.deviceType == SwitcherDevicesTypes.switcherV2Esp ||
         switcherDevice.deviceType == SwitcherDevicesTypes.switcherV2qualcomm) {
       final SwitcherV2Entity switcherV2DE = SwitcherV2Entity(
         uniqueId: CoreUniqueId(),
         defaultName: DeviceDefaultName('Switcher test 2'),
         roomId: CoreUniqueId.newDevicesRoom(),
-        roomName: DeviceRoomName(' '),
+        roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('switcher'),
         senderDeviceModel: DeviceSenderDeviceModel('1SE'),
@@ -25,8 +24,8 @@ class SwitcherHelpers {
         lastKnownIp: DeviceLastKnownIp(switcherDevice.ipAddress),
         stateMassage: DeviceStateMassage('Hello World'),
         powerConsumption: DevicePowerConsumption('0'),
-        boilerSwitchState:
-        GenericBoilerSwitchState(DeviceActions.actionNotSupported.toString()),
+        boilerSwitchState: GenericBoilerSwitchState(
+            DeviceActions.actionNotSupported.toString()),
         switcherDeviceId: SwitcherDeviceId(switcherDevice.deviceId),
       );
 

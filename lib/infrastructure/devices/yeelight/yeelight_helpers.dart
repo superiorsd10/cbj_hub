@@ -13,7 +13,7 @@ class YeelightHelpers {
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName('Yeelight test 2'),
       roomId: CoreUniqueId.newDevicesRoom(),
-      roomName: DeviceRoomName(' '),
+      roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('yeelight'),
       senderDeviceModel: DeviceSenderDeviceModel('1SE'),

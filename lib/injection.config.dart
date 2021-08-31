@@ -13,16 +13,15 @@ import 'domain/saved_devices/i_saved_devices_repo.dart' as _i9;
 import 'domain/saved_devices/local_db/i_local_db_repository.dart' as _i5;
 import 'infrastructure/app_communication/app_communication_repository.dart'
     as _i4;
-import 'infrastructure/devices/chrome_cast/yeelight_connector_conjector.dart'
-    as _i15;
 import 'infrastructure/devices/esphome/esphome_connector_conjector.dart'
     as _i11;
+import 'infrastructure/devices/google/google_connector_conjector.dart' as _i12;
 import 'infrastructure/devices/switcher/switcher_connector_conjector.dart'
-    as _i12;
-import 'infrastructure/devices/tasmota/tasmota_connector_conjector.dart'
     as _i13;
-import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+import 'infrastructure/devices/tasmota/tasmota_connector_conjector.dart'
     as _i14;
+import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+    as _i15;
 import 'infrastructure/mqtt_server/mqtt_server_repository.dart' as _i8;
 import 'infrastructure/saved_devices/local_db/local_db_repository.dart' as _i6;
 import 'infrastructure/saved_devices/saved_devices_repo.dart'
@@ -40,12 +39,11 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i9.ISavedDevicesRepo>(() => _i10.SavedDevicesRepo());
   gh.singleton<_i11.ESPHomeConnectorConjector>(
       _i11.ESPHomeConnectorConjector());
-  gh.singleton<_i12.SwitcherConnectorConjector>(
-      _i12.SwitcherConnectorConjector());
-  gh.singleton<_i13.TasmotaConnectorConjector>(
-      _i13.TasmotaConnectorConjector());
-  gh.singleton<_i14.YeelightConnectorConjector>(
-      _i14.YeelightConnectorConjector());
+  gh.singleton<_i12.GoogleConnectorConjector>(_i12.GoogleConnectorConjector());
+  gh.singleton<_i13.SwitcherConnectorConjector>(
+      _i13.SwitcherConnectorConjector());
+  gh.singleton<_i14.TasmotaConnectorConjector>(
+      _i14.TasmotaConnectorConjector());
   gh.singleton<_i15.YeelightConnectorConjector>(
       _i15.YeelightConnectorConjector());
   return get;
