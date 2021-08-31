@@ -13,6 +13,8 @@ import 'domain/saved_devices/i_saved_devices_repo.dart' as _i9;
 import 'domain/saved_devices/local_db/i_local_db_repository.dart' as _i5;
 import 'infrastructure/app_communication/app_communication_repository.dart'
     as _i4;
+import 'infrastructure/devices/chrome_cast/yeelight_connector_conjector.dart'
+    as _i15;
 import 'infrastructure/devices/esphome/esphome_connector_conjector.dart'
     as _i11;
 import 'infrastructure/devices/switcher/switcher_connector_conjector.dart'
@@ -44,5 +46,7 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       _i13.TasmotaConnectorConjector());
   gh.singleton<_i14.YeelightConnectorConjector>(
       _i14.YeelightConnectorConjector());
+  gh.singleton<_i15.YeelightConnectorConjector>(
+      _i15.YeelightConnectorConjector());
   return get;
 }
