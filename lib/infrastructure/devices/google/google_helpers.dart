@@ -1,6 +1,5 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/google/chrome_cast/chrome_cast_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/google/google_device_value_objects.dart';
@@ -28,10 +27,6 @@ class GoogleHelpers {
       googlePort: GooglePort(yeelightDevice.port.toString()),
       smartTvSwitchState: GenericSmartTvSwitchState(
           DeviceActions.actionNotSupported.toString()),
-      lightColorTemperature: GenericRgbwLightColorTemperature(
-          yeelightDevice.colorTemperature.toString()),
-      lightBrightness:
-          GenericRgbwLightBrightness(yeelightDevice.brightness.toString()),
     );
 
     return yeelightDE;
