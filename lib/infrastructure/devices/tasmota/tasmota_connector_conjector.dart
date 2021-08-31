@@ -100,7 +100,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
           uniqueId: CoreUniqueId(),
           defaultName: DeviceDefaultName('Tasmota test 1'),
           roomId: CoreUniqueId.newDevicesRoom(),
-          roomName: DeviceRoomName(' '),
+          roomName: DeviceRoomName('Discovered'),
           deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
           senderDeviceOs: DeviceSenderDeviceOs('Tasmota'),
           senderDeviceModel: DeviceSenderDeviceModel('LED'),
