@@ -102,8 +102,8 @@ class LocalDbRepository extends ILocalDbRepository {
     return {
       // yeelightDE.uniqueId.getOrCrash()!: yeelightDE,
       // tasmotaLedDE.uniqueId.getOrCrash()!: tasmotaLedDE,
-      espHomeLightDE.uniqueId.getOrCrash()!: espHomeLightDE,
-      chromeCastEntity.uniqueId.getOrCrash()!: chromeCastEntity,
+      // espHomeLightDE.uniqueId.getOrCrash()!: espHomeLightDE,
+      // chromeCastEntity.uniqueId.getOrCrash()!: chromeCastEntity,
     };
   }
 

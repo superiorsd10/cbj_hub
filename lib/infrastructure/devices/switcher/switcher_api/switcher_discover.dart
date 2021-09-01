@@ -11,8 +11,8 @@ class SwitcherDiscover {
       await for (final event in socket) {
         final Datagram? datagram = socket.receive();
         if (datagram == null) continue;
-        final SwitcherApiObject switcherApiObject = SwitcherApiObject.fromBytes(
-            ipAddress: datagram.address.address, bytes: datagram.data);
+        final SwitcherApiObject switcherApiObject =
+            SwitcherApiObject.createWithBytes(datagram);
 
         yield switcherApiObject;
       }

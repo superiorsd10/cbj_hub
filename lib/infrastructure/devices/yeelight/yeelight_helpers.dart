@@ -11,7 +11,8 @@ class YeelightHelpers {
       DiscoveryResponse yeelightDevice) {
     final Yeelight1SeEntity yeelightDE = Yeelight1SeEntity(
       uniqueId: CoreUniqueId(),
-      defaultName: DeviceDefaultName('Yeelight test 2'),
+      defaultName: DeviceDefaultName(
+          yeelightDevice.name != '' ? yeelightDevice.name : 'Yeelight test 2'),
       roomId: CoreUniqueId.newDevicesRoom(),
       roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
@@ -25,8 +26,8 @@ class YeelightHelpers {
       powerConsumption: DevicePowerConsumption('0'),
       yeelightDeviceId: YeelightDeviceId(yeelightDevice.id.toString()),
       yeelightPort: YeelightPort(yeelightDevice.port.toString()),
-      lightSwitchState: GenericRgbwLightSwitchState(
-          DeviceActions.actionNotSupported.toString()),
+      lightSwitchState:
+          GenericRgbwLightSwitchState(yeelightDevice.powered.toString()),
       lightColorTemperature: GenericRgbwLightColorTemperature(
           yeelightDevice.colorTemperature.toString()),
       lightBrightness:
