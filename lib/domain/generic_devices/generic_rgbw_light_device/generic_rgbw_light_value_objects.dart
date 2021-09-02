@@ -1,13 +1,19 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_validators.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:dartz/dartz.dart';
 
 class GenericRgbwLightSwitchState extends ValueObjectCore<String> {
   factory GenericRgbwLightSwitchState(String? input) {
     assert(input != null);
+    if (input!.toLowerCase() == true.toString()) {
+      input = DeviceActions.on.toString();
+    } else if (input.toLowerCase() == false.toString()) {
+      input = DeviceActions.off.toString();
+    }
     return GenericRgbwLightSwitchState._(
-      validateGenericRgbwLightStateNotEmty(input!),
+      validateGenericRgbwLightStateNotEmty(input),
     );
   }
 

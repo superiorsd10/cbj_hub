@@ -9,24 +9,25 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 class SwitcherHelpers {
   static DeviceEntityAbstract? addDiscoverdDevice(
       SwitcherApiObject switcherDevice) {
-
-    if(switcherDevice.deviceType == SwitcherDevicesTypes.switcherV2Esp ||
+    if (switcherDevice.deviceType == SwitcherDevicesTypes.switcherV2Esp ||
         switcherDevice.deviceType == SwitcherDevicesTypes.switcherV2qualcomm) {
       final SwitcherV2Entity switcherV2DE = SwitcherV2Entity(
         uniqueId: CoreUniqueId(),
-        defaultName: DeviceDefaultName('Switcher test 2'),
+        defaultName: DeviceDefaultName(switcherDevice.switcherName),
         roomId: CoreUniqueId.newDevicesRoom(),
-        roomName: DeviceRoomName(' '),
+        roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('switcher'),
-        senderDeviceModel: DeviceSenderDeviceModel('1SE'),
+        senderDeviceModel:
+            DeviceSenderDeviceModel(switcherDevice.deviceType.toString()),
         senderId: DeviceSenderId(),
         compUuid: DeviceCompUuid('34asdfrsd23gggg'),
-        lastKnownIp: DeviceLastKnownIp(switcherDevice.ipAddress),
+        lastKnownIp: DeviceLastKnownIp(switcherDevice.switcherIp),
         stateMassage: DeviceStateMassage('Hello World'),
-        powerConsumption: DevicePowerConsumption('0'),
+        powerConsumption:
+            DevicePowerConsumption(switcherDevice.powerConsumption),
         boilerSwitchState:
-        GenericBoilerSwitchState(DeviceActions.actionNotSupported.toString()),
+            GenericBoilerSwitchState(switcherDevice.deviceState.toString()),
         switcherDeviceId: SwitcherDeviceId(switcherDevice.deviceId),
       );
 

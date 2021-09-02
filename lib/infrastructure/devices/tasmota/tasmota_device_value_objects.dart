@@ -3,7 +3,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_device_validators.dart';
 import 'package:dartz/dartz.dart';
 
-/// Yeelight device unique address that came withe the device
+/// Tasmota device unique address that came withe the device
 class TasmotaDeviceTopicName extends ValueObjectCore<String> {
   factory TasmotaDeviceTopicName(String? input) {
     assert(input != null);
@@ -13,6 +13,21 @@ class TasmotaDeviceTopicName extends ValueObjectCore<String> {
   }
 
   const TasmotaDeviceTopicName._(this.value);
+
+  @override
+  final Either<CoreFailure<String>, String> value;
+}
+
+/// Tasmota device unique address that came withe the device
+class TasmotaDeviceId extends ValueObjectCore<String> {
+  factory TasmotaDeviceId(String? input) {
+    assert(input != null);
+    return TasmotaDeviceId._(
+      validateTasmotaDeviceIdNotEmpty(input!),
+    );
+  }
+
+  const TasmotaDeviceId._(this.value);
 
   @override
   final Either<CoreFailure<String>, String> value;
