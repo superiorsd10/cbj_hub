@@ -75,6 +75,7 @@ class LocalDbRepository extends ILocalDbRepository {
       lightSwitchState:
           GenericLightSwitchState(DeviceActions.actionNotSupported.toString()),
       tasmotaDeviceTopicName: TasmotaDeviceTopicName('tasmota_D663A6'),
+      tasmotaDeviceId: TasmotaDeviceId('asdas23ds'),
     );
 
     final Yeelight1SeEntity yeelightDE = Yeelight1SeEntity(
