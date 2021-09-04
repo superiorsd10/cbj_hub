@@ -80,10 +80,12 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
-          (await turnOnLight()).fold((l) => print('Error turning light on'),
+          (await turnOnLight()).fold(
+              (l) => print('Error turning yeelight light on'),
               (r) => print('Light turn on success'));
         } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffLight()).fold((l) => print('Error turning light off'),
+          (await turnOffLight()).fold(
+              (l) => print('Error turning yeelight light off'),
               (r) => print('Light turn off success'));
         } else {
           print('actionToPreform is not set correctly');
