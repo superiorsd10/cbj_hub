@@ -62,7 +62,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   DeviceMdnsName? deviceMdnsName;
 
   /// Yeelight package object require to close previews request before new one
-  Device? device;
+  Device? yeelightPackageObject;
 
   /// Please override the following methods
   @override
@@ -101,14 +101,14 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
     lightSwitchState = GenericRgbwLightSwitchState(DeviceActions.on.toString());
     try {
       try {
-        device?.disconnect();
+        yeelightPackageObject?.disconnect();
 
-        device = Device(
+        yeelightPackageObject = Device(
             address: InternetAddress(lastKnownIp!.getOrCrash()),
             port: int.parse(yeelightPort!.getOrCrash()));
 
-        await device!.turnOn();
-        device!.disconnect();
+        await yeelightPackageObject!.turnOn();
+        yeelightPackageObject!.disconnect();
 
         return right(unit);
       } catch (e) {
@@ -122,14 +122,15 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           print('Device cant be discovered');
           return left(const CoreFailure.unexpected());
         }
-        device?.disconnect();
+        yeelightPackageObject?.disconnect();
 
-        device = Device(address: response.address, port: response.port!);
+        yeelightPackageObject =
+            Device(address: response.address, port: response.port!);
         lastKnownIp = DeviceLastKnownIp(response.address.address.toString());
         yeelightPort = YeelightPort(response.port!.toString());
 
-        await device!.turnOn();
-        device!.disconnect();
+        await yeelightPackageObject!.turnOn();
+        yeelightPackageObject!.disconnect();
 
         return right(unit);
       }
@@ -145,14 +146,14 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
     try {
       try {
-        device?.disconnect();
+        yeelightPackageObject?.disconnect();
 
-        device = Device(
+        yeelightPackageObject = Device(
             address: InternetAddress(lastKnownIp!.getOrCrash()),
             port: int.parse(yeelightPort!.getOrCrash()));
 
-        await device!.turnOff();
-        device!.disconnect();
+        await yeelightPackageObject!.turnOff();
+        yeelightPackageObject!.disconnect();
 
         return right(unit);
       } catch (e) {
@@ -167,15 +168,16 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           return left(const CoreFailure.unexpected());
         }
 
-        device?.disconnect();
+        yeelightPackageObject?.disconnect();
 
-        device = Device(address: response.address, port: response.port!);
+        yeelightPackageObject =
+            Device(address: response.address, port: response.port!);
 
         lastKnownIp = DeviceLastKnownIp(response.address.address.toString());
         yeelightPort = YeelightPort(response.port!.toString());
 
-        await device!.turnOff();
-        device!.disconnect();
+        await yeelightPackageObject!.turnOff();
+        yeelightPackageObject!.disconnect();
 
         return right(unit);
       }

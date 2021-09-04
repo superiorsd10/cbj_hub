@@ -6,10 +6,10 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_api_object.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:dartz/dartz.dart';
-import 'package:yeedart/yeedart.dart';
 
 class SwitcherV2Entity extends GenericBoilerDE {
   SwitcherV2Entity({
@@ -53,7 +53,7 @@ class SwitcherV2Entity extends GenericBoilerDE {
   DeviceLastKnownIp? lastKnownIp;
 
   /// Switcher package object require to close previews request before new one
-  Device? device;
+  SwitcherApiObject? switcherObject;
 
   String? autoShutdown;
   String? electricCurrent;
@@ -95,7 +95,10 @@ class SwitcherV2Entity extends GenericBoilerDE {
   Future<Either<CoreFailure, Unit>> turnOnBoiler() async {
     boilerSwitchState = GenericBoilerSwitchState(DeviceActions.on.toString());
 
-    try {} catch (e) {
+    try {
+      await switcherObject!.turnOn();
+      return right(unit);
+    } catch (e) {
       return left(const CoreFailure.unexpected());
     }
     return left(const CoreFailure.unexpected());
@@ -105,7 +108,10 @@ class SwitcherV2Entity extends GenericBoilerDE {
   Future<Either<CoreFailure, Unit>> turnOffBoiler() async {
     boilerSwitchState = GenericBoilerSwitchState(DeviceActions.off.toString());
 
-    try {} catch (e) {
+    try {
+      await switcherObject!.turnOff();
+      return right(unit);
+    } catch (e) {
       return left(const CoreFailure.unexpected());
     }
     return left(const CoreFailure.unexpected());
