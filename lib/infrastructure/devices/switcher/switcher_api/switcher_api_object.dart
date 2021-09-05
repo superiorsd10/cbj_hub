@@ -10,6 +10,8 @@ class SwitcherApiObject {
     required this.deviceId,
     required this.switcherIp,
     required this.switcherName,
+    required this.powerConsumption,
+    required this.macAddress,
     this.deviceState = SwitcherDeviceState.cantGetState,
     this.devicePass = '00000000',
     this.phoneId = '0000',
@@ -17,8 +19,6 @@ class SwitcherApiObject {
     this.log,
     this.port = 9957,
     this.lastShutdownRemainingSecondsValue,
-    required this.macAddress,
-    required this.powerConsumption,
     this.remainingTimeForExecution,
   });
 

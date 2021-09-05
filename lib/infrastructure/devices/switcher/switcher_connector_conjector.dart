@@ -26,14 +26,14 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
         savedDevice = savedDevice as SwitcherV2Entity;
 
         if (switcherApiObject.deviceId.toString() ==
-            savedDevice.switcherDeviceId!.getOrCrash()) {
+            savedDevice.switcherDeviceId.getOrCrash()) {
           return;
         }
       }
 
       final DeviceEntityAbstract? addDevice =
           SwitcherHelpers.addDiscoverdDevice(switcherApiObject);
-      if(addDevice == null){
+      if (addDevice == null) {
         return;
       }
       CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);

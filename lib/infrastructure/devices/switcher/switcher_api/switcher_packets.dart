@@ -33,7 +33,7 @@ class SwitcherPackets {
 
   /// format values are local session id, timestamp, device id, name
   static const updateDeviceNamePacket =
-      'fef0740002320202$requestFormat{}${pad74Zeros}{}';
+      'fef0740002320202$requestFormat{}$pad74Zeros{}';
 
   /// format values are local session id, timestamp, device id
   static const getSchedulesPacket =

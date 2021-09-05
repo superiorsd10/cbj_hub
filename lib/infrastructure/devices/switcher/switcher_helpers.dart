@@ -29,6 +29,8 @@ class SwitcherHelpers {
         boilerSwitchState:
             GenericBoilerSwitchState(switcherDevice.deviceState.toString()),
         switcherDeviceId: SwitcherDeviceId(switcherDevice.deviceId),
+        switcherPort: SwitcherPort(switcherDevice.port.toString()),
+        switcherMacAddress: SwitcherMacAddress(switcherDevice.macAddress),
       );
 
       return switcherV2DE;

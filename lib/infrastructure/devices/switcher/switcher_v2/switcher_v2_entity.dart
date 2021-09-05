@@ -25,9 +25,10 @@ class SwitcherV2Entity extends GenericBoilerDE {
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
     required GenericBoilerSwitchState boilerSwitchState,
+    required this.switcherMacAddress,
     required this.switcherDeviceId,
-    this.switcherPort,
-    this.lastKnownIp,
+    required this.lastKnownIp,
+    required this.switcherPort,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
@@ -42,15 +43,25 @@ class SwitcherV2Entity extends GenericBoilerDE {
           compUuid: compUuid,
           powerConsumption: powerConsumption,
           boilerSwitchState: boilerSwitchState,
-        );
+        ) {
+    switcherObject = SwitcherApiObject(
+      deviceType: SwitcherDevicesTypes.switcherV2Esp,
+      deviceId: switcherDeviceId.getOrCrash(),
+      switcherIp: lastKnownIp.getOrCrash(),
+      switcherName: defaultName.getOrCrash()!,
+      macAddress: switcherMacAddress.getOrCrash(),
+      powerConsumption: powerConsumption.getOrCrash(),
+    );
+  }
 
   /// Switcher device unique id that came withe the device
-  SwitcherDeviceId? switcherDeviceId;
+  SwitcherDeviceId switcherDeviceId;
+  SwitcherMacAddress switcherMacAddress;
 
   /// Switcher communication port
   SwitcherPort? switcherPort;
 
-  DeviceLastKnownIp? lastKnownIp;
+  DeviceLastKnownIp lastKnownIp;
 
   /// Switcher package object require to close previews request before new one
   SwitcherApiObject? switcherObject;
@@ -95,6 +106,8 @@ class SwitcherV2Entity extends GenericBoilerDE {
   Future<Either<CoreFailure, Unit>> turnOnBoiler() async {
     boilerSwitchState = GenericBoilerSwitchState(DeviceActions.on.toString());
 
+    // setSwitcherObject();
+
     try {
       await switcherObject!.turnOn();
       return right(unit);
@@ -107,6 +120,8 @@ class SwitcherV2Entity extends GenericBoilerDE {
   @override
   Future<Either<CoreFailure, Unit>> turnOffBoiler() async {
     boilerSwitchState = GenericBoilerSwitchState(DeviceActions.off.toString());
+
+    // setSwitcherObject();
 
     try {
       await switcherObject!.turnOff();
