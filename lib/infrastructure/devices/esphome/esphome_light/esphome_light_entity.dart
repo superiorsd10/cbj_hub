@@ -71,7 +71,7 @@ class ESPHomeLightEntity extends GenericLightDE {
             (l) => print('Error turning ESPHome light off'),
             (r) => print('Light turn off success'));
       } else {
-        print('actionToPreform is not set correctly');
+        print('actionToPreform is not set correctly ESPHome light');
       }
     }
 

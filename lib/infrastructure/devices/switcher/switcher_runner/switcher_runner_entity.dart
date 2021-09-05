@@ -4,15 +4,15 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_api_object.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:dartz/dartz.dart';
 
-class SwitcherV2Entity extends GenericBoilerDE {
-  SwitcherV2Entity({
+class SwitcherRunnerEntity extends GenericBlindsDE {
+  SwitcherRunnerEntity({
     required CoreUniqueId uniqueId,
     required CoreUniqueId roomId,
     required DeviceDefaultName defaultName,
@@ -24,11 +24,11 @@ class SwitcherV2Entity extends GenericBoilerDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericBoilerSwitchState boilerSwitchState,
+    required GenericBlindsSwitchState blindsSwitchState,
     required this.switcherMacAddress,
     required this.switcherDeviceId,
     required this.lastKnownIp,
-    required this.switcherPort,
+    this.switcherPort,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
@@ -42,16 +42,20 @@ class SwitcherV2Entity extends GenericBoilerDE {
           deviceVendor: DeviceVendor(VendorsAndServices.switcher.toString()),
           compUuid: compUuid,
           powerConsumption: powerConsumption,
-          boilerSwitchState: boilerSwitchState,
+          blindsSwitchState: blindsSwitchState,
         ) {
+    if (switcherPort == null) {
+      switcherPort =
+          SwitcherPort(SwitcherApiObject.SWITCHER_TCP_PORT2.toString());
+    }
     switcherObject = SwitcherApiObject(
-      deviceType: SwitcherDevicesTypes.switcherV2Esp,
-      deviceId: switcherDeviceId.getOrCrash(),
-      switcherIp: lastKnownIp.getOrCrash(),
-      switcherName: defaultName.getOrCrash()!,
-      macAddress: switcherMacAddress.getOrCrash(),
-      powerConsumption: powerConsumption.getOrCrash(),
-    );
+        deviceType: SwitcherDevicesTypes.switcherRunner,
+        deviceId: switcherDeviceId.getOrCrash(),
+        switcherIp: lastKnownIp.getOrCrash(),
+        switcherName: defaultName.getOrCrash()!,
+        macAddress: switcherMacAddress.getOrCrash(),
+        powerConsumption: powerConsumption.getOrCrash(),
+        port: int.parse(switcherPort!.getOrCrash()));
   }
 
   /// Switcher device unique id that came withe the device
@@ -76,25 +80,29 @@ class SwitcherV2Entity extends GenericBoilerDE {
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
-    if (newEntity is! GenericBoilerDE) {
+    if (newEntity is! GenericBlindsDE) {
       return left(const CoreFailure.actionExcecuter(
           failedValue: 'Not the correct type'));
     }
 
-    if (newEntity.boilerSwitchState!.getOrCrash() !=
-        boilerSwitchState!.getOrCrash()) {
+    if (newEntity.blindsSwitchState!.getOrCrash() !=
+        blindsSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.boilerSwitchState!.getOrCrash());
+          newEntity.blindsSwitchState!.getOrCrash());
 
-      if (actionToPreform.toString() != boilerSwitchState!.getOrCrash()) {
-        if (actionToPreform == DeviceActions.on) {
-          (await turnOnBoiler()).fold((l) => print('Error turning boiler on'),
-              (r) => print('Boiler turn on success'));
-        } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffBoiler()).fold((l) => print('Error turning boiler off'),
-              (r) => print('Boiler turn off success'));
+      if (actionToPreform.toString() != blindsSwitchState!.getOrCrash()) {
+        if (actionToPreform == DeviceActions.moveUp) {
+          (await moveUpBlinds()).fold((l) => print('Error turning blinds up'),
+              (r) => print('Blinds up success'));
+        } else if (actionToPreform == DeviceActions.stop) {
+          (await stopBlinds()).fold((l) => print('Error stopping blinds '),
+              (r) => print('Blinds stop success'));
+        } else if (actionToPreform == DeviceActions.moveDown) {
+          (await moveDownBlinds()).fold(
+              (l) => print('Error turning blinds down'),
+              (r) => print('Blinds down success'));
         } else {
-          print('actionToPreform is not set correctly on Switcher V2');
+          print('actionToPreform is not set correctly on Switcher Runner');
         }
       }
     }
@@ -103,11 +111,12 @@ class SwitcherV2Entity extends GenericBoilerDE {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOnBoiler() async {
-    boilerSwitchState = GenericBoilerSwitchState(DeviceActions.on.toString());
+  Future<Either<CoreFailure, Unit>> moveUpBlinds() async {
+    blindsSwitchState =
+        GenericBlindsSwitchState(DeviceActions.moveUp.toString());
 
     try {
-      await switcherObject!.turnOn();
+      await switcherObject!.setPosition(pos: 100);
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
@@ -115,14 +124,30 @@ class SwitcherV2Entity extends GenericBoilerDE {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOffBoiler() async {
-    boilerSwitchState = GenericBoilerSwitchState(DeviceActions.off.toString());
+  Future<Either<CoreFailure, Unit>> stopBlinds() async {
+    blindsSwitchState = GenericBlindsSwitchState(DeviceActions.stop.toString());
+
+    // TODO: Implement stop function for switcher blinds
 
     try {
-      await switcherObject!.turnOff();
+      // await switcherObject!.turnOff();
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
+  }
+
+  @override
+  Future<Either<CoreFailure, Unit>> moveDownBlinds() async {
+    blindsSwitchState =
+        GenericBlindsSwitchState(DeviceActions.moveDown.toString());
+
+    try {
+      await switcherObject!.setPosition();
+      return right(unit);
+    } catch (e) {
+      return left(const CoreFailure.unexpected());
+    }
+    return left(const CoreFailure.unexpected());
   }
 }
