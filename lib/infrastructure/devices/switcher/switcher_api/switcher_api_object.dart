@@ -202,13 +202,15 @@ class SwitcherApiObject {
 
     data = await _crcSignFullPacketComKey(data, pKey);
 
-    final Socket socket = await getSocket();
-    socket.add(hexStringToDecimalList(data));
+    _socket = await getSocket();
+    _socket!.add(hexStringToDecimalList(data));
+    await _socket?.close();
+    _socket = null;
     // Uint8List dataFromDevice = await socket.first;
     // print(dataFromDevice);
   }
 
-  /// Sets the position of the blinds, 0 is up 100 is down
+  /// Sets the position of the blinds, 0 is down 100 is up
   Future<void> setPosition({int pos = 0}) async {
     if (deviceType != SwitcherDevicesTypes.switcherRunner &&
         deviceType != SwitcherDevicesTypes.switcherRunnerMini) {
@@ -243,8 +245,11 @@ class SwitcherApiObject {
 
     data = await _crcSignFullPacketComKey(data, pKey);
 
-    final Socket socket = await getSocket();
-    socket.add(hexStringToDecimalList(data));
+    _socket = await getSocket();
+    _socket!.add(hexStringToDecimalList(data));
+    await _socket?.close();
+    _socket = null;
+
     // Uint8List dataFromDevice = await socket.first;
     // print(dataFromDevice);
   }
@@ -294,7 +299,7 @@ class SwitcherApiObject {
 
   /// Used for sending the login packet to switcher runner.
   Future<String> _login2() async {
-    if (pSession != null) return pSession!;
+    // if (pSession != null) return pSession!;
 
     try {
       String data = 'fef030000305a600${pSessionValue}ff0301000000$phoneId'
@@ -309,6 +314,7 @@ class SwitcherApiObject {
       _socket!.add(hexStringToDecimalList(data));
 
       final Uint8List firstData = await _socket!.first;
+
       final String resultSession =
           substrLikeInJavaScript(intListToHex(firstData).join(), 16, 8);
 

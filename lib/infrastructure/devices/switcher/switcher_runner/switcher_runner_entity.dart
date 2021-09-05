@@ -130,7 +130,7 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
     // TODO: Implement stop function for switcher blinds
 
     try {
-      // await switcherObject!.turnOff();
+      // await switcherObject!.stopBlinds();
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
