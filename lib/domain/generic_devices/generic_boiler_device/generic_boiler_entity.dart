@@ -42,6 +42,7 @@ class GenericBoilerDE extends DeviceEntityAbstract {
 
   /// State of the boiler on/off
   GenericBoilerSwitchState? boilerSwitchState;
+  DevicePowerConsumption? powerConsumption;
 
   /// Empty instance of GenericBoilerEntity
   factory GenericBoilerDE.empty() => GenericBoilerDE(
@@ -57,7 +58,8 @@ class GenericBoilerDE extends DeviceEntityAbstract {
       deviceVendor: DeviceVendor(''),
       compUuid: DeviceCompUuid(''),
       powerConsumption: DevicePowerConsumption(''),
-      boilerSwitchState: GenericBoilerSwitchState(DeviceActions.off.toString()));
+      boilerSwitchState:
+          GenericBoilerSwitchState(DeviceActions.off.toString()));
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields

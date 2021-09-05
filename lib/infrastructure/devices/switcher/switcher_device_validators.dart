@@ -16,3 +16,12 @@ Either<CoreFailure<String>, String> validateSwitcherPortNotEmpty(String input) {
     return left(CoreFailure.empty(failedValue: input));
   }
 }
+
+Either<CoreFailure<String>, String> validateSwitcherMacAddressNotEmpty(
+    String input) {
+  if (input != null) {
+    return right(input);
+  } else {
+    return left(CoreFailure.empty(failedValue: input));
+  }
+}
