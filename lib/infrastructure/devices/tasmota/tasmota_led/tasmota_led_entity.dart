@@ -68,7 +68,7 @@ class TasmotaLedEntity extends GenericLightDE {
             (l) => print('Error turning tasmota light off'),
             (r) => print('Light turn off success'));
       } else {
-        print('actionToPreform is not set correctly');
+        print('actionToPreform is not set correctly on Tasmota Led');
       }
     }
 

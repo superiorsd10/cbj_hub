@@ -79,7 +79,7 @@ class ChromeCastEntity extends GenericSmartTvDE {
               (l) => print('Error turning chrome cast light off'),
               (r) => print('Light turn off success'));
         } else {
-          print('actionToPreform is not set correctly');
+          print('actionToPreform is not set correctly on Chrome Cast');
         }
       }
     }

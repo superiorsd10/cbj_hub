@@ -94,7 +94,7 @@ class SwitcherV2Entity extends GenericBoilerDE {
           (await turnOffBoiler()).fold((l) => print('Error turning boiler off'),
               (r) => print('Boiler turn off success'));
         } else {
-          print('actionToPreform is not set correctly');
+          print('actionToPreform is not set correctly on Switcher V2');
         }
       }
     }
@@ -106,22 +106,17 @@ class SwitcherV2Entity extends GenericBoilerDE {
   Future<Either<CoreFailure, Unit>> turnOnBoiler() async {
     boilerSwitchState = GenericBoilerSwitchState(DeviceActions.on.toString());
 
-    // setSwitcherObject();
-
     try {
       await switcherObject!.turnOn();
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
-    return left(const CoreFailure.unexpected());
   }
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffBoiler() async {
     boilerSwitchState = GenericBoilerSwitchState(DeviceActions.off.toString());
-
-    // setSwitcherObject();
 
     try {
       await switcherObject!.turnOff();
@@ -129,6 +124,5 @@ class SwitcherV2Entity extends GenericBoilerDE {
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
-    return left(const CoreFailure.unexpected());
   }
 }

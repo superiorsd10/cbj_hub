@@ -36,7 +36,8 @@ class SwitcherApiObject {
       });
     }
 
-    if (!isSwitcherMessage(data, hexSeparatedLetters)) {
+    if (!isSwitcherMessage(data, hexSeparatedLetters) &&
+        !isSwitcherMessageNew(data, hexSeparatedLetters)) {
       print('Not a switcher message arrived to here');
     }
 
@@ -57,6 +58,10 @@ class SwitcherApiObject {
 
     if (sDeviceType == SwitcherDevicesTypes.switcherRunner ||
         sDeviceType == SwitcherDevicesTypes.switcherRunnerMini) {
+      if (!isSwitcherMessageNew(data, hexSeparatedLetters)) {
+        print('Not new switcher device!');
+      }
+
       final SwitcherDeviceDirection switcherDeviceDirection =
           extractSwitchDirection(hexSeparatedLetters);
 
@@ -70,6 +75,10 @@ class SwitcherApiObject {
         powerConsumption: powerConsumption,
         port: SWITCHER_TCP_PORT2,
       );
+    }
+
+    if (!isSwitcherMessage(data, hexSeparatedLetters)) {
+      print('Not old switcher device!');
     }
 
     final SwitcherDeviceState switcherDeviceState =
@@ -130,8 +139,14 @@ class SwitcherApiObject {
       Uint8List data, List<String> hexSeparatedLetters) {
     // Verify the broadcast message had originated from a switcher device.
     return hexSeparatedLetters.sublist(0, 4).join() == 'fef0' &&
-            data.length == 159 ||
         data.length == 165;
+  }
+
+  static bool isSwitcherMessageNew(
+      Uint8List data, List<String> hexSeparatedLetters) {
+    // Verify the broadcast message had originated from a switcher device.
+    return hexSeparatedLetters.sublist(0, 4).join() == 'fef0' &&
+        data.length == 159;
   }
 
   static SwitcherDevicesTypes getDeviceType(List<String> messageBuffer) {
@@ -193,6 +208,47 @@ class SwitcherApiObject {
     // print(dataFromDevice);
   }
 
+  /// Sets the position of the blinds, 0 is up 100 is down
+  Future<void> setPosition({int pos = 0}) async {
+    if (deviceType != SwitcherDevicesTypes.switcherRunner &&
+        deviceType != SwitcherDevicesTypes.switcherRunnerMini) {
+      print('Set position support only blinds');
+      return;
+    }
+
+    final String positionCommand = _getHexPos(pos: pos);
+    _runPositionCommand(positionCommand);
+  }
+
+  String _getHexPos({int pos = 0}) {
+    String posAsHex = intListToHex([pos]).join();
+    if (posAsHex.length < 2) {
+      posAsHex = '0$posAsHex';
+    }
+    return posAsHex;
+  }
+
+  Future<void> _runPositionCommand(String positionCommand) async {
+    final int pos = int.parse(positionCommand, radix: 16);
+    pSession = await _login2();
+    if (pSession == 'B') {
+      print('Switcher error');
+      return;
+    }
+    var data =
+        'fef0580003050102${pSession!}290401000000000000000000${_getTimeStamp()}'
+        '00000000000000000000f0fe${deviceId}00${phoneId}0000$devicePass'
+        '00000000000000000000000000000000000000000000000000000037010100'
+        '$positionCommand';
+
+    data = await _crcSignFullPacketComKey(data, pKey);
+
+    final Socket socket = await getSocket();
+    socket.add(hexStringToDecimalList(data));
+    // Uint8List dataFromDevice = await socket.first;
+    // print(dataFromDevice);
+  }
+
   /// Used for sending actions to the device
   void sendState({required SwitcherDeviceState command, int minutes = 0}) {
     _getFullState();
@@ -230,6 +286,35 @@ class SwitcherApiObject {
       return resultSession;
     } catch (error) {
       log = 'login failed due to an error $error';
+      print(log);
+      pSession = 'B';
+    }
+    return pSession!;
+  }
+
+  /// Used for sending the login packet to switcher runner.
+  Future<String> _login2() async {
+    if (pSession != null) return pSession!;
+
+    try {
+      String data = 'fef030000305a600${pSessionValue}ff0301000000$phoneId'
+          '00000000${_getTimeStamp()}00000000000000000000f0fe${deviceId}00';
+
+      data = await _crcSignFullPacketComKey(data, pKey);
+      _socket = await getSocket();
+      if (_socket == null) {
+        throw 'Error';
+      }
+
+      _socket!.add(hexStringToDecimalList(data));
+
+      final Uint8List firstData = await _socket!.first;
+      final String resultSession =
+          substrLikeInJavaScript(intListToHex(firstData).join(), 16, 8);
+
+      return resultSession;
+    } catch (error) {
+      log = 'login2 failed due to an error $error';
       print(log);
       pSession = 'B';
     }
@@ -443,7 +528,7 @@ class SwitcherApiObject {
     SwitcherDeviceState switcherDeviceState = SwitcherDeviceState.cantGetState;
 
     final String hexModel =
-        substrLikeInJavaScript(hexSeparatedLetters.join(), 266, 270);
+        substrLikeInJavaScript(hexSeparatedLetters.join(), 266, 4);
 
     if (hexModel == '0100') {
       switcherDeviceState = SwitcherDeviceState.on;

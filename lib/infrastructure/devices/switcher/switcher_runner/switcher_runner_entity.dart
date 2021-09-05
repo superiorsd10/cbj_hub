@@ -28,7 +28,7 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
     required this.switcherMacAddress,
     required this.switcherDeviceId,
     required this.lastKnownIp,
-    required this.switcherPort,
+    this.switcherPort,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
@@ -44,14 +44,18 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
           powerConsumption: powerConsumption,
           blindsSwitchState: blindsSwitchState,
         ) {
+    if (switcherPort == null) {
+      switcherPort =
+          SwitcherPort(SwitcherApiObject.SWITCHER_TCP_PORT2.toString());
+    }
     switcherObject = SwitcherApiObject(
-      deviceType: SwitcherDevicesTypes.switcherRunner,
-      deviceId: switcherDeviceId.getOrCrash(),
-      switcherIp: lastKnownIp.getOrCrash(),
-      switcherName: defaultName.getOrCrash()!,
-      macAddress: switcherMacAddress.getOrCrash(),
-      powerConsumption: powerConsumption.getOrCrash(),
-    );
+        deviceType: SwitcherDevicesTypes.switcherRunner,
+        deviceId: switcherDeviceId.getOrCrash(),
+        switcherIp: lastKnownIp.getOrCrash(),
+        switcherName: defaultName.getOrCrash()!,
+        macAddress: switcherMacAddress.getOrCrash(),
+        powerConsumption: powerConsumption.getOrCrash(),
+        port: int.parse(switcherPort!.getOrCrash()));
   }
 
   /// Switcher device unique id that came withe the device
@@ -87,14 +91,18 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
           newEntity.blindsSwitchState!.getOrCrash());
 
       if (actionToPreform.toString() != blindsSwitchState!.getOrCrash()) {
-        if (actionToPreform == DeviceActions.on) {
-          (await turnOnBlinds()).fold((l) => print('Error turning blinds on'),
-              (r) => print('Blinds turn on success'));
-        } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffBlinds()).fold((l) => print('Error turning blinds off'),
-              (r) => print('Blinds turn off success'));
+        if (actionToPreform == DeviceActions.moveUp) {
+          (await moveUpBlinds()).fold((l) => print('Error turning blinds up'),
+              (r) => print('Blinds up success'));
+        } else if (actionToPreform == DeviceActions.stop) {
+          (await stopBlinds()).fold((l) => print('Error stopping blinds '),
+              (r) => print('Blinds stop success'));
+        } else if (actionToPreform == DeviceActions.moveDown) {
+          (await moveDownBlinds()).fold(
+              (l) => print('Error turning blinds down'),
+              (r) => print('Blinds down success'));
         } else {
-          print('actionToPreform is not set correctly');
+          print('actionToPreform is not set correctly on Switcher Runner');
         }
       }
     }
@@ -103,28 +111,39 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOnBlinds() async {
-    blindsSwitchState = GenericBlindsSwitchState(DeviceActions.on.toString());
-
-    // setSwitcherObject();
+  Future<Either<CoreFailure, Unit>> moveUpBlinds() async {
+    blindsSwitchState =
+        GenericBlindsSwitchState(DeviceActions.moveUp.toString());
 
     try {
-      await switcherObject!.turnOn();
+      await switcherObject!.setPosition(pos: 100);
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
-    return left(const CoreFailure.unexpected());
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOffBlinds() async {
-    blindsSwitchState = GenericBlindsSwitchState(DeviceActions.off.toString());
+  Future<Either<CoreFailure, Unit>> stopBlinds() async {
+    blindsSwitchState = GenericBlindsSwitchState(DeviceActions.stop.toString());
 
-    // setSwitcherObject();
+    // TODO: Implement stop function for switcher blinds
 
     try {
-      await switcherObject!.turnOff();
+      // await switcherObject!.turnOff();
+      return right(unit);
+    } catch (e) {
+      return left(const CoreFailure.unexpected());
+    }
+  }
+
+  @override
+  Future<Either<CoreFailure, Unit>> moveDownBlinds() async {
+    blindsSwitchState =
+        GenericBlindsSwitchState(DeviceActions.moveDown.toString());
+
+    try {
+      await switcherObject!.setPosition();
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());

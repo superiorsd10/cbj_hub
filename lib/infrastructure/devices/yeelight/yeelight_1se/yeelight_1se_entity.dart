@@ -88,7 +88,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
               (l) => print('Error turning yeelight light off'),
               (r) => print('Light turn off success'));
         } else {
-          print('actionToPreform is not set correctly');
+          print('actionToPreform is not set correctly on Yeelight 1SE');
         }
       }
     }
