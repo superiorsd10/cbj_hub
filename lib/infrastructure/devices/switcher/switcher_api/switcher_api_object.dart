@@ -268,8 +268,6 @@ class SwitcherApiObject {
 
   /// Used for sending the login packet to the device.
   Future<String> _login() async {
-    if (pSession != null) return pSession!;
-
     try {
       String data = 'fef052000232a100${pSessionValue}340001000000000000000000'
           '${_getTimeStamp()}00000000000000000000f0fe1c00${phoneId}0000'
