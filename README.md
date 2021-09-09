@@ -11,15 +11,15 @@
 
 This repository is in charge of controlling smart devices and is part of the [CyBear Jinni Smart Home](https://github.com/CyBear-Jinni/CBJ_Smart-Home) system.
 
-The software is writen in [dart](https://dart.dev) and allows you to control smart devices from different companies in the same app and adding automation between them while keeping your privacy.
+The software is writen in [dart](https://dart.dev) and allows you to control smart devices from different companies in the same app [CyBear Jinni App](https://github.com/CyBear-Jinni/CBJ_App) and adding automation between them while keeping your privacy.
  
-For controlling the hub from your phone you can use [CyBear Jinni App](https://github.com/CyBear-Jinni/CBJ_App).
 
 This part is using the snap store in order to have easy way to update all the devices software versions with new features and security updates.
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/cbj-hub)
 
 
+To run the hub you will also nee [MQTT broker](https://snapcraft.io/mosquitto).
 
 # Social Media Links
 
@@ -28,11 +28,3 @@ This part is using the snap store in order to have easy way to update all the de
 If you have any questions feel free to ask in our Discord server 
 
 [<img src="https://cdn.icon-icons.com/icons2/2108/PNG/512/discord_icon_130958.png" height="80">](https://discord.gg/mUXfwUY)
-
-
-## Disclaimers
-
-**Use at Your Own Risk,**
-**we do not take responsibility on any outcome using anything in this repo.**
-
-The project is under heavy work and may contain bugs and incorrect instructions.
