@@ -22,31 +22,36 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
 
   Future<void> _discoverNewDevices() async {
     while (true) {
-      final responses = await Yeelight.discover();
-      for (final DiscoveryResponse yeelightDevice in responses) {
-        bool deviceExist = false;
-        for (DeviceEntityAbstract savedDevice in companyDevices.values) {
-          savedDevice = savedDevice as Yeelight1SeEntity;
+      try {
+        final responses = await Yeelight.discover();
+        for (final DiscoveryResponse yeelightDevice in responses) {
+          bool deviceExist = false;
+          for (DeviceEntityAbstract savedDevice in companyDevices.values) {
+            savedDevice = savedDevice as Yeelight1SeEntity;
 
-          if (yeelightDevice.id.toString() ==
-              savedDevice.yeelightDeviceId!.getOrCrash()) {
-            deviceExist = true;
-            break;
+            if (yeelightDevice.id.toString() ==
+                savedDevice.yeelightDeviceId!.getOrCrash()) {
+              deviceExist = true;
+              break;
+            }
+          }
+          if (!deviceExist) {
+            final DeviceEntityAbstract addDevice =
+                YeelightHelpers.addDiscoverdDevice(yeelightDevice);
+            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+            final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
+                MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
+            companyDevices.addEntries([deviceAsEntry]);
+
+            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+            print('New yeelight devices where add');
           }
         }
-        if (!deviceExist) {
-          final DeviceEntityAbstract addDevice =
-              YeelightHelpers.addDiscoverdDevice(yeelightDevice);
-          CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-          final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
-              MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
-          companyDevices.addEntries([deviceAsEntry]);
-
-          CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-          print('New yeelight devices where add');
-        }
+        await Future.delayed(const Duration(minutes: 3));
+      } catch (e) {
+        print('Error discover in yeelight $e');
+        await Future.delayed(const Duration(seconds: 3));
       }
-      await Future.delayed(const Duration(minutes: 3));
     }
   }
 
@@ -70,7 +75,8 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
 
   @override
   Future<void> manageHubRequestsForDevice(
-      DeviceEntityAbstract yeelightDE) async {
+    DeviceEntityAbstract yeelightDE,
+  ) async {
     final DeviceEntityAbstract? device =
         companyDevices[yeelightDE.getDeviceId()];
 
@@ -82,10 +88,11 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> updateDatabase(
-      {required String pathOfField,
-      required Map<String, dynamic> fieldsToUpdate,
-      String? forceUpdateLocation}) async {
+  Future<Either<CoreFailure, Unit>> updateDatabase({
+    required String pathOfField,
+    required Map<String, dynamic> fieldsToUpdate,
+    String? forceUpdateLocation,
+  }) async {
     // TODO: implement updateDatabase
     throw UnimplementedError();
   }
@@ -105,12 +112,15 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
       // other mDNS queries are running elsewhere on the machine.
       await for (final SrvResourceRecord srv
           in client.lookup<SrvResourceRecord>(
-              ResourceRecordQuery.service(ptr.domainName))) {
+        ResourceRecordQuery.service(ptr.domainName),
+      )) {
         // Domain name will be something like "io.flutter.example@some-iphone.local._dartobservatory._tcp.local"
         final String bundleId =
             ptr.domainName; //.substring(0, ptr.domainName.indexOf('@'));
-        print('Dart observatory instance found at '
-            '${srv.target}:${srv.port} for "$bundleId".');
+        print(
+          'Dart observatory instance found at '
+          '${srv.target}:${srv.port} for "$bundleId".',
+        );
       }
     }
     return null;

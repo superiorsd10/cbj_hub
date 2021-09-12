@@ -25,6 +25,10 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
     required GenericRgbwLightSwitchState lightSwitchState,
+    required GenericRgbwLightColorAlpha lightColorAlpha,
+    required GenericRgbwLightColorHue lightColorHue,
+    required GenericRgbwLightColorSaturation lightColorSaturation,
+    required GenericRgbwLightColorValue lightColorValue,
     required this.philips_hueDeviceId,
     required this.philips_huePort,
     this.deviceMdnsName,
@@ -49,6 +53,10 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
           powerConsumption: powerConsumption,
           lightColorTemperature: lightColorTemperature,
           lightBrightness: lightBrightness,
+          lightColorAlpha: lightColorAlpha,
+          lightColorHue: lightColorHue,
+          lightColorSaturation: lightColorSaturation,
+          lightColorValue: lightColorValue,
         );
 
   /// PhilipsHue device unique id that came withe the device
@@ -117,21 +125,28 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
     }
   }
 
-  static Future<Either<CoreFailure, Unit>> adjustBrightness(
-      PhilipsHueE26Entity philips_hueE26Entity) async {
-    try {
-      return left(const CoreFailure.unexpected());
-    } catch (e) {
-      return left(const CoreFailure.unexpected());
-    }
+  @override
+  Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
+    print('Please override this method in the non generic implementation');
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
-  static Future<Either<CoreFailure, Unit>> changeColorTemperature(
-      PhilipsHueE26Entity philips_hueE26Entity) async {
-    try {
-      return left(const CoreFailure.unexpected());
-    } catch (e) {
-      return left(const CoreFailure.unexpected());
-    }
+  @override
+  Future<Either<CoreFailure, Unit>> changeColorTemperature({
+    required String lightColorAlphaNewValue,
+    required String lightColorHueNewValue,
+    required String lightColorSaturationNewValue,
+    required String lightColorValueNewValue,
+  }) async {
+    print('Please override this method in the non generic implementation');
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 }

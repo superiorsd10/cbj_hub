@@ -8,11 +8,13 @@ import 'package:yeedart/yeedart.dart';
 
 class YeelightHelpers {
   static DeviceEntityAbstract addDiscoverdDevice(
-      DiscoveryResponse yeelightDevice) {
+    DiscoveryResponse yeelightDevice,
+  ) {
     final Yeelight1SeEntity yeelightDE = Yeelight1SeEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName(
-          yeelightDevice.name != '' ? yeelightDevice.name : 'Yeelight test 2'),
+        yeelightDevice.name != '' ? yeelightDevice.name : 'Yeelight test 2',
+      ),
       roomId: CoreUniqueId.newDevicesRoom(),
       roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
@@ -21,7 +23,7 @@ class YeelightHelpers {
       senderId: DeviceSenderId(),
       compUuid: DeviceCompUuid('34asdfrsd23gggg'),
       deviceMdnsName: DeviceMdnsName('yeelink-light-colora_miap9C52'),
-      lastKnownIp: DeviceLastKnownIp(yeelightDevice.address.address.toString()),
+      lastKnownIp: DeviceLastKnownIp(yeelightDevice.address.address),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
       yeelightDeviceId: YeelightDeviceId(yeelightDevice.id.toString()),
@@ -29,9 +31,16 @@ class YeelightHelpers {
       lightSwitchState:
           GenericRgbwLightSwitchState(yeelightDevice.powered.toString()),
       lightColorTemperature: GenericRgbwLightColorTemperature(
-          yeelightDevice.colorTemperature.toString()),
+        yeelightDevice.colorTemperature.toString(),
+      ),
       lightBrightness:
           GenericRgbwLightBrightness(yeelightDevice.brightness.toString()),
+      lightColorAlpha: GenericRgbwLightColorAlpha('1.0'),
+      lightColorHue: GenericRgbwLightColorHue(yeelightDevice.hue.toString()),
+      lightColorSaturation: GenericRgbwLightColorSaturation(
+        yeelightDevice.sat.toString(),
+      ),
+      lightColorValue: GenericRgbwLightColorValue('1.0'),
     );
 
     return yeelightDE;
