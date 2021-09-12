@@ -10,7 +10,8 @@ import 'package:cbj_hub/injection.dart';
 
 class CompanysConnectorConjector {
   static updateAllDevicesReposWithDeviceChanges(
-      Stream<DeviceEntityAbstract> allDevices) {
+    Stream<DeviceEntityAbstract> allDevices,
+  ) {
     allDevices.listen((deviceEntityAbstract) {
       final String deviceVendor =
           deviceEntityAbstract.deviceVendor.getOrCrash();
@@ -39,16 +40,21 @@ class CompanysConnectorConjector {
     for (final String deviceId in allDevices.keys) {
       final MapEntry<String, DeviceEntityAbstract> currentDeviceMapEntry =
           MapEntry<String, DeviceEntityAbstract>(
-              deviceId, allDevices[deviceId]!);
+        deviceId,
+        allDevices[deviceId]!,
+      );
       addDeviceToItsRepo(currentDeviceMapEntry);
     }
   }
 
   static addDeviceToItsRepo(
-      MapEntry<String, DeviceEntityAbstract> deviceEntityAbstract) {
+    MapEntry<String, DeviceEntityAbstract> deviceEntityAbstract,
+  ) {
     final MapEntry<String, DeviceEntityAbstract> devicesEntry =
         MapEntry<String, DeviceEntityAbstract>(
-            deviceEntityAbstract.key, deviceEntityAbstract.value);
+      deviceEntityAbstract.key,
+      deviceEntityAbstract.value,
+    );
 
     final String deviceVendor =
         deviceEntityAbstract.value.deviceVendor.getOrCrash();

@@ -23,10 +23,14 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
     required DeviceSenderDeviceModel senderDeviceModel,
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
-    DevicePowerConsumption? powerConsumption,
     required this.lightSwitchState,
     required this.lightColorTemperature,
+    required this.lightColorAlpha,
+    required this.lightColorHue,
+    required this.lightColorSaturation,
+    required this.lightColorValue,
     required this.lightBrightness,
+    DevicePowerConsumption? powerConsumption,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
@@ -48,8 +52,20 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
   /// Color temperature in int
   GenericRgbwLightColorTemperature? lightColorTemperature;
 
+  /// Color alpha in double
+  GenericRgbwLightColorAlpha lightColorAlpha;
+
+  /// Color hue in double
+  GenericRgbwLightColorHue lightColorHue;
+
+  /// Color saturation in double
+  GenericRgbwLightColorSaturation lightColorSaturation;
+
+  /// Color value in double
+  GenericRgbwLightColorValue lightColorValue;
+
   /// Brightness 0-100%
-  GenericRgbwLightBrightness? lightBrightness;
+  GenericRgbwLightBrightness lightBrightness;
 
   /// Empty instance of GenericLightEntity
   factory GenericRgbwLightDE.empty() => GenericRgbwLightDE(
@@ -69,6 +85,10 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
             GenericRgbwLightSwitchState(DeviceActions.off.toString()),
         lightColorTemperature: GenericRgbwLightColorTemperature(''),
         lightBrightness: GenericRgbwLightBrightness(''),
+        lightColorAlpha: GenericRgbwLightColorAlpha(''),
+        lightColorHue: GenericRgbwLightColorHue(''),
+        lightColorSaturation: GenericRgbwLightColorSaturation(''),
+        lightColorValue: GenericRgbwLightColorValue(''),
       );
 
   //
@@ -114,31 +134,71 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
       compUuid: compUuid.getOrCrash(),
       lightSwitchState: lightSwitchState!.getOrCrash(),
       deviceVendor: deviceVendor.getOrCrash(),
-      lightColorTemperature: lightBrightness!.getOrCrash(),
-      lightBrightness: lightBrightness!.getOrCrash(),
+      lightColorTemperature: lightBrightness.getOrCrash(),
+      lightBrightness: lightBrightness.getOrCrash(),
+      lightColorAlpha: lightColorAlpha.getOrCrash(),
+      lightColorHue: lightColorHue.getOrCrash(),
+      lightColorSaturation: lightColorSaturation.getOrCrash(),
+      lightColorValue: lightColorValue.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
 
   /// Please override the following methods
+  @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity) async {
+    DeviceEntityAbstract newEntity,
+  ) async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
+  }
+
+  /// Please override the following methods
+  Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
+    print('Please override this method in the non generic implementation');
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
+  }
+
+  /// Please override the following methods
+  Future<Either<CoreFailure, Unit>> changeColorTemperature({
+    required String lightColorAlphaNewValue,
+    required String lightColorHueNewValue,
+    required String lightColorSaturationNewValue,
+    required String lightColorValueNewValue,
+  }) async {
+    print('Please override this method in the non generic implementation');
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 }
