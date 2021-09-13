@@ -9,7 +9,9 @@ class SwitcherDiscover {
   static Stream<SwitcherApiObject> discover20002Devices() async* {
     try {
       final RawDatagramSocket socket20002 = await RawDatagramSocket.bind(
-          InternetAddress.anyIPv4, SWITCHER_UDP_PORT);
+        InternetAddress.anyIPv4,
+        SWITCHER_UDP_PORT,
+      );
 
       await for (final event in socket20002) {
         final Datagram? datagram = socket20002.receive();
@@ -27,7 +29,9 @@ class SwitcherDiscover {
   static Stream<SwitcherApiObject> discover20003Devices() async* {
     try {
       final RawDatagramSocket socket20003 = await RawDatagramSocket.bind(
-          InternetAddress.anyIPv4, SWITCHER_UDP_PORT2);
+        InternetAddress.anyIPv4,
+        SWITCHER_UDP_PORT2,
+      );
 
       await for (final event in socket20003) {
         final Datagram? datagram = socket20003.receive();
