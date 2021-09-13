@@ -4,7 +4,7 @@ import 'package:cbj_hub/infrastructure/system_commands/device_pin_manager.dart';
 import 'package:cbj_hub/injection.dart';
 
 void main(List<String> arguments) async {
-  await configureInjection(Env.prod);
+  await configureInjection(Env.devPc);
 
   try {
     SharedVariables(arguments[0]);
