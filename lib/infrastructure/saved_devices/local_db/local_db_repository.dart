@@ -53,7 +53,8 @@ class LocalDbRepository extends ILocalDbRepository {
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
       smartTvSwitchState: GenericSmartTvSwitchState(
-          DeviceActions.actionNotSupported.toString()),
+        DeviceActions.actionNotSupported.toString(),
+      ),
       deviceMdnsName: DeviceMdnsName('livingroomTV'),
       lastKnownIp: DeviceLastKnownIp('192.168.31.26'),
       googlePort: GooglePort('8009'),
@@ -95,9 +96,14 @@ class LocalDbRepository extends ILocalDbRepository {
       yeelightDeviceId: YeelightDeviceId('249185746'),
       yeelightPort: YeelightPort('55443'),
       lightSwitchState: GenericRgbwLightSwitchState(
-          DeviceActions.actionNotSupported.toString()),
+        DeviceActions.actionNotSupported.toString(),
+      ),
       lightColorTemperature: GenericRgbwLightColorTemperature(''),
       lightBrightness: GenericRgbwLightBrightness('90'),
+      lightColorAlpha: GenericRgbwLightColorAlpha('1.0'),
+      lightColorHue: GenericRgbwLightColorHue('0.0'),
+      lightColorSaturation: GenericRgbwLightColorSaturation('1.0'),
+      lightColorValue: GenericRgbwLightColorValue('1.0'),
     );
 
     return {

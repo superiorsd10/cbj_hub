@@ -13,6 +13,18 @@ class SwitcherHelpers {
       SwitcherApiObject switcherDevice) {
     if (switcherDevice.deviceType == SwitcherDevicesTypes.switcherRunner ||
         switcherDevice.deviceType == SwitcherDevicesTypes.switcherRunnerMini) {
+      DeviceActions deviceActions = DeviceActions.actionNotSupported;
+
+      if (switcherDevice.deviceDirection == SwitcherDeviceDirection.up) {
+        deviceActions = DeviceActions.moveUp;
+      } else if (switcherDevice.deviceDirection ==
+          SwitcherDeviceDirection.stop) {
+        deviceActions = DeviceActions.stop;
+      } else if (switcherDevice.deviceDirection ==
+          SwitcherDeviceDirection.down) {
+        deviceActions = DeviceActions.moveDown;
+      }
+
       final SwitcherRunnerEntity switcherRunnerDe = SwitcherRunnerEntity(
         uniqueId: CoreUniqueId(),
         defaultName: DeviceDefaultName(switcherDevice.switcherName),
@@ -32,12 +44,18 @@ class SwitcherHelpers {
         switcherPort: SwitcherPort(switcherDevice.port.toString()),
         switcherMacAddress: SwitcherMacAddress(switcherDevice.macAddress),
         blindsSwitchState: GenericBlindsSwitchState(
-          switcherDevice.deviceState.toString(),
+          deviceActions.toString(),
         ),
       );
 
       return switcherRunnerDe;
     } else {
+      DeviceActions deviceActions = DeviceActions.actionNotSupported;
+      if (switcherDevice.deviceState == SwitcherDeviceState.on) {
+        deviceActions = DeviceActions.on;
+      } else if (switcherDevice.deviceState == SwitcherDeviceState.off) {
+        deviceActions = DeviceActions.off;
+      }
       final SwitcherV2Entity switcherV2De = SwitcherV2Entity(
         uniqueId: CoreUniqueId(),
         defaultName: DeviceDefaultName(switcherDevice.switcherName),
@@ -53,8 +71,7 @@ class SwitcherHelpers {
         stateMassage: DeviceStateMassage('Hello World'),
         powerConsumption:
             DevicePowerConsumption(switcherDevice.powerConsumption),
-        boilerSwitchState:
-            GenericBoilerSwitchState(switcherDevice.deviceState.toString()),
+        boilerSwitchState: GenericBoilerSwitchState(deviceActions.toString()),
         switcherDeviceId: SwitcherDeviceId(switcherDevice.deviceId),
         switcherPort: SwitcherPort(switcherDevice.port.toString()),
         switcherMacAddress: SwitcherMacAddress(switcherDevice.macAddress),
