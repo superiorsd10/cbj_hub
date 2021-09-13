@@ -15,12 +15,16 @@ import 'infrastructure/app_communication/app_communication_repository.dart'
     as _i6;
 import 'infrastructure/devices/esphome/esphome_connector_conjector.dart' as _i3;
 import 'infrastructure/devices/google/google_connector_conjector.dart' as _i4;
-import 'infrastructure/devices/switcher/switcher_connector_conjector.dart'
+import 'infrastructure/devices/philips_hue/philips_hue_connector_conjector.dart'
     as _i13;
-import 'infrastructure/devices/tasmota/tasmota_connector_conjector.dart'
+import 'infrastructure/devices/switcher/switcher_connector_conjector.dart'
     as _i14;
-import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+import 'infrastructure/devices/tasmota/tasmota_connector_conjector.dart'
     as _i15;
+import 'infrastructure/devices/xiaomi_io/xiaomi_io_connector_conjector.dart'
+    as _i16;
+import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+    as _i17;
 import 'infrastructure/mqtt_server/mqtt_server_repository.dart' as _i10;
 import 'infrastructure/saved_devices/local_db/local_db_repository.dart' as _i8;
 import 'infrastructure/saved_devices/saved_devices_repo.dart'
@@ -39,11 +43,15 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i9.IMqttServerRepository>(
       () => _i10.MqttServerRepository());
   gh.lazySingleton<_i11.ISavedDevicesRepo>(() => _i12.SavedDevicesRepo());
-  gh.singleton<_i13.SwitcherConnectorConjector>(
-      _i13.SwitcherConnectorConjector());
-  gh.singleton<_i14.TasmotaConnectorConjector>(
-      _i14.TasmotaConnectorConjector());
-  gh.singleton<_i15.YeelightConnectorConjector>(
-      _i15.YeelightConnectorConjector());
+  gh.singleton<_i13.PhilipsHueConnectorConjector>(
+      _i13.PhilipsHueConnectorConjector());
+  gh.singleton<_i14.SwitcherConnectorConjector>(
+      _i14.SwitcherConnectorConjector());
+  gh.singleton<_i15.TasmotaConnectorConjector>(
+      _i15.TasmotaConnectorConjector());
+  gh.singleton<_i16.XiaomiIoConnectorConjector>(
+      _i16.XiaomiIoConnectorConjector());
+  gh.singleton<_i17.YeelightConnectorConjector>(
+      _i17.YeelightConnectorConjector());
   return get;
 }
