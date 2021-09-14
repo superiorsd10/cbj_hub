@@ -1,6 +1,6 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/infrastructure/devices/philips%20hue/philips_hue_device_validators.dart';
+import 'package:cbj_hub/infrastructure/devices/philips_hue/philips_hue_device_validators.dart';
 import 'package:dartz/dartz.dart';
 
 /// PhilipsHue device unique address that came withe the device

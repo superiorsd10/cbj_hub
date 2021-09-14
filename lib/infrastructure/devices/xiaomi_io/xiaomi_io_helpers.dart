@@ -1,47 +1,45 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/philips%20hue/philips_hue_device_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/philips%20hue/philips_hue_e26/philips_hue_e26_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/xiaomi_io/xiaomi_io_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/xiaomi_io/xiaomi_io_gpx3021gl/xiaomi_io_gpx3021gl_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:yeedart/yeedart.dart';
 
-class PhilipsHueHelpers {
+class XiaomiIoHelpers {
   static DeviceEntityAbstract addDiscoverdDevice(
-      DiscoveryResponse philips_hueDevice) {
-    final PhilipsHueE26Entity philips_hueDE = PhilipsHueE26Entity(
+      DiscoveryResponse xiaomi_ioDevice) {
+    final XiaomiIoGpx4021GlEntity xiaomi_ioDE = XiaomiIoGpx4021GlEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName(
-        philips_hueDevice.name != ''
-            ? philips_hueDevice.name
-            : 'PhilipsHue test 2',
+        xiaomi_ioDevice.name != '' ? xiaomi_ioDevice.name : 'XiaomiIo test 2',
       ),
       roomId: CoreUniqueId.newDevicesRoom(),
       roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
-      senderDeviceOs: DeviceSenderDeviceOs('philips_hue'),
+      senderDeviceOs: DeviceSenderDeviceOs('xiaomi_io'),
       senderDeviceModel: DeviceSenderDeviceModel('1SE'),
       senderId: DeviceSenderId(),
       compUuid: DeviceCompUuid('34asdfrsd23gggg'),
       deviceMdnsName: DeviceMdnsName('yeelink-light-colora_miap9C52'),
-      lastKnownIp: DeviceLastKnownIp(philips_hueDevice.address.address),
+      lastKnownIp: DeviceLastKnownIp(xiaomi_ioDevice.address.address),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      philips_hueDeviceId: PhilipsHueDeviceId(philips_hueDevice.id.toString()),
-      philips_huePort: PhilipsHuePort(philips_hueDevice.port.toString()),
+      xiaomi_ioDeviceId: XiaomiIoDeviceId(xiaomi_ioDevice.id.toString()),
+      xiaomi_ioPort: XiaomiIoPort(xiaomi_ioDevice.port.toString()),
       lightSwitchState:
-          GenericRgbwLightSwitchState(philips_hueDevice.powered.toString()),
+          GenericRgbwLightSwitchState(xiaomi_ioDevice.powered.toString()),
       lightColorTemperature: GenericRgbwLightColorTemperature(
-        philips_hueDevice.colorTemperature.toString(),
+        xiaomi_ioDevice.colorTemperature.toString(),
       ),
       lightBrightness:
-          GenericRgbwLightBrightness(philips_hueDevice.brightness.toString()),
+          GenericRgbwLightBrightness(xiaomi_ioDevice.brightness.toString()),
       lightColorAlpha: GenericRgbwLightColorAlpha('1.0'),
       lightColorHue: GenericRgbwLightColorHue('0.0'),
       lightColorSaturation: GenericRgbwLightColorSaturation('1.0'),
       lightColorValue: GenericRgbwLightColorValue('1.0'),
     );
 
-    return philips_hueDE;
+    return xiaomi_ioDE;
   }
 }
