@@ -4,6 +4,7 @@ import 'package:cbj_hub/infrastructure/devices/esphome/esphome_connector_conject
 import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/xiaomi_io/xiaomi_io_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
@@ -29,6 +30,9 @@ class CompanysConnectorConjector {
             .manageHubRequestsForDevice(deviceEntityAbstract);
       } else if (deviceVendor == VendorsAndServices.google.toString()) {
         GoogleConnectorConjector()
+            .manageHubRequestsForDevice(deviceEntityAbstract);
+      } else if (deviceVendor == VendorsAndServices.xiaomiMiio.toString()) {
+        XiaomiIoConnectorConjector()
             .manageHubRequestsForDevice(deviceEntityAbstract);
       } else {
         print('Cannot send device changes to its repo, company not supported');
@@ -69,6 +73,8 @@ class CompanysConnectorConjector {
       SwitcherConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.google.toString()) {
       GoogleConnectorConjector.companyDevices.addEntries([devicesEntry]);
+    } else if (deviceVendor == VendorsAndServices.xiaomiMiio.toString()) {
+      XiaomiIoConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else {
       print('Cannot add device entity to its repo, type not supported');
     }

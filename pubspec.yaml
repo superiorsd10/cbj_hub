@@ -34,6 +34,8 @@ dependencies:
   kt_dart: ^0.9.1
   # Collection of lint rules for Dart and Flutter projects
   lint: ^1.7.2
+  # Small, easy to use and extensible logger which prints beautiful logs.
+  logger: ^1.1.0
   # A server and browser based MQTT client for Dart.
   mqtt_client: ^9.6.0
   # Service discovery over multicast DNS (mDNS), Bonjour, and Avahi.

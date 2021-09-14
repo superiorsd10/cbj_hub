@@ -4,6 +4,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/google/chrome_cast/chrome_cast_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:multicast_dns/multicast_dns.dart';
@@ -44,7 +45,7 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
     if (device is ChromeCastEntity) {
       device.executeDeviceAction(googleDE);
     } else {
-      print('Google device type does not exist');
+      logger.i('Google device type does not exist');
     }
   }
 
