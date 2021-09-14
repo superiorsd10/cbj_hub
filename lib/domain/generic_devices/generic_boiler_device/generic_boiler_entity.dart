@@ -116,7 +116,6 @@ class GenericBoilerDE extends DeviceEntityAbstract {
     return left(
       const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist',
-
       ),
     );
   }
