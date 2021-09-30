@@ -17,25 +17,41 @@ class XiaomiIoConnectorConjector implements AbstractCompanyConnectorConjector {
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> _discoverNewDevices() async {
-    // await MiIoCommandRunner().run(args);
-    // final InternetAddress internetAddress = InternetAddress('192.168.31.255');
-    // final MiIo miIo = MiIo.instance;
-    // miIo.discover(internetAddress).listen((event) {
-    //   print('event $event');
-    // });
-    // MiIo m = MiIo();
-    // MiIoDevice miDevice = MiIoDevice(address: internetAddress);
-    // miio discover --ip 192.168.1.255
+    // try {
+    //   final InternetAddress internetAddress = InternetAddress('192.168.31.255');
+    //
+    //   await for (final tup.Tuple2<InternetAddress, MiIoPacket> miDevice
+    //       in MiIo.instance.discover(internetAddress)) {
+    //     print('miDevice devices $miDevice');
+    //     // MiIo.instance.send(address, packet);
+    //   }
+    //
+    //   // final InternetAddress internetAddress = InternetAddress('192.168.31.247');
+    //   //
+    //   // MiIoPacket a = await MiIo.instance.hello(internetAddress);
+    //   // MiIoPacket ab = await MiIo.instance.send(internetAddress, a);
+    //   // print('This is mi packets $a');
+    // } on MiIoError catch (e) {
+    //   logger.e(
+    //     'Command failed with error from xiaomi device:\n'
+    //     'code: ${e.code}\n'
+    //     'message: ${e.message}',
+    //   );
+    // } on Exception catch (e) {
+    //   logger.e('Xiaomi command failed with exception:\n$e');
+    // } catch (e) {
+    //   print('All else');
+    // }
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract xiaomi_io) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract xiaomiIo) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract xiaomi_io) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract xiaomiIo) {
     // TODO: implement delete
     throw UnimplementedError();
   }

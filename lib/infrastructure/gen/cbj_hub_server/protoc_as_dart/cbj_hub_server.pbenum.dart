@@ -15,11 +15,11 @@ class VendorsAndServices extends $pb.ProtobufEnum {
       const $core.bool.fromEnvironment('protobuf.omit_enum_names')
           ? ''
           : 'espHome');
-  static const VendorsAndServices switcher = VendorsAndServices._(
+  static const VendorsAndServices switcherSmartHome = VendorsAndServices._(
       2,
       const $core.bool.fromEnvironment('protobuf.omit_enum_names')
           ? ''
-          : 'switcher');
+          : 'switcherSmartHome');
   static const VendorsAndServices tasmota = VendorsAndServices._(
       3,
       const $core.bool.fromEnvironment('protobuf.omit_enum_names')
@@ -35,20 +35,32 @@ class VendorsAndServices extends $pb.ProtobufEnum {
       const $core.bool.fromEnvironment('protobuf.omit_enum_names')
           ? ''
           : 'google');
-  static const VendorsAndServices xiaomiMiio = VendorsAndServices._(
+  static const VendorsAndServices miHome = VendorsAndServices._(
       6,
       const $core.bool.fromEnvironment('protobuf.omit_enum_names')
           ? ''
-          : 'xiaomiMiio');
+          : 'miHome');
+  static const VendorsAndServices lifx = VendorsAndServices._(
+      7,
+      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+          ? ''
+          : 'lifx');
+  static const VendorsAndServices tuyaSmart = VendorsAndServices._(
+      8,
+      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+          ? ''
+          : 'tuyaSmart');
 
   static const $core.List<VendorsAndServices> values = <VendorsAndServices>[
     vendorsAndServicesNotSupported,
     espHome,
-    switcher,
+    switcherSmartHome,
     tasmota,
     yeelight,
     google,
-    xiaomiMiio,
+    miHome,
+    lifx,
+    tuyaSmart,
   ];
 
   static final $core.Map<$core.int, VendorsAndServices> _byValue =
