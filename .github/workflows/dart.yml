@@ -25,15 +25,14 @@ jobs:
       
       - name: generate_all_files
         run: dart run build_runner build --delete-conflicting-outputs
-        
+            
       # Verify the use of 'dart format' on each commit.
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
-# TODO: find a way to run analyze and exculde spesific file types like .pb.dart .pbenum.dart .pbjson.dart
-#       # Consider passing '--fatal-infos' for slightly stricter analysis.
-#       - name: Analyze project source
-#         run: dart analyze
+      # Consider passing '--fatal-infos' for slightly stricter analysis.
+      - name: Analyze project source
+        run: dart analyze
 
       # Your project will need to have tests in test/ and a dependency on
       # package:test for this step to succeed.
