@@ -39,7 +39,8 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
           senderDeviceOs: senderDeviceOs,
           senderDeviceModel: senderDeviceModel,
           senderId: senderId,
-          deviceVendor: DeviceVendor(VendorsAndServices.switcher.toString()),
+          deviceVendor:
+              DeviceVendor(VendorsAndServices.switcherSmartHome.toString()),
           compUuid: compUuid,
           powerConsumption: powerConsumption,
           blindsSwitchState: blindsSwitchState,
