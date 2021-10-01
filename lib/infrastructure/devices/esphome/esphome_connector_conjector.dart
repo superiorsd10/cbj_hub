@@ -33,7 +33,8 @@ class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
 
   @override
   Future<void> manageHubRequestsForDevice(
-      DeviceEntityAbstract espHomeDE) async {
+    DeviceEntityAbstract espHomeDE,
+  ) async {
     final DeviceEntityAbstract? device =
         companyDevices[espHomeDE.getDeviceId()];
 
@@ -70,12 +71,15 @@ class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
       // other mDNS queries are running elsewhere on the machine.
       await for (final SrvResourceRecord srv
           in client.lookup<SrvResourceRecord>(
-              ResourceRecordQuery.service(ptr.domainName))) {
+        ResourceRecordQuery.service(ptr.domainName),
+      )) {
         // Domain name will be something like "io.flutter.example@some-iphone.local._dartobservatory._tcp.local"
         final String bundleId =
             ptr.domainName; //.substring(0, ptr.domainName.indexOf('@'));
-        print('Dart observatory instance found at '
-            '${srv.target}:${srv.port} for "$bundleId".');
+        print(
+          'Dart observatory instance found at '
+          '${srv.target}:${srv.port} for "$bundleId".',
+        );
       }
     }
     return null;

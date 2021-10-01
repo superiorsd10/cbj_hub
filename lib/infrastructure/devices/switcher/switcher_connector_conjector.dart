@@ -35,12 +35,12 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
       SwitcherApiObject switcherApiObject) async {
     for (final DeviceEntityAbstract savedDevice in companyDevices.values) {
       if (savedDevice is SwitcherV2Entity) {
-        if (switcherApiObject.deviceId.toString() ==
+        if (switcherApiObject.deviceId ==
             savedDevice.switcherDeviceId.getOrCrash()) {
           return;
         }
       } else if (savedDevice is SwitcherRunnerEntity) {
-        if (switcherApiObject.deviceId.toString() ==
+        if (switcherApiObject.deviceId ==
             savedDevice.switcherDeviceId.getOrCrash()) {
           return;
         }
@@ -124,8 +124,10 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
         // Domain name will be something like "io.flutter.example@some-iphone.local._dartobservatory._tcp.local"
         final String bundleId =
             ptr.domainName; //.substring(0, ptr.domainName.indexOf('@'));
-        print('Dart observatory instance found at '
-            '${srv.target}:${srv.port} for "$bundleId".');
+        print(
+          'Dart observatory instance found at '
+          '${srv.target}:${srv.port} for "$bundleId".',
+        );
       }
     }
     return null;

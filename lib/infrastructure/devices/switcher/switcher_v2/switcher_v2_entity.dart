@@ -78,22 +78,30 @@ class SwitcherV2Entity extends GenericBoilerDE {
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
     if (newEntity is! GenericBoilerDE) {
-      return left(const CoreFailure.actionExcecuter(
-          failedValue: 'Not the correct type'));
+      return left(
+        const CoreFailure.actionExcecuter(
+          failedValue: 'Not the correct type',
+        ),
+      );
     }
 
     if (newEntity.boilerSwitchState!.getOrCrash() !=
         boilerSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.boilerSwitchState!.getOrCrash());
+        newEntity.boilerSwitchState!.getOrCrash(),
+      );
 
       if (actionToPreform.toString() != boilerSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
-          (await turnOnBoiler()).fold((l) => print('Error turning boiler on'),
-              (r) => print('Boiler turn on success'));
+          (await turnOnBoiler()).fold(
+            (l) => print('Error turning boiler on'),
+            (r) => print('Boiler turn on success'),
+          );
         } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffBoiler()).fold((l) => print('Error turning boiler off'),
-              (r) => print('Boiler turn off success'));
+          (await turnOffBoiler()).fold(
+            (l) => print('Error turning boiler off'),
+            (r) => print('Boiler turn off success'),
+          );
         } else {
           print('actionToPreform is not set correctly on Switcher V2');
         }

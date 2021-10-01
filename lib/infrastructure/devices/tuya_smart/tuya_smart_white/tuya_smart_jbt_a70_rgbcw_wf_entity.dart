@@ -32,8 +32,8 @@ class TuyaSmartJbtA70RgbcwWfEntityEntity extends GenericRgbwLightDE {
     required GenericRgbwLightColorHue lightColorHue,
     required GenericRgbwLightColorSaturation lightColorSaturation,
     required GenericRgbwLightColorValue lightColorValue,
-    required this.tuya_smartDeviceId,
-    required this.tuya_smartPort,
+    required this.tuyaSmartDeviceId,
+    required this.tuyaSmartPort,
     this.deviceMdnsName,
     this.lastKnownIp,
   }) : super(
@@ -59,17 +59,17 @@ class TuyaSmartJbtA70RgbcwWfEntityEntity extends GenericRgbwLightDE {
         );
 
   /// TuyaSmart device unique id that came withe the device
-  TuyaSmartDeviceId? tuya_smartDeviceId;
+  TuyaSmartDeviceId? tuyaSmartDeviceId;
 
   /// TuyaSmart communication port
-  TuyaSmartPort? tuya_smartPort;
+  TuyaSmartPort? tuyaSmartPort;
 
   DeviceLastKnownIp? lastKnownIp;
 
   DeviceMdnsName? deviceMdnsName;
 
   /// TuyaSmart package object require to close previews request before new one
-  Device? tuya_smartPackageObject;
+  Device? tuyaSmartPackageObject;
 
   /// Please override the following methods
   @override

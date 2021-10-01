@@ -29,8 +29,8 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
     required GenericRgbwLightColorHue lightColorHue,
     required GenericRgbwLightColorSaturation lightColorSaturation,
     required GenericRgbwLightColorValue lightColorValue,
-    required this.philips_hueDeviceId,
-    required this.philips_huePort,
+    required this.philipsHueDeviceId,
+    required this.philipsHuePort,
     this.deviceMdnsName,
     this.lastKnownIp,
     required GenericRgbwLightColorTemperature lightColorTemperature,
@@ -60,41 +60,48 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
         );
 
   /// PhilipsHue device unique id that came withe the device
-  PhilipsHueDeviceId? philips_hueDeviceId;
+  PhilipsHueDeviceId? philipsHueDeviceId;
 
   /// PhilipsHue communication port
-  PhilipsHuePort? philips_huePort;
+  PhilipsHuePort? philipsHuePort;
 
   DeviceLastKnownIp? lastKnownIp;
 
   DeviceMdnsName? deviceMdnsName;
 
   /// PhilipsHue package object require to close previews request before new one
-  Device? philips_huePackageObject;
+  Device? philipsHuePackageObject;
 
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity) async {
+    DeviceEntityAbstract newEntity,
+  ) async {
     if (newEntity is! GenericRgbwLightDE) {
-      return left(const CoreFailure.actionExcecuter(
-          failedValue: 'Not the correct type'));
+      return left(
+        const CoreFailure.actionExcecuter(
+          failedValue: 'Not the correct type',
+        ),
+      );
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
         lightSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.lightSwitchState!.getOrCrash());
+        newEntity.lightSwitchState!.getOrCrash(),
+      );
 
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-              (l) => print('Error turning philips_hue light on'),
-              (r) => print('Light turn on success'));
+            (l) => print('Error turning philips_hue light on'),
+            (r) => print('Light turn on success'),
+          );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-              (l) => print('Error turning philips_hue light off'),
-              (r) => print('Light turn off success'));
+            (l) => print('Error turning philips_hue light off'),
+            (r) => print('Light turn off success'),
+          );
         } else {
           print('actionToPreform is not set correctly on PhilipsHue E26');
         }

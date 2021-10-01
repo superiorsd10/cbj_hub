@@ -48,14 +48,17 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
       }
 
       final DeviceEntityAbstract? tasmotaDeviceToAdd = await mqttToDevice(
-          MapEntry(messageTopic, mqttPublishMessage[0].payload));
+        MapEntry(messageTopic, mqttPublishMessage[0].payload),
+      );
 
       if (tasmotaDeviceToAdd == null) {
         return;
       }
       print('Adding tasmota device');
       final MapEntry<String, DeviceEntityAbstract> deviceAsEntry = MapEntry(
-          tasmotaDeviceToAdd.uniqueId.getOrCrash()!, tasmotaDeviceToAdd);
+        tasmotaDeviceToAdd.uniqueId.getOrCrash()!,
+        tasmotaDeviceToAdd,
+      );
       companyDevices.addEntries([deviceAsEntry]);
 
       CompanysConnectorConjector.addDiscoverdDeviceToHub(tasmotaDeviceToAdd);
@@ -82,8 +85,8 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
     }
 
     final String pt = MqttPublishPayload.bytesToStringAsString(
-            (deviceChangeFromMqtt.value as MqttPublishMessage).payload.message)
-        .replaceAll('\n', '');
+      (deviceChangeFromMqtt.value as MqttPublishMessage).payload.message,
+    ).replaceAll('\n', '');
 
     final String deviceTopic = getValueFromMqttResult(pt, '"t"')!;
 

@@ -29,8 +29,8 @@ class TuyaSmartHelpers {
       lastKnownIp: DeviceLastKnownIp(tuya_smartDevice.address.address),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      tuya_smartDeviceId: TuyaSmartDeviceId(tuya_smartDevice.id.toString()),
-      tuya_smartPort: TuyaSmartPort(tuya_smartDevice.port.toString()),
+      tuyaSmartDeviceId: TuyaSmartDeviceId(tuya_smartDevice.id.toString()),
+      tuyaSmartPort: TuyaSmartPort(tuya_smartDevice.port.toString()),
       lightSwitchState:
           GenericRgbwLightSwitchState(tuya_smartDevice.powered.toString()),
       lightColorTemperature: GenericRgbwLightColorTemperature(

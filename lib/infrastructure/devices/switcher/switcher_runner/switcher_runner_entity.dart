@@ -80,28 +80,36 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity) async {
+    DeviceEntityAbstract newEntity,
+  ) async {
     if (newEntity is! GenericBlindsDE) {
-      return left(const CoreFailure.actionExcecuter(
-          failedValue: 'Not the correct type'));
+      return left(
+        const CoreFailure.actionExcecuter(failedValue: 'Not the correct type'),
+      );
     }
 
     if (newEntity.blindsSwitchState!.getOrCrash() !=
         blindsSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.blindsSwitchState!.getOrCrash());
+        newEntity.blindsSwitchState!.getOrCrash(),
+      );
 
       if (actionToPreform.toString() != blindsSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.moveUp) {
-          (await moveUpBlinds()).fold((l) => print('Error turning blinds up'),
-              (r) => print('Blinds up success'));
+          (await moveUpBlinds()).fold(
+            (l) => print('Error turning blinds up'),
+            (r) => print('Blinds up success'),
+          );
         } else if (actionToPreform == DeviceActions.stop) {
-          (await stopBlinds()).fold((l) => print('Error stopping blinds '),
-              (r) => print('Blinds stop success'));
+          (await stopBlinds()).fold(
+            (l) => print('Error stopping blinds '),
+            (r) => print('Blinds stop success'),
+          );
         } else if (actionToPreform == DeviceActions.moveDown) {
           (await moveDownBlinds()).fold(
-              (l) => print('Error turning blinds down'),
-              (r) => print('Blinds down success'));
+            (l) => print('Error turning blinds down'),
+            (r) => print('Blinds down success'),
+          );
         } else {
           print('actionToPreform is not set correctly on Switcher Runner');
         }

@@ -111,28 +111,40 @@ class GenericBlindsDE extends DeviceEntityAbstract {
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> moveUpBlinds() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> stopBlinds() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> moveDownBlinds() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 }

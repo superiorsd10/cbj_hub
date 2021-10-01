@@ -53,23 +53,29 @@ class ESPHomeLightEntity extends GenericLightDE {
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
     if (newEntity is! GenericLightDE) {
-      return left(const CoreFailure.actionExcecuter(
-          failedValue: 'Not the correct type'));
+      return left(
+        const CoreFailure.actionExcecuter(
+          failedValue: 'Not the correct type',
+        ),
+      );
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
         lightSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.lightSwitchState!.getOrCrash());
+        newEntity.lightSwitchState!.getOrCrash(),
+      );
 
       if (actionToPreform == DeviceActions.on) {
         (await turnOnLight()).fold(
-            (l) => print('Error turning ESPHome light on'),
-            (r) => print('Light turn on success'));
+          (l) => print('Error turning ESPHome light on'),
+          (r) => print('Light turn on success'),
+        );
       } else if (actionToPreform == DeviceActions.off) {
         (await turnOffLight()).fold(
-            (l) => print('Error turning ESPHome light off'),
-            (r) => print('Light turn off success'));
+          (l) => print('Error turning ESPHome light off'),
+          (r) => print('Light turn off success'),
+        );
       } else {
         print('actionToPreform is not set correctly ESPHome light');
       }
