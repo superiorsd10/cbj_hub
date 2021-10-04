@@ -28,7 +28,7 @@ class LifxHelpers {
       powerConsumption: DevicePowerConsumption('0'),
       lifxDeviceId: LifxDeviceId(lifxDevice.id.toString()),
       lifxPort: LifxPort(lifxDevice.port.toString()),
-      lightSwitchState: GenericLightSwitchState(lifxDevice.powered.toString()),
+      lightSwitchState: GenericSwitchState(lifxDevice.powered.toString()),
     );
 
     return lifxDE;

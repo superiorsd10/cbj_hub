@@ -9,9 +9,9 @@ import 'package:dartz/dartz.dart';
 
 /// Abstract smart GenericLight that exist inside a computer, the
 /// implementations will be actual GenericLight like blinds lights and more
-class GenericLightDE extends DeviceEntityAbstract {
+class GenericSwitchDE extends DeviceEntityAbstract {
   /// All public field of GenericLight entity
-  GenericLightDE({
+  GenericSwitchDE({
     required CoreUniqueId uniqueId,
     required CoreUniqueId roomId,
     required DeviceVendor deviceVendor,
@@ -24,7 +24,7 @@ class GenericLightDE extends DeviceEntityAbstract {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     DevicePowerConsumption? powerConsumption,
-    required this.lightSwitchState,
+    required this.switchState,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
@@ -40,11 +40,11 @@ class GenericLightDE extends DeviceEntityAbstract {
           stateMassage: stateMassage,
         );
 
-  /// State of the light on/off
-  GenericSwitchState? lightSwitchState;
+  /// State of the switch on/off
+  GenericSwitchState? switchState;
 
   /// Empty instance of GenericLightEntity
-  factory GenericLightDE.empty() => GenericLightDE(
+  factory GenericSwitchDE.empty() => GenericSwitchDE(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName(''),
       roomId: CoreUniqueId(),
@@ -57,7 +57,7 @@ class GenericLightDE extends DeviceEntityAbstract {
       deviceVendor: DeviceVendor(''),
       compUuid: DeviceCompUuid(''),
       powerConsumption: DevicePowerConsumption(''),
-      lightSwitchState: GenericSwitchState(DeviceActions.off.toString()));
+      switchState: GenericSwitchState(DeviceActions.off.toString()));
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
@@ -100,7 +100,7 @@ class GenericLightDE extends DeviceEntityAbstract {
       senderId: senderId.getOrCrash(),
       deviceTypes: deviceTypes.getOrCrash(),
       compUuid: compUuid.getOrCrash(),
-      lightSwitchState: lightSwitchState!.getOrCrash(),
+      lightSwitchState: switchState!.getOrCrash(),
       deviceVendor: deviceVendor.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );

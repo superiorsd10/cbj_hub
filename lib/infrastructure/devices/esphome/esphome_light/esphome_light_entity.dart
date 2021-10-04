@@ -22,7 +22,7 @@ class ESPHomeLightEntity extends GenericLightDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericLightSwitchState lightSwitchState,
+    required GenericSwitchState lightSwitchState,
     required this.espHomeSwitchKey,
     required this.deviceMdnsName,
     this.lastKnownIp,
@@ -86,7 +86,7 @@ class ESPHomeLightEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
+    lightSwitchState = GenericSwitchState(DeviceActions.on.toString());
 
     try {
       print('Turn on ESPHome device');
@@ -117,7 +117,7 @@ class ESPHomeLightEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    lightSwitchState = GenericLightSwitchState(DeviceActions.off.toString());
+    lightSwitchState = GenericSwitchState(DeviceActions.off.toString());
 
     try {
       try {

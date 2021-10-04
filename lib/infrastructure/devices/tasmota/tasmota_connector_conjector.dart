@@ -114,7 +114,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
       compUuid: DeviceCompUuid(mac),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      lightSwitchState: GenericLightSwitchState(deviceActions.toString()),
+      lightSwitchState: GenericSwitchState(deviceActions.toString()),
       tasmotaDeviceTopicName: TasmotaDeviceTopicName(deviceTopic),
       tasmotaDeviceId: TasmotaDeviceId(deviceId),
     );

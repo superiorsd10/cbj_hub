@@ -12,8 +12,8 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:dartz/dartz.dart';
 import 'package:yeedart/yeedart.dart';
 
-class TuyaSmartJbtA70RgbcwWfEntityEntity extends GenericRgbwLightDE {
-  TuyaSmartJbtA70RgbcwWfEntityEntity({
+class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
+  TuyaSmartJbtA70RgbcwWfEntity({
     required CoreUniqueId uniqueId,
     required CoreUniqueId roomId,
     required DeviceDefaultName defaultName,
@@ -33,9 +33,6 @@ class TuyaSmartJbtA70RgbcwWfEntityEntity extends GenericRgbwLightDE {
     required GenericRgbwLightColorSaturation lightColorSaturation,
     required GenericRgbwLightColorValue lightColorValue,
     required this.tuyaSmartDeviceId,
-    required this.tuyaSmartPort,
-    this.deviceMdnsName,
-    this.lastKnownIp,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
@@ -60,13 +57,6 @@ class TuyaSmartJbtA70RgbcwWfEntityEntity extends GenericRgbwLightDE {
 
   /// TuyaSmart device unique id that came withe the device
   TuyaSmartDeviceId? tuyaSmartDeviceId;
-
-  /// TuyaSmart communication port
-  TuyaSmartPort? tuyaSmartPort;
-
-  DeviceLastKnownIp? lastKnownIp;
-
-  DeviceMdnsName? deviceMdnsName;
 
   /// TuyaSmart package object require to close previews request before new one
   Device? tuyaSmartPackageObject;

@@ -42,12 +42,15 @@ class CloudTuya {
   String? tokens;
 
   Future<void> login() async {
-    Uri uriTemp = Uri.parse('$uri/auth.do');
-    Map<String, String> headers = {
+    if (tokens != null) {
+      return;
+    }
+    final Uri uriTemp = Uri.parse('$uri/auth.do');
+    final Map<String, String> headers = {
       'Content-Type': 'application/x-www-form-urlencoded'
     };
 
-    Map<String, dynamic> body = {
+    final Map<String, dynamic> body = {
       'bizType': bizType,
       'countryCode': countryCode,
       'from': from,
@@ -55,19 +58,21 @@ class CloudTuya {
       'userName': userName,
     };
 
-    Response response =
+    final Response response =
         await consistentRequest(uriTemp, headers: headers, body: body);
 
-    int statusCode = response.statusCode;
-    String responseBody = response.body;
+    final int statusCode = response.statusCode;
+    final String responseBody = response.body;
 
     if (responseBody.contains('error')) {
       print('Error: $responseBody');
       print('Will try again in 60s');
-      await Future.delayed(Duration(seconds: 60));
-      return await login();
+      await Future.delayed(const Duration(seconds: 60));
+      // Do not remove the await
+      await login();
+      return;
     }
-    String accessToken =
+    final String accessToken =
         responseBody.substring(responseBody.indexOf('access_token') + 15);
     tokens = accessToken.substring(0, accessToken.indexOf('"'));
   }
@@ -77,11 +82,11 @@ class CloudTuya {
     if (tokens == null) {
       await login();
     }
-    Uri uriTemp = Uri.parse('$uri/skill');
+    final Uri uriTemp = Uri.parse('$uri/skill');
 
-    Map<String, String> headers = {'Content-Type': 'application/json'};
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
 
-    String data = json.encode({
+    final String data = json.encode({
       'header': {
         'name': 'Discovery',
         'namespace': 'discovery',
@@ -92,21 +97,26 @@ class CloudTuya {
       },
     });
 
-    Response response =
+    final Response response =
         await consistentRequest(uriTemp, headers: headers, body: data);
 
-    int statusCode = response.statusCode;
-    String responseBody = response.body;
+    final int statusCode = response.statusCode;
+    final String responseBody = response.body;
 
-    dynamic a = json.decode(responseBody);
-    dynamic devicesList = a['payload']['devices'];
+    final dynamic a = json.decode(responseBody);
+    final dynamic devicesList = a['payload']['devices'];
+
     print('Devices:\n$devicesList');
-    List<TuyaDeviceAbstract> tuyaDeviceList = [];
-    for (dynamic device in devicesList) {
+    final List<TuyaDeviceAbstract> tuyaDeviceList = [];
+
+    if (devicesList == null) {
+      return tuyaDeviceList;
+    }
+
+    for (final dynamic device in devicesList) {
       if (device['ha_type'] != 'scene') {
-        TuyaDeviceAbstract tuyaDevice =
+        final TuyaDeviceAbstract tuyaDevice =
             TuyaDeviceAbstract.fromInternalLinkedHashMap(device);
-        print('Device $tuyaDevice');
         tuyaDeviceList.add(tuyaDevice);
       }
     }
@@ -119,11 +129,11 @@ class CloudTuya {
     if (tokens == null) {
       await login();
     }
-    Uri uriTemp = Uri.parse('$uri/skill');
+    final Uri uriTemp = Uri.parse('$uri/skill');
 
-    Map<String, String> headers = {'Content-Type': 'application/json'};
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
 
-    String data = json.encode({
+    final String data = json.encode({
       'header': {
         'name': 'Discovery',
         'namespace': 'discovery',
@@ -134,14 +144,14 @@ class CloudTuya {
       },
     });
 
-    Response response =
+    final Response response =
         await consistentRequest(uriTemp, headers: headers, body: data);
 
-    int statusCode = response.statusCode;
-    String responseBody = response.body;
+    final int statusCode = response.statusCode;
+    final String responseBody = response.body;
 
-    dynamic a = json.decode(responseBody);
-    dynamic scenesList = a['payload']['scenes'];
+    final dynamic a = json.decode(responseBody);
+    final dynamic scenesList = a['payload']['scenes'];
     print('Scenes:\n$scenesList');
 
     return scenesList;
@@ -153,7 +163,7 @@ class CloudTuya {
     required dynamic body,
     Encoding? encoding,
   }) async {
-    Response response = await post(
+    final Response response = await post(
       url,
       headers: headers,
       body: body,
@@ -167,11 +177,11 @@ class CloudTuya {
     if (tokens == null) {
       await login();
     }
-    Uri uriTemp = Uri.parse('$uri/skill');
+    final Uri uriTemp = Uri.parse('$uri/skill');
 
-    Map<String, String> headers = {'Content-Type': 'application/json'};
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
 
-    String data = json.encode({
+    final String data = json.encode({
       'header': {
         'name': 'turnOnOff',
         'namespace': 'control',
@@ -184,13 +194,13 @@ class CloudTuya {
       },
     });
 
-    Response response =
+    final Response response =
         await consistentRequest(uriTemp, headers: headers, body: data);
 
-    int statusCode = response.statusCode;
-    String responseBody = response.body;
+    final int statusCode = response.statusCode;
+    final String responseBody = response.body;
 
-    dynamic responseDecoded = json.decode(responseBody);
+    final dynamic responseDecoded = json.decode(responseBody);
 
     return responseDecoded['header']['code'] as String;
   }

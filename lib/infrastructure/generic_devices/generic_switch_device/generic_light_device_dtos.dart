@@ -1,7 +1,7 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_light_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -9,9 +9,9 @@ part 'generic_light_device_dtos.freezed.dart';
 part 'generic_light_device_dtos.g.dart';
 
 @freezed
-abstract class GenericLightDeviceDtos
-    implements _$GenericLightDeviceDtos, DeviceEntityDtoAbstract {
-  factory GenericLightDeviceDtos(
+abstract class GenericSwitchDeviceDtos
+    implements _$GenericSwitchDeviceDtos, DeviceEntityDtoAbstract {
+  factory GenericSwitchDeviceDtos(
       {
       // @JsonKey(ignore: true)
       String? deviceDtoClass,
@@ -24,7 +24,7 @@ abstract class GenericLightDeviceDtos
       required String? senderDeviceOs,
       required String? senderDeviceModel,
       required String? senderId,
-      required String? lightSwitchState,
+      required String? switchState,
       required String? deviceTypes,
       required String? compUuid,
       required String? deviceVendor
@@ -32,36 +32,36 @@ abstract class GenericLightDeviceDtos
       // required ServerTimestampConverter() FieldValue serverTimeStamp,
       }) = _GenericLightDeviceDtos;
 
-  GenericLightDeviceDtos._();
+  GenericSwitchDeviceDtos._();
 
   @override
-  final String deviceDtoClassInstance = (GenericLightDeviceDtos).toString();
+  final String deviceDtoClassInstance = (GenericSwitchDeviceDtos).toString();
 
-  factory GenericLightDeviceDtos.fromDomain(GenericLightDE genericLightDE) {
-    return GenericLightDeviceDtos(
-      deviceDtoClass: (GenericLightDeviceDtos).toString(),
-      id: genericLightDE.uniqueId.getOrCrash(),
-      defaultName: genericLightDE.defaultName.getOrCrash(),
-      roomId: genericLightDE.roomId.getOrCrash(),
-      roomName: genericLightDE.roomName.getOrCrash(),
-      deviceStateGRPC: genericLightDE.deviceStateGRPC.getOrCrash(),
-      stateMassage: genericLightDE.stateMassage.getOrCrash(),
-      senderDeviceOs: genericLightDE.senderDeviceOs.getOrCrash(),
-      senderDeviceModel: genericLightDE.senderDeviceModel.getOrCrash(),
-      senderId: genericLightDE.senderId.getOrCrash(),
-      lightSwitchState: genericLightDE.lightSwitchState!.getOrCrash(),
-      deviceTypes: genericLightDE.deviceTypes.getOrCrash(),
-      compUuid: genericLightDE.compUuid.getOrCrash(),
-      deviceVendor: genericLightDE.deviceVendor.getOrCrash(),
+  factory GenericSwitchDeviceDtos.fromDomain(GenericSwitchDE genericSwitchDe) {
+    return GenericSwitchDeviceDtos(
+      deviceDtoClass: (GenericSwitchDeviceDtos).toString(),
+      id: genericSwitchDe.uniqueId.getOrCrash(),
+      defaultName: genericSwitchDe.defaultName.getOrCrash(),
+      roomId: genericSwitchDe.roomId.getOrCrash(),
+      roomName: genericSwitchDe.roomName.getOrCrash(),
+      deviceStateGRPC: genericSwitchDe.deviceStateGRPC.getOrCrash(),
+      stateMassage: genericSwitchDe.stateMassage.getOrCrash(),
+      senderDeviceOs: genericSwitchDe.senderDeviceOs.getOrCrash(),
+      senderDeviceModel: genericSwitchDe.senderDeviceModel.getOrCrash(),
+      senderId: genericSwitchDe.senderId.getOrCrash(),
+      switchState: genericSwitchDe.switchState!.getOrCrash(),
+      deviceTypes: genericSwitchDe.deviceTypes.getOrCrash(),
+      compUuid: genericSwitchDe.compUuid.getOrCrash(),
+      deviceVendor: genericSwitchDe.deviceVendor.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
 
-  factory GenericLightDeviceDtos.fromJson(Map<String, dynamic> json) =>
-      _$GenericLightDeviceDtosFromJson(json);
+  factory GenericSwitchDeviceDtos.fromJson(Map<String, dynamic> json) =>
+      _$GenericSwitchDeviceDtosFromJson(json);
 
   DeviceEntityAbstract toDomain() {
-    return GenericLightDE(
+    return GenericSwitchDE(
       uniqueId: CoreUniqueId.fromUniqueString(id),
       defaultName: DeviceDefaultName(defaultName),
       roomId: CoreUniqueId.fromUniqueString(roomId),
@@ -73,7 +73,7 @@ abstract class GenericLightDeviceDtos
       senderId: DeviceSenderId.fromUniqueString(senderId),
       deviceVendor: DeviceVendor(deviceVendor),
       compUuid: DeviceCompUuid(compUuid),
-      lightSwitchState: GenericSwitchState(lightSwitchState),
+      switchState: GenericSwitchState(switchState),
     );
   }
 }
