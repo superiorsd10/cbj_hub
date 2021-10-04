@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_white/tuya_smart_jbt_a70_rgbcw_wf_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_jbt_a70_rgbcw_wf/tuya_smart_jbt_a70_rgbcw_wf_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
@@ -11,13 +13,19 @@ import 'package:multicast_dns/multicast_dns.dart';
 @singleton
 class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
   TuyaSmartConnectorConjector() {
-    _discoverNewDevices();
   }
+
+  static late CloudTuya cloudTuya;
 
   @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
-  Future<void> _discoverNewDevices() async {}
+  Future<void> _discoverNewDevices() async {
+    List<TuyaDeviceAbstract> deviceList = await cloudTuya.findDevices();
+    print(deviceList);
+
+    // print(cloudTuya.turnOff(deviceList[0].id));
+  }
 
   @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tuya_smart) {
