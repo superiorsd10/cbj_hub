@@ -58,7 +58,7 @@ class TuyaSmartHelpers {
         roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('tuya_smart'),
-        senderDeviceModel: DeviceSenderDeviceModel('1SE'),
+        senderDeviceModel: DeviceSenderDeviceModel('Cloud'),
         senderId: DeviceSenderId(),
         compUuid: DeviceCompUuid('34asdfrsd23gggg'),
         stateMassage: DeviceStateMassage('Hello World'),

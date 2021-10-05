@@ -2,22 +2,60 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/lifx/lifx_helpers.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_white/lifx_white_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:lifx_http_api/lifx_http_api.dart' as lifx;
 import 'package:multicast_dns/multicast_dns.dart';
 
 @singleton
 class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
   LifxConnectorConjector() {
-    _discoverNewDevices();
+    // _discoverNewDevices();
   }
 
   @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
-  Future<void> _discoverNewDevices() async {}
+  static lifx.Client? lifxClient;
+
+  Future<void> _discoverNewDevices() async {
+    while (true) {
+      try {
+        final Iterable<lifx.Bulb> lights = await lifxClient!.listLights();
+
+        for (final lifx.Bulb lifxDevice in lights) {
+          bool deviceExist = false;
+          for (DeviceEntityAbstract savedDevice in companyDevices.values) {
+            savedDevice = savedDevice as LifxWhiteEntity;
+
+            if (lifxDevice.id == savedDevice.lifxDeviceId!.getOrCrash()) {
+              deviceExist = true;
+              break;
+            }
+          }
+          if (!deviceExist) {
+            final DeviceEntityAbstract addDevice =
+                LifxHelpers.addDiscoverdDevice(lifxDevice);
+            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+            final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
+                MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
+            companyDevices.addEntries([deviceAsEntry]);
+
+            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+            print('New Lifx devices where add');
+          }
+        }
+        await Future.delayed(const Duration(minutes: 3));
+      } catch (e) {
+        print('Error discover in Lifx $e');
+        await Future.delayed(const Duration(minutes: 1));
+      }
+    }
+  }
 
   @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract lifx) {

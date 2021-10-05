@@ -23,8 +23,6 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> _discoverNewDevices() async {
-    // Not sure why but removing this line create errors
-    await cloudTuya.findDevices();
     while (true) {
       try {
         final List<TuyaDeviceAbstract> deviceList =

@@ -6,10 +6,11 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:dartz/dartz.dart';
-import 'package:yeedart/yeedart.dart';
+import 'package:lifx_http_api/src/responses/set_state/set_state.dart';
 
 class LifxWhiteEntity extends GenericLightDE {
   LifxWhiteEntity({
@@ -26,9 +27,6 @@ class LifxWhiteEntity extends GenericLightDE {
     required DevicePowerConsumption powerConsumption,
     required GenericSwitchState lightSwitchState,
     required this.lifxDeviceId,
-    required this.lifxPort,
-    this.deviceMdnsName,
-    this.lastKnownIp,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
@@ -47,16 +45,6 @@ class LifxWhiteEntity extends GenericLightDE {
 
   /// Lifx device unique id that came withe the device
   LifxDeviceId? lifxDeviceId;
-
-  /// Lifx communication port
-  LifxPort? lifxPort;
-
-  DeviceLastKnownIp? lastKnownIp;
-
-  DeviceMdnsName? deviceMdnsName;
-
-  /// Lifx package object require to close previews request before new one
-  Device? lifxPackageObject;
 
   /// Please override the following methods
   @override
@@ -101,6 +89,13 @@ class LifxWhiteEntity extends GenericLightDE {
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     lightSwitchState = GenericSwitchState(DeviceActions.on.toString());
     try {
+      final SetStateBody? setStateBodyResponse = await LifxConnectorConjector
+          .lifxClient
+          ?.setState(lifxDeviceId!.getOrCrash(), power: 'on', fast: true);
+      if (setStateBodyResponse == null) {
+        throw 'setStateBodyResponse is null';
+      }
+
       return left(const CoreFailure.unexpected());
     } catch (e) {
       return left(const CoreFailure.unexpected());
@@ -112,6 +107,12 @@ class LifxWhiteEntity extends GenericLightDE {
     lightSwitchState = GenericSwitchState(DeviceActions.off.toString());
 
     try {
+      final SetStateBody? setStateBodyResponse = await LifxConnectorConjector
+          .lifxClient
+          ?.setState(lifxDeviceId!.getOrCrash(), power: 'off', fast: true);
+      if (setStateBodyResponse == null) {
+        throw 'setStateBodyResponse is null';
+      }
       return left(const CoreFailure.unexpected());
     } catch (e) {
       return left(const CoreFailure.unexpected());
