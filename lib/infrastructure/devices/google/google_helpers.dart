@@ -8,7 +8,8 @@ import 'package:yeedart/yeedart.dart';
 
 class GoogleHelpers {
   static DeviceEntityAbstract addDiscoverdDevice(
-      DiscoveryResponse yeelightDevice) {
+    DiscoveryResponse yeelightDevice,
+  ) {
     final ChromeCastEntity yeelightDE = ChromeCastEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName('Google test 2'),
@@ -20,13 +21,14 @@ class GoogleHelpers {
       senderId: DeviceSenderId(),
       compUuid: DeviceCompUuid('34asdfrsd23gggg'),
       deviceMdnsName: DeviceMdnsName('yeelink-light-colora_miap9C52'),
-      lastKnownIp: DeviceLastKnownIp(yeelightDevice.address.address.toString()),
+      lastKnownIp: DeviceLastKnownIp(yeelightDevice.address.address),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
       googleDeviceId: GoogleDeviceId(yeelightDevice.id.toString()),
       googlePort: GooglePort(yeelightDevice.port.toString()),
       smartTvSwitchState: GenericSmartTvSwitchState(
-          DeviceActions.actionNotSupported.toString()),
+        DeviceActions.actionNotSupported.toString(),
+      ),
     );
 
     return yeelightDE;

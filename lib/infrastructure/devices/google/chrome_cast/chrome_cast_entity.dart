@@ -60,24 +60,30 @@ class ChromeCastEntity extends GenericSmartTvDE {
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
     if (newEntity is! GenericRgbwLightDE) {
-      return left(const CoreFailure.actionExcecuter(
-          failedValue: 'Not the correct type'));
+      return left(
+        const CoreFailure.actionExcecuter(
+          failedValue: 'Not the correct type',
+        ),
+      );
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
         smartTvSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.lightSwitchState!.getOrCrash());
+        newEntity.lightSwitchState!.getOrCrash(),
+      );
 
       if (actionToPreform.toString() != smartTvSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-              (l) => print('Error turning chrome cast light on'),
-              (r) => print('Light turn on success'));
+            (l) => print('Error turning chrome cast light on'),
+            (r) => print('Light turn on success'),
+          );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-              (l) => print('Error turning chrome cast light off'),
-              (r) => print('Light turn off success'));
+            (l) => print('Error turning chrome cast light off'),
+            (r) => print('Light turn off success'),
+          );
         } else {
           print('actionToPreform is not set correctly on Chrome Cast');
         }

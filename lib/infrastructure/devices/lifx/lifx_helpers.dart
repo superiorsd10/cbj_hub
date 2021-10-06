@@ -4,31 +4,28 @@ import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_ligh
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_white/lifx_white_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
-import 'package:yeedart/yeedart.dart';
+import 'package:lifx_http_api/lifx_http_api.dart' as lifx;
 
 class LifxHelpers {
   static DeviceEntityAbstract addDiscoverdDevice(
-    DiscoveryResponse lifxDevice,
+    lifx.Bulb lifxDevice,
   ) {
     final LifxWhiteEntity lifxDE = LifxWhiteEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName(
-        lifxDevice.name != '' ? lifxDevice.name : 'Lifx test 2',
+        lifxDevice.label != '' ? lifxDevice.label : 'Lifx test 2',
       ),
       roomId: CoreUniqueId.newDevicesRoom(),
       roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
-      senderDeviceOs: DeviceSenderDeviceOs('lifx'),
-      senderDeviceModel: DeviceSenderDeviceModel('1SE'),
+      senderDeviceOs: DeviceSenderDeviceOs('Lifx'),
+      senderDeviceModel: DeviceSenderDeviceModel('Cloud'),
       senderId: DeviceSenderId(),
-      compUuid: DeviceCompUuid('34asdfrsd23gggg'),
-      deviceMdnsName: DeviceMdnsName('yeelink-light-colora_miap9C52'),
-      lastKnownIp: DeviceLastKnownIp(lifxDevice.address.address),
+      compUuid: DeviceCompUuid(lifxDevice.uuid),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      lifxDeviceId: LifxDeviceId(lifxDevice.id.toString()),
-      lifxPort: LifxPort(lifxDevice.port.toString()),
-      lightSwitchState: GenericLightSwitchState(lifxDevice.powered.toString()),
+      lifxDeviceId: LifxDeviceId(lifxDevice.id),
+      lightSwitchState: GenericSwitchState(lifxDevice.power.toString()),
     );
 
     return lifxDE;

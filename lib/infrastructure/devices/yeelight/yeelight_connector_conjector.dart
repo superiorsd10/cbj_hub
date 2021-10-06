@@ -50,7 +50,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
         await Future.delayed(const Duration(minutes: 3));
       } catch (e) {
         print('Error discover in yeelight $e');
-        await Future.delayed(const Duration(seconds: 3));
+        await Future.delayed(const Duration(minutes: 1));
       }
     }
   }

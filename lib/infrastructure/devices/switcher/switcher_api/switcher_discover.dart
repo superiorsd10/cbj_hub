@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_api_object.dart';
 
 class SwitcherDiscover {
-  static const SWITCHER_UDP_PORT = 20002;
-  static const SWITCHER_UDP_PORT2 = 20003;
+  static const switcherUdpPort = 20002;
+  static const switcherUdpPort2 = 20003;
 
   static Stream<SwitcherApiObject> discover20002Devices() async* {
     try {
       final RawDatagramSocket socket20002 = await RawDatagramSocket.bind(
         InternetAddress.anyIPv4,
-        SWITCHER_UDP_PORT,
+        switcherUdpPort,
       );
 
       await for (final event in socket20002) {
@@ -30,7 +30,7 @@ class SwitcherDiscover {
     try {
       final RawDatagramSocket socket20003 = await RawDatagramSocket.bind(
         InternetAddress.anyIPv4,
-        SWITCHER_UDP_PORT2,
+        switcherUdpPort2,
       );
 
       await for (final event in socket20003) {

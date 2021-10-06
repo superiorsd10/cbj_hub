@@ -9,8 +9,6 @@ import 'package:cbj_hub/infrastructure/generic_devices/generic_smart_tv_device/g
 class DeviceEntityDtoAbstract {
   DeviceEntityDtoAbstract();
 
-  final String deviceDtoClassInstance = (DeviceEntityDtoAbstract).toString();
-
   factory DeviceEntityDtoAbstract.fromDomain() {
     print('DeviceEntityDtoAbstract.fromDomain');
     return DeviceEntityDtoAbstract();
@@ -40,6 +38,8 @@ class DeviceEntityDtoAbstract {
     }
     return deviceEntityDtoAbstract;
   }
+
+  final String deviceDtoClassInstance = (DeviceEntityDtoAbstract).toString();
 
   Map<String, dynamic> toJson() {
     print('DeviceEntityDtoAbstract to Json');
