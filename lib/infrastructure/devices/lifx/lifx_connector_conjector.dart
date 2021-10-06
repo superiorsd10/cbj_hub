@@ -13,8 +13,10 @@ import 'package:multicast_dns/multicast_dns.dart';
 
 @singleton
 class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
-  LifxConnectorConjector() {
-    // _discoverNewDevices();
+  Future<String> accountLogin(String apiKey) async {
+    lifxClient = lifx.Client(apiKey);
+    _discoverNewDevices();
+    return 'Success';
   }
 
   @override
