@@ -18,7 +18,8 @@ Either<CoreFailure<String>, String> validateSwitcherPortNotEmpty(String input) {
 }
 
 Either<CoreFailure<String>, String> validateSwitcherMacAddressNotEmpty(
-    String input) {
+  String input,
+) {
   if (input != null) {
     return right(input);
   } else {

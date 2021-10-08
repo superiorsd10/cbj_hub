@@ -3,19 +3,21 @@ import 'dart:async';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_jbt_a70_rgbcw_wf/tuya_smart_jbt_a70_rgbcw_wf_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_switch/tuya_smart_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:multicast_dns/multicast_dns.dart';
-import 'package:yeedart/yeedart.dart';
 
 @singleton
-class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
-  YeelightConnectorConjector() {
-    _discoverNewDevices();
-  }
+class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
+  TuyaSmartConnectorConjector() {}
+
+  static late CloudTuya cloudTuya;
 
   @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
@@ -23,46 +25,52 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
   Future<void> _discoverNewDevices() async {
     while (true) {
       try {
-        final responses = await Yeelight.discover();
-        for (final DiscoveryResponse yeelightDevice in responses) {
-          bool deviceExist = false;
-          for (DeviceEntityAbstract savedDevice in companyDevices.values) {
-            savedDevice = savedDevice as Yeelight1SeEntity;
+        final List<TuyaDeviceAbstract> deviceList =
+            await cloudTuya.findDevices();
 
-            if (yeelightDevice.id.toString() ==
-                savedDevice.yeelightDeviceId!.getOrCrash()) {
-              deviceExist = true;
+        for (final TuyaDeviceAbstract tuyaDevice in deviceList) {
+          bool deviceExist = false;
+          for (final DeviceEntityAbstract savedDevice
+              in companyDevices.values) {
+            if (savedDevice is TuyaSmartJbtA70RgbcwWfEntity) {
+              if (tuyaDevice.id ==
+                  savedDevice.tuyaSmartDeviceId!.getOrCrash()) {
+                deviceExist = true;
+                break;
+              }
+            } else {
+              print('please add new tuya device type');
               break;
             }
           }
           if (!deviceExist) {
             final DeviceEntityAbstract addDevice =
-                YeelightHelpers.addDiscoverdDevice(yeelightDevice);
+                TuyaSmartHelpers.addDiscoverdDevice(tuyaDevice);
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
             final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
                 MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
             companyDevices.addEntries([deviceAsEntry]);
 
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-            print('New yeelight devices where add');
+            print('New Tuya devices where add');
           }
         }
         await Future.delayed(const Duration(minutes: 3));
       } catch (e) {
-        print('Error discover in yeelight $e');
+        print('Error discover in Tuya $e');
         await Future.delayed(const Duration(minutes: 1));
       }
     }
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract yeelight) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tuya_smart) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract yeelight) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract tuya_smart) {
     // TODO: implement delete
     throw UnimplementedError();
   }
@@ -75,15 +83,17 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
 
   @override
   Future<void> manageHubRequestsForDevice(
-    DeviceEntityAbstract yeelightDE,
+    DeviceEntityAbstract tuya_smartDE,
   ) async {
     final DeviceEntityAbstract? device =
-        companyDevices[yeelightDE.getDeviceId()];
+        companyDevices[tuya_smartDE.getDeviceId()];
 
-    if (device is Yeelight1SeEntity) {
-      device.executeDeviceAction(yeelightDE);
+    if (device is TuyaSmartJbtA70RgbcwWfEntity) {
+      device.executeDeviceAction(tuya_smartDE);
+    } else if (device is TuyaSmartSwitchEntity) {
+      device.executeDeviceAction(tuya_smartDE);
     } else {
-      print('Yeelight device type does not exist');
+      print('TuyaSmart device type does not exist');
     }
   }
 

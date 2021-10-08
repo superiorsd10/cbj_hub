@@ -2,8 +2,10 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abs
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/xiaomi_io/xiaomi_io_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
@@ -26,14 +28,21 @@ class CompanysConnectorConjector {
       } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
         ESPHomeConnectorConjector()
             .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor == VendorsAndServices.switcher.toString()) {
+      } else if (deviceVendor ==
+          VendorsAndServices.switcherSmartHome.toString()) {
         SwitcherConnectorConjector()
             .manageHubRequestsForDevice(deviceEntityAbstract);
       } else if (deviceVendor == VendorsAndServices.google.toString()) {
         GoogleConnectorConjector()
             .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor == VendorsAndServices.xiaomiMiio.toString()) {
+      } else if (deviceVendor == VendorsAndServices.miHome.toString()) {
         XiaomiIoConnectorConjector()
+            .manageHubRequestsForDevice(deviceEntityAbstract);
+      } else if (deviceVendor == VendorsAndServices.tuyaSmart.toString()) {
+        TuyaSmartConnectorConjector()
+            .manageHubRequestsForDevice(deviceEntityAbstract);
+      } else if (deviceVendor == VendorsAndServices.lifx.toString()) {
+        LifxConnectorConjector()
             .manageHubRequestsForDevice(deviceEntityAbstract);
       } else {
         logger
@@ -71,12 +80,17 @@ class CompanysConnectorConjector {
       TasmotaConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
       ESPHomeConnectorConjector.companyDevices.addEntries([devicesEntry]);
-    } else if (deviceVendor == VendorsAndServices.switcher.toString()) {
+    } else if (deviceVendor ==
+        VendorsAndServices.switcherSmartHome.toString()) {
       SwitcherConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.google.toString()) {
       GoogleConnectorConjector.companyDevices.addEntries([devicesEntry]);
-    } else if (deviceVendor == VendorsAndServices.xiaomiMiio.toString()) {
+    } else if (deviceVendor == VendorsAndServices.miHome.toString()) {
       XiaomiIoConnectorConjector.companyDevices.addEntries([devicesEntry]);
+    } else if (deviceVendor == VendorsAndServices.tuyaSmart.toString()) {
+      TuyaSmartConnectorConjector.companyDevices.addEntries([devicesEntry]);
+    } else if (deviceVendor == VendorsAndServices.lifx.toString()) {
+      LifxConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else {
       print('Cannot add device entity to its repo, type not supported');
     }

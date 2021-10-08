@@ -3,66 +3,70 @@ import 'dart:async';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/lifx/lifx_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/lifx/lifx_white/lifx_white_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:lifx_http_api/lifx_http_api.dart' as lifx;
 import 'package:multicast_dns/multicast_dns.dart';
-import 'package:yeedart/yeedart.dart';
 
 @singleton
-class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
-  YeelightConnectorConjector() {
+class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
+  Future<String> accountLogin(String apiKey) async {
+    lifxClient = lifx.Client(apiKey);
     _discoverNewDevices();
+    return 'Success';
   }
 
   @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
+  static lifx.Client? lifxClient;
+
   Future<void> _discoverNewDevices() async {
     while (true) {
       try {
-        final responses = await Yeelight.discover();
-        for (final DiscoveryResponse yeelightDevice in responses) {
+        final Iterable<lifx.Bulb> lights = await lifxClient!.listLights();
+
+        for (final lifx.Bulb lifxDevice in lights) {
           bool deviceExist = false;
           for (DeviceEntityAbstract savedDevice in companyDevices.values) {
-            savedDevice = savedDevice as Yeelight1SeEntity;
+            savedDevice = savedDevice as LifxWhiteEntity;
 
-            if (yeelightDevice.id.toString() ==
-                savedDevice.yeelightDeviceId!.getOrCrash()) {
+            if (lifxDevice.id == savedDevice.lifxDeviceId!.getOrCrash()) {
               deviceExist = true;
               break;
             }
           }
           if (!deviceExist) {
             final DeviceEntityAbstract addDevice =
-                YeelightHelpers.addDiscoverdDevice(yeelightDevice);
+                LifxHelpers.addDiscoverdDevice(lifxDevice);
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
             final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
                 MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
             companyDevices.addEntries([deviceAsEntry]);
 
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-            print('New yeelight devices where add');
+            print('New Lifx devices where add');
           }
         }
         await Future.delayed(const Duration(minutes: 3));
       } catch (e) {
-        print('Error discover in yeelight $e');
+        print('Error discover in Lifx $e');
         await Future.delayed(const Duration(minutes: 1));
       }
     }
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract yeelight) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract lifx) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract yeelight) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract lifx) {
     // TODO: implement delete
     throw UnimplementedError();
   }
@@ -75,15 +79,14 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
 
   @override
   Future<void> manageHubRequestsForDevice(
-    DeviceEntityAbstract yeelightDE,
+    DeviceEntityAbstract lifxDE,
   ) async {
-    final DeviceEntityAbstract? device =
-        companyDevices[yeelightDE.getDeviceId()];
+    final DeviceEntityAbstract? device = companyDevices[lifxDE.getDeviceId()];
 
-    if (device is Yeelight1SeEntity) {
-      device.executeDeviceAction(yeelightDE);
+    if (device is LifxWhiteEntity) {
+      device.executeDeviceAction(lifxDE);
     } else {
-      print('Yeelight device type does not exist');
+      print('Lifx device type does not exist');
     }
   }
 
