@@ -3,70 +3,74 @@ import 'dart:async';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/lifx/lifx_helpers.dart';
-import 'package:cbj_hub/infrastructure/devices/lifx/lifx_white/lifx_white_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_jbt_a70_rgbcw_wf/tuya_smart_jbt_a70_rgbcw_wf_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_switch/tuya_smart_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:lifx_http_api/lifx_http_api.dart' as lifx;
 import 'package:multicast_dns/multicast_dns.dart';
 
 @singleton
-class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
-  Future<String> accountLogin(String apiKey) async {
-    lifxClient = lifx.Client(apiKey);
-    _discoverNewDevices();
-    return 'Success';
-  }
+class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
+  TuyaSmartConnectorConjector() {}
+
+  static late CloudTuya cloudTuya;
 
   @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
-  static lifx.Client? lifxClient;
-
   Future<void> _discoverNewDevices() async {
     while (true) {
       try {
-        final Iterable<lifx.Bulb> lights = await lifxClient!.listLights();
+        final List<TuyaDeviceAbstract> deviceList =
+            await cloudTuya.findDevices();
 
-        for (final lifx.Bulb lifxDevice in lights) {
+        for (final TuyaDeviceAbstract tuyaDevice in deviceList) {
           bool deviceExist = false;
-          for (DeviceEntityAbstract savedDevice in companyDevices.values) {
-            savedDevice = savedDevice as LifxWhiteEntity;
-
-            if (lifxDevice.id == savedDevice.lifxDeviceId!.getOrCrash()) {
-              deviceExist = true;
+          for (final DeviceEntityAbstract savedDevice
+              in companyDevices.values) {
+            if (savedDevice is TuyaSmartJbtA70RgbcwWfEntity) {
+              if (tuyaDevice.id ==
+                  savedDevice.tuyaSmartDeviceId!.getOrCrash()) {
+                deviceExist = true;
+                break;
+              }
+            } else {
+              print('please add new tuya device type');
               break;
             }
           }
           if (!deviceExist) {
             final DeviceEntityAbstract addDevice =
-                LifxHelpers.addDiscoverdDevice(lifxDevice);
+                TuyaSmartHelpers.addDiscoverdDevice(tuyaDevice);
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
             final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
                 MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
             companyDevices.addEntries([deviceAsEntry]);
 
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-            print('New Lifx devices where add');
+            print('New Tuya devices where add');
           }
         }
         await Future.delayed(const Duration(minutes: 3));
       } catch (e) {
-        print('Error discover in Lifx $e');
+        print('Error discover in Tuya $e');
         await Future.delayed(const Duration(minutes: 1));
       }
     }
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract lifx) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tuya_smart) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract lifx) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract tuya_smart) {
     // TODO: implement delete
     throw UnimplementedError();
   }
@@ -79,14 +83,17 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
 
   @override
   Future<void> manageHubRequestsForDevice(
-    DeviceEntityAbstract lifxDE,
+    DeviceEntityAbstract tuya_smartDE,
   ) async {
-    final DeviceEntityAbstract? device = companyDevices[lifxDE.getDeviceId()];
+    final DeviceEntityAbstract? device =
+        companyDevices[tuya_smartDE.getDeviceId()];
 
-    if (device is LifxWhiteEntity) {
-      device.executeDeviceAction(lifxDE);
+    if (device is TuyaSmartJbtA70RgbcwWfEntity) {
+      device.executeDeviceAction(tuya_smartDE);
+    } else if (device is TuyaSmartSwitchEntity) {
+      device.executeDeviceAction(tuya_smartDE);
     } else {
-      print('Lifx device type does not exist');
+      print('TuyaSmart device type does not exist');
     }
   }
 

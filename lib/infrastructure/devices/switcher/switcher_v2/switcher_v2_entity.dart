@@ -79,14 +79,18 @@ class SwitcherV2Entity extends GenericBoilerDE {
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
     if (newEntity is! GenericBoilerDE) {
-      return left(const CoreFailure.actionExcecuter(
-          failedValue: 'Not the correct type'));
+      return left(
+        const CoreFailure.actionExcecuter(
+          failedValue: 'Not the correct type',
+        ),
+      );
     }
 
     if (newEntity.boilerSwitchState!.getOrCrash() !=
         boilerSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.boilerSwitchState!.getOrCrash());
+        newEntity.boilerSwitchState!.getOrCrash(),
+      );
 
       if (actionToPreform.toString() != boilerSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {

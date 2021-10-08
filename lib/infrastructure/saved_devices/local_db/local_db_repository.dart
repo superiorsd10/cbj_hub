@@ -34,7 +34,7 @@ class LocalDbRepository extends ILocalDbRepository {
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
       lightSwitchState:
-          GenericLightSwitchState(DeviceActions.actionNotSupported.toString()),
+          GenericSwitchState(DeviceActions.actionNotSupported.toString()),
       espHomeSwitchKey: ESPHomeSwitchKey('1711856045'),
       deviceMdnsName: DeviceMdnsName('livingroom'),
       lastKnownIp: DeviceLastKnownIp('192.168.31.62'),
@@ -74,7 +74,7 @@ class LocalDbRepository extends ILocalDbRepository {
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
       lightSwitchState:
-          GenericLightSwitchState(DeviceActions.actionNotSupported.toString()),
+          GenericSwitchState(DeviceActions.actionNotSupported.toString()),
       tasmotaDeviceTopicName: TasmotaDeviceTopicName('tasmota_D663A6'),
       tasmotaDeviceId: TasmotaDeviceId('asdas23ds'),
     );

@@ -33,6 +33,8 @@ dependencies:
   json_serializable: ^5.0.0
   # Port of Kotlin's Kotlin Standard library for Dart/Flutter projects
   kt_dart: ^0.9.1
+  # Implementation of the LIFX HTTP API
+  lifx_http_api: ^0.0.11+2
   # Collection of lint rules for Dart and Flutter projects
   lint: ^1.7.2
   # Small, easy to use and extensible logger which prints beautiful logs.

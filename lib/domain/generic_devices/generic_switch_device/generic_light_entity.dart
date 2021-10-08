@@ -1,17 +1,17 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/generic_devices/generic_blinds_device/generic_blinds_device_dtos.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/generic_light_device/generic_light_device_dtos.dart';
 import 'package:dartz/dartz.dart';
 
-/// Abstract smart GenericBlinds that exist inside a computer, the
-/// implementations will be actual GenericBlinds like blinds blindss and more
-class GenericBlindsDE extends DeviceEntityAbstract {
-  /// All public field of GenericBlinds entity
-  GenericBlindsDE({
+/// Abstract smart GenericLight that exist inside a computer, the
+/// implementations will be actual GenericLight like blinds lights and more
+class GenericSwitchDE extends DeviceEntityAbstract {
+  /// All public field of GenericLight entity
+  GenericSwitchDE({
     required CoreUniqueId uniqueId,
     required CoreUniqueId roomId,
     required DeviceVendor deviceVendor,
@@ -24,12 +24,12 @@ class GenericBlindsDE extends DeviceEntityAbstract {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     DevicePowerConsumption? powerConsumption,
-    required this.blindsSwitchState,
+    required this.switchState,
   }) : super(
           uniqueId: uniqueId,
           defaultName: defaultName,
           roomId: roomId,
-          deviceTypes: DeviceType(DeviceTypes.blinds.toString()),
+          deviceTypes: DeviceType(DeviceTypes.light.toString()),
           deviceVendor: deviceVendor,
           deviceStateGRPC: deviceStateGRPC,
           compUuid: compUuid,
@@ -40,11 +40,11 @@ class GenericBlindsDE extends DeviceEntityAbstract {
           stateMassage: stateMassage,
         );
 
-  /// State of the blinds on/off
-  GenericBlindsSwitchState? blindsSwitchState;
+  /// State of the switch on/off
+  GenericSwitchState? switchState;
 
-  /// Empty instance of GenericBlindsEntity
-  factory GenericBlindsDE.empty() => GenericBlindsDE(
+  /// Empty instance of GenericLightEntity
+  factory GenericSwitchDE.empty() => GenericSwitchDE(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName(''),
       roomId: CoreUniqueId(),
@@ -57,8 +57,7 @@ class GenericBlindsDE extends DeviceEntityAbstract {
       deviceVendor: DeviceVendor(''),
       compUuid: DeviceCompUuid(''),
       powerConsumption: DevicePowerConsumption(''),
-      blindsSwitchState:
-          GenericBlindsSwitchState(DeviceActions.off.toString()));
+      switchState: GenericSwitchState(DeviceActions.off.toString()));
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
@@ -88,8 +87,8 @@ class GenericBlindsDE extends DeviceEntityAbstract {
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
-    return GenericBlindsDeviceDtos(
-      deviceDtoClass: (GenericBlindsDeviceDtos).toString(),
+    return GenericLightDeviceDtos(
+      deviceDtoClass: (GenericLightDeviceDtos).toString(),
       id: uniqueId.getOrCrash(),
       defaultName: defaultName.getOrCrash(),
       roomId: roomId.getOrCrash(),
@@ -101,7 +100,7 @@ class GenericBlindsDE extends DeviceEntityAbstract {
       senderId: senderId.getOrCrash(),
       deviceTypes: deviceTypes.getOrCrash(),
       compUuid: compUuid.getOrCrash(),
-      blindsSwitchState: blindsSwitchState!.getOrCrash(),
+      lightSwitchState: switchState!.getOrCrash(),
       deviceVendor: deviceVendor.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
@@ -119,7 +118,7 @@ class GenericBlindsDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> moveUpBlinds() async {
+  Future<Either<CoreFailure, Unit>> turnOnLight() async {
     print('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
@@ -129,17 +128,7 @@ class GenericBlindsDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> stopBlinds() async {
-    print('Please override this method in the non generic implementation');
-    return left(
-      const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist',
-      ),
-    );
-  }
-
-  /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> moveDownBlinds() async {
+  Future<Either<CoreFailure, Unit>> turnOffLight() async {
     print('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(

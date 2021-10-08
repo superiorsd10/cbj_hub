@@ -41,7 +41,7 @@ class GenericLightDE extends DeviceEntityAbstract {
         );
 
   /// State of the light on/off
-  GenericLightSwitchState? lightSwitchState;
+  GenericSwitchState? lightSwitchState;
 
   /// Empty instance of GenericLightEntity
   factory GenericLightDE.empty() => GenericLightDE(
@@ -57,7 +57,7 @@ class GenericLightDE extends DeviceEntityAbstract {
       deviceVendor: DeviceVendor(''),
       compUuid: DeviceCompUuid(''),
       powerConsumption: DevicePowerConsumption(''),
-      lightSwitchState: GenericLightSwitchState(DeviceActions.off.toString()));
+      lightSwitchState: GenericSwitchState(DeviceActions.off.toString()));
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
@@ -110,21 +110,30 @@ class GenericLightDE extends DeviceEntityAbstract {
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 }

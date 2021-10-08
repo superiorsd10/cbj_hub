@@ -15,7 +15,9 @@ class HubAppServer extends CbjHubServiceBase {
 
   @override
   Stream<RequestsAndStatusFromHub> clientTransferDevices(
-      ServiceCall call, Stream<ClientStatusRequests> request) async* {
+    ServiceCall call,
+    Stream<ClientStatusRequests> request,
+  ) async* {
     try {
       print('Got new Client');
 
@@ -39,7 +41,9 @@ class HubAppServer extends CbjHubServiceBase {
 
   @override
   Stream<ClientStatusRequests> hubTransferDevices(
-      ServiceCall call, Stream<RequestsAndStatusFromHub> request) async* {
+    ServiceCall call,
+    Stream<RequestsAndStatusFromHub> request,
+  ) async* {
     // TODO: implement registerHub
     throw UnimplementedError();
   }
