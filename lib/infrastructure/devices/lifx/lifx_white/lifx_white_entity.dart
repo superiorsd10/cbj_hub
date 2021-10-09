@@ -96,9 +96,12 @@ class LifxWhiteEntity extends GenericLightDE {
         throw 'setStateBodyResponse is null';
       }
 
-      return left(const CoreFailure.unexpected());
+      return right(unit);
     } catch (e) {
-      return left(const CoreFailure.unexpected());
+      // As we are using the fast = true the response is always
+      // LifxHttpException Error
+      return right(unit);
+      // return left(const CoreFailure.unexpected());
     }
   }
 
@@ -113,9 +116,12 @@ class LifxWhiteEntity extends GenericLightDE {
       if (setStateBodyResponse == null) {
         throw 'setStateBodyResponse is null';
       }
-      return left(const CoreFailure.unexpected());
+      return right(unit);
     } catch (e) {
-      return left(const CoreFailure.unexpected());
+      // As we are using the fast = true the response is always
+      // LifxHttpException Error
+      return right(unit);
+      // return left(const CoreFailure.unexpected());
     }
   }
 }
