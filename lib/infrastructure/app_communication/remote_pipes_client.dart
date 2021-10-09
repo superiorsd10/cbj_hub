@@ -49,9 +49,10 @@ class RemotePipesClient {
   static Future<ClientChannel> _createCbjHubClient(
       String deviceIp, int hubPort) async {
     await channel?.shutdown();
-    return ClientChannel(deviceIp,
-        port: hubPort,
-        options:
-            const ChannelOptions(credentials: ChannelCredentials.insecure()));
+    return ClientChannel(
+      deviceIp,
+      port: hubPort,
+      options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
+    );
   }
 }

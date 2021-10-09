@@ -5,6 +5,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boi
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/generic_boiler_device/generic_boiler_device_dtos.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
 /// Abstract smart GenericBoiler that exist inside a computer, the
@@ -42,6 +43,7 @@ class GenericBoilerDE extends DeviceEntityAbstract {
 
   /// State of the boiler on/off
   GenericBoilerSwitchState? boilerSwitchState;
+  DevicePowerConsumption? powerConsumption;
 
   /// Empty instance of GenericBoilerEntity
   factory GenericBoilerDE.empty() => GenericBoilerDE(
@@ -57,7 +59,8 @@ class GenericBoilerDE extends DeviceEntityAbstract {
       deviceVendor: DeviceVendor(''),
       compUuid: DeviceCompUuid(''),
       powerConsumption: DevicePowerConsumption(''),
-      boilerSwitchState: GenericBoilerSwitchState(DeviceActions.off.toString()));
+      boilerSwitchState:
+          GenericBoilerSwitchState(DeviceActions.off.toString()));
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
@@ -109,22 +112,31 @@ class GenericBoilerDE extends DeviceEntityAbstract {
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
       DeviceEntityAbstract newEntity) async {
-    print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    logger.w('Please override this method in the non generic implementation');
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> turnOnBoiler() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> turnOffBoiler() async {
     print('Please override this method in the non generic implementation');
-    return left(const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist'));
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
   }
 }

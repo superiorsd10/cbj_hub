@@ -25,94 +25,111 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   Future<void> discoverNewDevices() async {
-    //TODO: We need to write to mqtt massage that will make all the tasmota
-    // devices repost in discovery. Currently we recognize only the tasmota
-    // devices that coming online after the program got turned on.
     getIt<IMqttServerRepository>()
-        .streamOfChosenSubscription('tasmota/discovery/#')
+        .streamOfChosenSubscription('tasmota/discovery/+/config')
         .listen((mqttPublishMessage) async {
       final String messageTopic = mqttPublishMessage[0].topic;
+
       final List<String> topicsSplitted = messageTopic.split('/');
-      if (topicsSplitted.length < 2) {
-        return;
-      }
+
       final String deviceId = topicsSplitted[2];
-      final String deviceDeviceTypeThatChanged = topicsSplitted[3];
 
-      final DeviceEntityAbstract? tasmotaDeviceToAdd = await mqttToDevice(
-          MapEntry(deviceId,
-              {deviceDeviceTypeThatChanged: mqttPublishMessage[0].payload}));
-
-      if (tasmotaDeviceToAdd == null) {
-        return;
-      }
       bool deviceExist = false;
       for (DeviceEntityAbstract savedDevice in companyDevices.values) {
         savedDevice = savedDevice as TasmotaLedEntity;
-        final TasmotaLedEntity tasmotaDeviceAsLed =
-            tasmotaDeviceToAdd as TasmotaLedEntity;
 
-        if (tasmotaDeviceAsLed.tasmotaDeviceTopicName.getOrCrash() ==
-            savedDevice.tasmotaDeviceTopicName.getOrCrash()) {
+        if (deviceId == savedDevice.tasmotaDeviceId.getOrCrash()) {
           deviceExist = true;
           break;
         }
       }
-      if (!deviceExist) {
-        print('Adding tasmota device');
-        final MapEntry<String, DeviceEntityAbstract> deviceAsEntry = MapEntry(
-            tasmotaDeviceToAdd.uniqueId.getOrCrash()!, tasmotaDeviceToAdd);
-        companyDevices.addEntries([deviceAsEntry]);
-
-        CompanysConnectorConjector.addDiscoverdDeviceToHub(tasmotaDeviceToAdd);
+      if (deviceExist) {
+        return;
       }
+
+      final DeviceEntityAbstract? tasmotaDeviceToAdd = await mqttToDevice(
+        MapEntry(messageTopic, mqttPublishMessage[0].payload),
+      );
+
+      if (tasmotaDeviceToAdd == null) {
+        return;
+      }
+      print('Adding tasmota device');
+      final MapEntry<String, DeviceEntityAbstract> deviceAsEntry = MapEntry(
+        tasmotaDeviceToAdd.uniqueId.getOrCrash()!,
+        tasmotaDeviceToAdd,
+      );
+      companyDevices.addEntries([deviceAsEntry]);
+
+      CompanysConnectorConjector.addDiscoverdDeviceToHub(tasmotaDeviceToAdd);
     });
+
+    /// Make all tasmota devices repost themselves under topic discovery
+    /// in the MQTT broker
+    getIt<IMqttServerRepository>()
+        .publishMessage('cmnd/tasmotas/SetOption19', '0');
   }
 
   static Future<DeviceEntityAbstract?> mqttToDevice(
-      MapEntry<String, Map<String, dynamic>> deviceChangeFromMqtt) async {
+      MapEntry<String, dynamic> deviceChangeFromMqtt) async {
     DeviceEntityAbstract? tasmotaDeviceToAdd;
-    final Map<String, dynamic> devicePropertyAndValues =
-        deviceChangeFromMqtt.value;
 
-    for (final String property in devicePropertyAndValues.keys) {
-      if (property != 'config') {
-        continue;
-      }
-      final String pt = MqttPublishPayload.bytesToStringAsString(
-              (devicePropertyAndValues[property] as MqttPublishMessage)
-                  .payload
-                  .message)
-          .replaceAll('\n', '');
-      String deviceTopicName = pt.substring(pt.indexOf('"t":"'));
-      deviceTopicName = deviceTopicName.substring(
-          deviceTopicName.indexOf(':') + 2, deviceTopicName.indexOf('",'));
-
-      String stateValues = pt.substring(pt.indexOf('state'));
-      stateValues = stateValues.substring(
-          stateValues.indexOf(':'), stateValues.indexOf('],') + 1);
-
-      if (stateValues.contains('["OFF","ON","TOGGLE","HOLD"]')) {
-        // Than device is light or switch
-        tasmotaDeviceToAdd = TasmotaLedEntity(
-          uniqueId: CoreUniqueId(),
-          defaultName: DeviceDefaultName('Tasmota test 1'),
-          roomId: CoreUniqueId.newDevicesRoom(),
-          roomName: DeviceRoomName(' '),
-          deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
-          senderDeviceOs: DeviceSenderDeviceOs('Tasmota'),
-          senderDeviceModel: DeviceSenderDeviceModel('LED'),
-          senderId: DeviceSenderId(),
-          compUuid: DeviceCompUuid('34asd233asfdggggg'),
-          stateMassage: DeviceStateMassage('Hello World'),
-          powerConsumption: DevicePowerConsumption('0'),
-          lightSwitchState: GenericLightSwitchState(
-              DeviceActions.actionNotSupported.toString()),
-          tasmotaDeviceTopicName: TasmotaDeviceTopicName(deviceTopicName),
-        );
-      }
+    final List<String> topicsSplitted = deviceChangeFromMqtt.key.split('/');
+    if (topicsSplitted.length < 3) {
+      return null;
     }
+    final String deviceId = topicsSplitted[2];
+
+    if (topicsSplitted[3] != 'config') {
+      return null;
+    }
+
+    final String pt = MqttPublishPayload.bytesToStringAsString(
+      (deviceChangeFromMqtt.value as MqttPublishMessage).payload.message,
+    ).replaceAll('\n', '');
+
+    final String deviceTopic = getValueFromMqttResult(pt, '"t"')!;
+
+    final String? mac = getValueFromMqttResult(pt, 'mac');
+
+    /// Check if this is result full of info and not just response for action
+    if (mac == null) {
+      return null;
+    }
+
+    final String name = getValueFromMqttResult(pt, 'dn')!;
+
+    DeviceActions deviceActions = DeviceActions.actionNotSupported;
+
+    // Than device is light or switch
+    tasmotaDeviceToAdd = TasmotaLedEntity(
+      uniqueId: CoreUniqueId(),
+      defaultName: DeviceDefaultName(name),
+      roomId: CoreUniqueId.newDevicesRoom(),
+      roomName: DeviceRoomName('Discovered'),
+      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
+      senderDeviceOs: DeviceSenderDeviceOs('Tasmota'),
+      senderDeviceModel: DeviceSenderDeviceModel('LED'),
+      senderId: DeviceSenderId(),
+      compUuid: DeviceCompUuid(mac),
+      stateMassage: DeviceStateMassage('Hello World'),
+      powerConsumption: DevicePowerConsumption('0'),
+      lightSwitchState: GenericSwitchState(deviceActions.toString()),
+      tasmotaDeviceTopicName: TasmotaDeviceTopicName(deviceTopic),
+      tasmotaDeviceId: TasmotaDeviceId(deviceId),
+    );
     return tasmotaDeviceToAdd;
+  }
+
+  static String? getValueFromMqttResult(String result, String valueName) {
+    String value;
+    try {
+      value = result.substring(result.indexOf(valueName));
+      value = value.substring(value.indexOf(':') + 2, value.indexOf(',') - 1);
+    } catch (e) {
+      return null;
+    }
+    return value;
   }
 
   @override

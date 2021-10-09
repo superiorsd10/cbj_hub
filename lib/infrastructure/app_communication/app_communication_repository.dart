@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
+import 'package:cbj_hub/infrastructure/app_communication/remote_pipes_client.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
@@ -19,7 +22,7 @@ import 'package:rxdart/rxdart.dart';
 @LazySingleton(as: IAppCommunicationRepository)
 class AppCommunicationRepository extends IAppCommunicationRepository {
   AppCommunicationRepository() {
-    if(currentEnv == Env.prod){
+    if (currentEnv == Env.prod) {
       hubPort = 60055;
     } else {
       hubPort = 50055;
@@ -39,7 +42,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   }
 
   Future startRemotePipesConnection() async {
-    // RemotePipesClient.createStreamWithHub('', 50051);
+    RemotePipesClient.createStreamWithHub('172.104.231.123', 50051);
+    // RemotePipesClient.createStreamWithHub('192.168.31.154', 50051);
     // RemotePipesClient.createStreamWithHub('127.0.0.1', 50051);
     print('Creating connection with remote pipes');
   }
@@ -84,7 +88,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   }
 
   static Future<void> seindToMqtt(
-      DeviceEntityAbstract deviceEntityFromApp) async {
+    DeviceEntityAbstract deviceEntityFromApp,
+  ) async {
     final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
     final Map<String, DeviceEntityAbstract> allDevices =
         await savedDevicesRepo.getAllDevices();
@@ -98,19 +103,34 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
     MapEntry<String, DeviceEntityAbstract> deviceFromApp;
 
-    if (savedDeviceEntity is GenericLightDE) {
-      final GenericLightDE savedDeviceEntityFromApp =
-          deviceEntityFromApp as GenericLightDE;
-      savedDeviceEntity.lightSwitchState =
-          savedDeviceEntityFromApp.lightSwitchState;
+    if (savedDeviceEntity is GenericLightDE &&
+        deviceEntityFromApp is GenericLightDE) {
+      savedDeviceEntity.lightSwitchState = deviceEntityFromApp.lightSwitchState;
 
       deviceFromApp =
           MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
-    } else if (savedDeviceEntity is GenericRgbwLightDE) {
-      final GenericRgbwLightDE savedDeviceEntityFromApp =
-          deviceEntityFromApp as GenericRgbwLightDE;
-      savedDeviceEntity.lightSwitchState =
-          savedDeviceEntityFromApp.lightSwitchState;
+    } else if (savedDeviceEntity is GenericRgbwLightDE &&
+        deviceEntityFromApp is GenericRgbwLightDE) {
+      savedDeviceEntity.lightSwitchState = deviceEntityFromApp.lightSwitchState;
+      savedDeviceEntity.lightColorSaturation =
+          deviceEntityFromApp.lightColorSaturation;
+      savedDeviceEntity.lightColorHue = deviceEntityFromApp.lightColorHue;
+      savedDeviceEntity.lightColorAlpha = deviceEntityFromApp.lightColorAlpha;
+      savedDeviceEntity.lightColorValue = deviceEntityFromApp.lightColorValue;
+
+      deviceFromApp =
+          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
+    } else if (savedDeviceEntity is GenericBoilerDE &&
+        deviceEntityFromApp is GenericBoilerDE) {
+      savedDeviceEntity.boilerSwitchState =
+          deviceEntityFromApp.boilerSwitchState;
+
+      deviceFromApp =
+          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
+    } else if (savedDeviceEntity is GenericBlindsDE &&
+        deviceEntityFromApp is GenericBlindsDE) {
+      savedDeviceEntity.blindsSwitchState =
+          deviceEntityFromApp.blindsSwitchState;
 
       deviceFromApp =
           MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);

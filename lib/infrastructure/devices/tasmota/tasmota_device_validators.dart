@@ -9,3 +9,12 @@ Either<CoreFailure<String>, String> validateTasmotaDeviceTopicNameNotEmpty(
     return left(CoreFailure.empty(failedValue: input));
   }
 }
+
+Either<CoreFailure<String>, String> validateTasmotaDeviceIdNotEmpty(
+    String input) {
+  if (input != null) {
+    return right(input);
+  } else {
+    return left(CoreFailure.empty(failedValue: input));
+  }
+}

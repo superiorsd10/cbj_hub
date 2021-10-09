@@ -90,7 +90,8 @@ class EspHomeApi {
         else if (responseType == 19) {
           print('responseType is ListEntitiesDoneResponse');
           print(
-              'ListEntitiesDoneResponse data: ${utf8.decode(data.sublist(3))}');
+            'ListEntitiesDoneResponse data: ${utf8.decode(data.sublist(3))}',
+          );
           print('');
         }
 
@@ -260,8 +261,10 @@ class EspHomeApi {
   Future<void> ping() async {
     // connect to the socket server
     final socket = await fSocket;
-    print('Connected request to: '
-        '${socket.remoteAddress.address}:${socket.remotePort}');
+    print(
+      'Connected request to: '
+      '${socket.remoteAddress.address}:${socket.remotePort}',
+    );
 
     final PingRequest helloRequest = PingRequest();
 
@@ -294,8 +297,10 @@ class EspHomeApi {
   Future<void> deviceInfoRequestToEsp() async {
     // connect to the socket server
     final socket = await fSocket;
-    print('Connected request to:'
-        ' ${socket.remoteAddress.address}:${socket.remotePort}');
+    print(
+      'Connected request to:'
+      ' ${socket.remoteAddress.address}:${socket.remotePort}',
+    );
 
     final DeviceInfoRequest deviceInfoRequest = DeviceInfoRequest();
 
@@ -328,8 +333,10 @@ class EspHomeApi {
   Future<void> subscribeStatesRequest() async {
     // connect to the socket server
     final socket = await fSocket;
-    print('Connected request to:'
-        ' ${socket.remoteAddress.address}:${socket.remotePort}');
+    print(
+      'Connected request to:'
+      ' ${socket.remoteAddress.address}:${socket.remotePort}',
+    );
 
     final SubscribeStatesRequest subscribeStateReq = SubscribeStatesRequest();
 
@@ -366,8 +373,10 @@ class EspHomeApi {
     }
     // connect to the socket server
     final socket = await fSocket;
-    print('Connected request to:'
-        ' ${socket.remoteAddress.address}:${socket.remotePort}');
+    print(
+      'Connected request to:'
+      ' ${socket.remoteAddress.address}:${socket.remotePort}',
+    );
 
     final SwitchCommandRequest switchCommandRequest =
         SwitchCommandRequest(key: deviceKey, state: changeTostate);
@@ -430,8 +439,10 @@ class EspHomeApi {
     }
     // connect to the socket server
     final socket = await fSocket;
-    print('Connected request to:'
-        ' ${socket.remoteAddress.address}:${socket.remotePort}');
+    print(
+      'Connected request to:'
+      ' ${socket.remoteAddress.address}:${socket.remotePort}',
+    );
 
     final ListEntitiesRequest switchCommandRequest = ListEntitiesRequest();
 

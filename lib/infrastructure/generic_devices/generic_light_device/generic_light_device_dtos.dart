@@ -73,7 +73,7 @@ abstract class GenericLightDeviceDtos
       senderId: DeviceSenderId.fromUniqueString(senderId),
       deviceVendor: DeviceVendor(deviceVendor),
       compUuid: DeviceCompUuid(compUuid),
-      lightSwitchState: GenericLightSwitchState(lightSwitchState),
+      lightSwitchState: GenericSwitchState(lightSwitchState),
     );
   }
 }
