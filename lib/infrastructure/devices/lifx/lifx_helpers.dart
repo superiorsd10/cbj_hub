@@ -5,6 +5,7 @@ import 'package:cbj_hub/infrastructure/devices/lifx/lifx_device_value_objects.da
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_white/lifx_white_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:lifx_http_api/lifx_http_api.dart' as lifx;
+import 'package:lifx_http_api/lifx_http_api.dart';
 
 class LifxHelpers {
   static DeviceEntityAbstract addDiscoverdDevice(
@@ -25,7 +26,8 @@ class LifxHelpers {
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
       lifxDeviceId: LifxDeviceId(lifxDevice.id),
-      lightSwitchState: GenericSwitchState(lifxDevice.power.toString()),
+      lightSwitchState:
+          GenericSwitchState((lifxDevice.power == LifxPower.on).toString()),
     );
 
     return lifxDE;

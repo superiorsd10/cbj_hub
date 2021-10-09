@@ -8,11 +8,14 @@ import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boi
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
+import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
 import 'package:cbj_hub/infrastructure/app_communication/remote_pipes_client.dart';
+import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/generic_vendors_login/vendor_helper.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:grpc/grpc.dart';
 import 'package:injectable/injectable.dart';
@@ -80,14 +83,19 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         final DeviceEntityAbstract deviceEntityFromApp =
             DeviceHelper.convertJsonStringToDomain(event.allRemoteCommands);
 
-        seindToMqtt(deviceEntityFromApp);
+        sendToMqtt(deviceEntityFromApp);
+      } else if (event.sendingType == SendingType.vendorLoginType) {
+        final LoginEntityAbstract loginEntityFromApp =
+            VendorHelper.convertJsonStringToDomain(event.allRemoteCommands);
+
+        sendLoginToVendor(loginEntityFromApp);
       } else {
         print('Request from app does not support this sending device type');
       }
     }).onError((error) => print('Stream getFromApp have error $error'));
   }
 
-  static Future<void> seindToMqtt(
+  static Future<void> sendToMqtt(
     DeviceEntityAbstract deviceEntityFromApp,
   ) async {
     final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
@@ -139,6 +147,12 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       return;
     }
     ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
+  }
+
+  static Future<void> sendLoginToVendor(
+    LoginEntityAbstract loginEntityFromApp,
+  ) async {
+    CompanysConnectorConjector.setVendorLoginCredentials(loginEntityFromApp);
   }
 
   static Future<void> sendAllDevicesToHubRequestsStream() async {

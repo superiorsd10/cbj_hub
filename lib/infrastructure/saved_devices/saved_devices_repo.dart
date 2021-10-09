@@ -21,8 +21,11 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
       allDevices[deviceEntity.getDeviceId()] = deviceEntity;
 
       ConnectorStreamToMqtt.toMqttController.sink.add(
-          MapEntry<String, DeviceEntityAbstract>(deviceEntity.getDeviceId(),
-              allDevices[deviceEntity.getDeviceId()]!));
+        MapEntry<String, DeviceEntityAbstract>(
+          deviceEntity.getDeviceId(),
+          allDevices[deviceEntity.getDeviceId()]!,
+        ),
+      );
     }
 
     return 'add or updated success';

@@ -1,5 +1,7 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
+import 'package:cbj_hub/domain/vendors/lifx_login/generic_lifx_login_entity.dart';
+import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
@@ -98,5 +100,13 @@ class CompanysConnectorConjector {
 
   static void addDiscoverdDeviceToHub(DeviceEntityAbstract deviceEntity) {
     getIt<ISavedDevicesRepo>().addOrUpdateDevice(deviceEntity);
+  }
+
+  static void setVendorLoginCredentials(LoginEntityAbstract loginEntity) {
+    if (loginEntity is GenericLifxLoginDE) {
+      getIt<LifxConnectorConjector>().accountLogin(loginEntity);
+    } else {
+      logger.w('Vendor login type ${loginEntity.runtimeType} is not supported');
+    }
   }
 }
