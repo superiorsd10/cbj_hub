@@ -4,6 +4,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/philips_hue/philips_hue_e26/philips_hue_e26_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:multicast_dns/multicast_dns.dart';
@@ -20,42 +21,39 @@ class PhilipsHueConnectorConjector
 
   Future<void> _discoverNewDevices() async {}
 
-  @override
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract philips_hue) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract philipsHue) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  @override
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract philips_hue) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract philipsHue) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
   }
 
-  @override
   Future<void> manageHubRequestsForDevice(
-      DeviceEntityAbstract philips_hueDE) async {
+    DeviceEntityAbstract philipsHueDE,
+  ) async {
     final DeviceEntityAbstract? device =
-        companyDevices[philips_hueDE.getDeviceId()];
+        companyDevices[philipsHueDE.getDeviceId()];
 
     if (device is PhilipsHueE26Entity) {
-      device.executeDeviceAction(philips_hueDE);
+      device.executeDeviceAction(philipsHueDE);
     } else {
-      print('PhilipsHue device type does not exist');
+      logger.w('PhilipsHue device type does not exist');
     }
   }
 
-  @override
-  Future<Either<CoreFailure, Unit>> updateDatabase(
-      {required String pathOfField,
-      required Map<String, dynamic> fieldsToUpdate,
-      String? forceUpdateLocation}) async {
+  Future<Either<CoreFailure, Unit>> updateDatabase({
+    required String pathOfField,
+    required Map<String, dynamic> fieldsToUpdate,
+    String? forceUpdateLocation,
+  }) async {
     // TODO: implement updateDatabase
     throw UnimplementedError();
   }
@@ -75,12 +73,15 @@ class PhilipsHueConnectorConjector
       // other mDNS queries are running elsewhere on the machine.
       await for (final SrvResourceRecord srv
           in client.lookup<SrvResourceRecord>(
-              ResourceRecordQuery.service(ptr.domainName))) {
+        ResourceRecordQuery.service(ptr.domainName),
+      )) {
         // Domain name will be something like "io.flutter.example@some-iphone.local._dartobservatory._tcp.local"
         final String bundleId =
             ptr.domainName; //.substring(0, ptr.domainName.indexOf('@'));
-        print('Dart observatory instance found at '
-            '${srv.target}:${srv.port} for "$bundleId".');
+        logger.v(
+          'Dart observatory instance found at '
+          '${srv.target}:${srv.port} for "$bundleId".',
+        );
       }
     }
     return null;

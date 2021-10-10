@@ -10,7 +10,8 @@ Either<CoreFailure<String>, String> validatePhilipsHueIdNotEmpty(String input) {
 }
 
 Either<CoreFailure<String>, String> validatePhilipsHuePortNotEmpty(
-    String input) {
+  String input,
+) {
   if (input != null) {
     return right(input);
   } else {

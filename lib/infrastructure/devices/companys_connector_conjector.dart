@@ -16,7 +16,7 @@ import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 
 class CompanysConnectorConjector {
-  static updateAllDevicesReposWithDeviceChanges(
+  static void updateAllDevicesReposWithDeviceChanges(
     Stream<DeviceEntityAbstract> allDevices,
   ) {
     allDevices.listen((deviceEntityAbstract) {
@@ -54,7 +54,8 @@ class CompanysConnectorConjector {
     });
   }
 
-  static addAllDevicesToItsRepos(Map<String, DeviceEntityAbstract> allDevices) {
+  static void addAllDevicesToItsRepos(
+      Map<String, DeviceEntityAbstract> allDevices) {
     for (final String deviceId in allDevices.keys) {
       final MapEntry<String, DeviceEntityAbstract> currentDeviceMapEntry =
           MapEntry<String, DeviceEntityAbstract>(
@@ -65,7 +66,7 @@ class CompanysConnectorConjector {
     }
   }
 
-  static addDeviceToItsRepo(
+  static void addDeviceToItsRepo(
     MapEntry<String, DeviceEntityAbstract> deviceEntityAbstract,
   ) {
     final MapEntry<String, DeviceEntityAbstract> devicesEntry =
@@ -95,7 +96,7 @@ class CompanysConnectorConjector {
     } else if (deviceVendor == VendorsAndServices.lifx.toString()) {
       LifxConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else {
-      print('Cannot add device entity to its repo, type not supported');
+      logger.w('Cannot add device entity to its repo, type not supported');
     }
   }
 

@@ -4,8 +4,8 @@ import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart'
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/injection.dart';
-import 'package:grpc/service_api.dart';
 import 'package:cbj_hub/utils.dart';
+import 'package:grpc/service_api.dart';
 
 /// Server to get and send information to the app
 class HubAppServer extends CbjHubServiceBase {
@@ -19,7 +19,7 @@ class HubAppServer extends CbjHubServiceBase {
     Stream<ClientStatusRequests> request,
   ) async* {
     try {
-      print('Got new Client');
+      logger.v('Got new Client');
 
       getIt<IAppCommunicationRepository>().getFromApp(request);
 
@@ -27,12 +27,14 @@ class HubAppServer extends CbjHubServiceBase {
       AppCommunicationRepository.sendAllDevicesToHubRequestsStream();
 
       yield* HubRequestsToApp.streamRequestsToApp
-          .map((DeviceEntityDtoAbstract deviceEntityDto) =>
-              RequestsAndStatusFromHub(
-                sendingType: SendingType.deviceType,
-                allRemoteCommands:
-                    DeviceHelper.convertDtoToJsonString(deviceEntityDto),
-              ))
+          .map(
+            (DeviceEntityDtoAbstract deviceEntityDto) =>
+                RequestsAndStatusFromHub(
+              sendingType: SendingType.deviceType,
+              allRemoteCommands:
+                  DeviceHelper.convertDtoToJsonString(deviceEntityDto),
+            ),
+          )
           .handleError((error) => logger.e('Stream have error $error'));
     } catch (e) {
       logger.e('Hub server error $e');

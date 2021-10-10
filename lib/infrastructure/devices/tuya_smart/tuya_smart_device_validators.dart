@@ -10,7 +10,8 @@ Either<CoreFailure<String>, String> validateTuyaSmartIdNotEmpty(String input) {
 }
 
 Either<CoreFailure<String>, String> validateTuyaSmartPortNotEmpty(
-    String input) {
+  String input,
+) {
   if (input != null) {
     return right(input);
   } else {

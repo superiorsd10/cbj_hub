@@ -9,8 +9,8 @@ import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boi
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_api_object.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
-import 'package:dartz/dartz.dart';
 import 'package:cbj_hub/utils.dart';
+import 'package:dartz/dartz.dart';
 
 class SwitcherV2Entity extends GenericBoilerDE {
   SwitcherV2Entity({
@@ -77,7 +77,8 @@ class SwitcherV2Entity extends GenericBoilerDE {
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity) async {
+    DeviceEntityAbstract newEntity,
+  ) async {
     if (newEntity is! GenericBoilerDE) {
       return left(
         const CoreFailure.actionExcecuter(
@@ -94,11 +95,15 @@ class SwitcherV2Entity extends GenericBoilerDE {
 
       if (actionToPreform.toString() != boilerSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
-          (await turnOnBoiler()).fold((l) => logger.e('Error turning boiler on'),
-              (r) => print('Boiler turn on success'));
+          (await turnOnBoiler()).fold(
+            (l) => logger.e('Error turning boiler on'),
+            (r) => logger.i('Boiler turn on success'),
+          );
         } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffBoiler()).fold((l) => logger.e('Error turning boiler off'),
-              (r) => print('Boiler turn off success'));
+          (await turnOffBoiler()).fold(
+            (l) => logger.e('Error turning boiler off'),
+            (r) => logger.i('Boiler turn off success'),
+          );
         } else {
           logger.e('actionToPreform is not set correctly on Switcher V2');
         }

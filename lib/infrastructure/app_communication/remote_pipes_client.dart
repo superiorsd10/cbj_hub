@@ -6,8 +6,8 @@ import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart'
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/injection.dart';
-import 'package:grpc/grpc.dart';
 import 'package:cbj_hub/utils.dart';
+import 'package:grpc/grpc.dart';
 
 class RemotePipesClient {
   static ClientChannel? channel;
@@ -16,7 +16,9 @@ class RemotePipesClient {
   // createStreamWithRemotePipes
   ///  Turn smart device on
   static Future<void> createStreamWithHub(
-      String addressToHub, int hubPort) async {
+    String addressToHub,
+    int hubPort,
+  ) async {
     channel = await _createCbjHubClient(addressToHub, hubPort);
     stub = CbjHubClient(channel!);
 
@@ -26,12 +28,14 @@ class RemotePipesClient {
       response = stub!.hubTransferDevices(
         /// Transfer all requests from hub to the remote pipes->app
         HubRequestsToApp.streamRequestsToApp
-            .map((DeviceEntityDtoAbstract deviceEntityDto) =>
-                RequestsAndStatusFromHub(
-                  sendingType: SendingType.deviceType,
-                  allRemoteCommands:
-                      DeviceHelper.convertDtoToJsonString(deviceEntityDto),
-                ))
+            .map(
+              (DeviceEntityDtoAbstract deviceEntityDto) =>
+                  RequestsAndStatusFromHub(
+                sendingType: SendingType.deviceType,
+                allRemoteCommands:
+                    DeviceHelper.convertDtoToJsonString(deviceEntityDto),
+              ),
+            )
             .handleError((error) => logger.e('Stream have error $error')),
       );
 
@@ -48,7 +52,9 @@ class RemotePipesClient {
   }
 
   static Future<ClientChannel> _createCbjHubClient(
-      String deviceIp, int hubPort) async {
+    String deviceIp,
+    int hubPort,
+  ) async {
     await channel?.shutdown();
     return ClientChannel(
       deviceIp,

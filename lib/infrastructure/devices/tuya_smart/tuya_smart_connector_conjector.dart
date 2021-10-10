@@ -74,41 +74,36 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tuyaSmart) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract tuyaSmart) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
   }
 
-  @override
   Future<void> manageHubRequestsForDevice(
-    DeviceEntityAbstract tuya_smartDE,
+    DeviceEntityAbstract tuyaSmartDE,
   ) async {
     final DeviceEntityAbstract? device =
-        companyDevices[tuya_smartDE.getDeviceId()];
+        companyDevices[tuyaSmartDE.getDeviceId()];
 
     if (device is TuyaSmartJbtA70RgbcwWfEntity) {
-      device.executeDeviceAction(tuya_smartDE);
+      device.executeDeviceAction(tuyaSmartDE);
     } else if (device is TuyaSmartSwitchEntity) {
-      device.executeDeviceAction(tuya_smartDE);
+      device.executeDeviceAction(tuyaSmartDE);
     } else {
       logger.w('TuyaSmart device type does not exist');
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> updateDatabase({
     required String pathOfField,
     required Map<String, dynamic> fieldsToUpdate,

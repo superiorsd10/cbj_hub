@@ -49,7 +49,8 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
           senderId: senderId,
           // TODO: change when implementing philips hue
           deviceVendor: DeviceVendor(
-              VendorsAndServices.vendorsAndServicesNotSupported.toString()),
+            VendorsAndServices.vendorsAndServicesNotSupported.toString(),
+          ),
           compUuid: compUuid,
           powerConsumption: powerConsumption,
           lightColorTemperature: lightColorTemperature,

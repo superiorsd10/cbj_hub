@@ -2,11 +2,11 @@ import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:mqtt_client/src/observable/src/records.dart';
-import 'package:cbj_hub/utils.dart';
 
 @LazySingleton(as: IMqttServerRepository)
 class MqttServerRepository extends IMqttServerRepository {
@@ -50,7 +50,7 @@ class MqttServerRepository extends IMqttServerRepository {
         .startClean()
         .withWillQos(MqttQos.atLeastOnce);
 
-    print('Client connecting');
+    logger.v('Client connecting');
     client.connectionMessage = connMessage;
     try {
       await client.connect();
@@ -88,13 +88,15 @@ class MqttServerRepository extends IMqttServerRepository {
       streamOfAllDevicesHubSubscriptions() async* {
     await connect();
     yield* MqttClientTopicFilter(
-            '$hubBaseTopic/$devicesTopicTypeName/#', client.updates)
-        .updates;
+      '$hubBaseTopic/$devicesTopicTypeName/#',
+      client.updates,
+    ).updates;
   }
 
   @override
   Stream<List<MqttReceivedMessage<MqttMessage?>>> streamOfChosenSubscription(
-      String topicPath) async* {
+    String topicPath,
+  ) async* {
     await connect();
     yield* MqttClientTopicFilter(topicPath, client.updates).updates;
   }
@@ -111,8 +113,12 @@ class MqttServerRepository extends IMqttServerRepository {
       final String deviceId = topicsSplitted[2];
       final String deviceDeviceTypeThatChanged = topicsSplitted[3];
 
-      Connector.updateDevicesFromMqttDeviceChange(MapEntry(deviceId,
-          {deviceDeviceTypeThatChanged: mqttPublishMessage[0].payload}));
+      Connector.updateDevicesFromMqttDeviceChange(
+        MapEntry(
+          deviceId,
+          {deviceDeviceTypeThatChanged: mqttPublishMessage[0].payload},
+        ),
+      );
     });
   }
 
@@ -134,8 +140,10 @@ class MqttServerRepository extends IMqttServerRepository {
     for (final String propertyTopicAndMassage
         in devicePropertiesAsMqttTopicsAndValues.keys) {
       final MapEntry<String, String> deviceTopicAndProperty =
-          MapEntry<String, String>(propertyTopicAndMassage,
-              devicePropertiesAsMqttTopicsAndValues[propertyTopicAndMassage]!);
+          MapEntry<String, String>(
+        propertyTopicAndMassage,
+        devicePropertiesAsMqttTopicsAndValues[propertyTopicAndMassage]!,
+      );
       publishMessage(deviceTopicAndProperty.key, deviceTopicAndProperty.value);
     }
   }
@@ -150,7 +158,7 @@ class MqttServerRepository extends IMqttServerRepository {
         mqttClientTopic.updates.asBroadcastStream();
 
     // myValueStream.listen((event) {
-    //   print(event);
+    //   logger.v(event);
     // });
     // final List<MqttReceivedMessage<MqttMessage?>> result =
     //     await myValueStream.first;
@@ -162,37 +170,38 @@ class MqttServerRepository extends IMqttServerRepository {
 
   /// Callback function for connection succeeded
   void onConnected() {
-    print('Connected');
+    logger.v('Connected');
   }
 
   /// Unconnected
   void onDisconnected() {
-    print('Disconnected');
+    logger.v('Disconnected');
   }
 
   /// subscribe to topic succeeded
   void onSubscribed(String topic) {
-    print('Subscribed topic: $topic');
+    logger.v('Subscribed topic: $topic');
   }
 
   /// subscribe to topic failed
   void onSubscribeFail(String topic) {
-    print('Failed to subscribe $topic');
+    logger.v('Failed to subscribe $topic');
   }
 
   /// unsubscribe succeeded
   void onUnsubscribed(String? topic) {
-    print('Unsubscribed topic: $topic');
+    logger.v('Unsubscribed topic: $topic');
   }
 
   /// PING response received
   void pong() {
-    print('Ping response client callback invoked');
+    logger.v('Ping response client callback invoked');
   }
 
   /// Convert device entity properties to mqtt topic and massage
   Map<String, String> deviceEntityPropertiesToListOfTopicAndValue(
-      DeviceEntityDtoAbstract deviceEntity) {
+    DeviceEntityDtoAbstract deviceEntity,
+  ) {
     final Map<String, dynamic> json = deviceEntity.toJson();
     final String deviceId = json['id'].toString();
 
@@ -202,10 +211,11 @@ class MqttServerRepository extends IMqttServerRepository {
       if (devicePropertyKey == 'id') {
         continue;
       }
-      final MapEntry<String, String> topicAndProperty = MapEntry<String,
-              String>(
-          '$hubBaseTopic/$devicesTopicTypeName/$deviceId/$devicePropertyKey',
-          json[devicePropertyKey].toString());
+      final MapEntry<String, String> topicAndProperty =
+          MapEntry<String, String>(
+        '$hubBaseTopic/$devicesTopicTypeName/$deviceId/$devicePropertyKey',
+        json[devicePropertyKey].toString(),
+      );
       topicsAndProperties.addEntries([topicAndProperty]);
     }
 
@@ -213,8 +223,10 @@ class MqttServerRepository extends IMqttServerRepository {
   }
 
   /// Get saved device dto from mqtt by device id
-  Future<DeviceEntityDtoAbstract> getDeviceDtoFromMqtt(String deviceId,
-      {String? deviceComponentKey}) async {
+  Future<DeviceEntityDtoAbstract> getDeviceDtoFromMqtt(
+    String deviceId, {
+    String? deviceComponentKey,
+  }) async {
     String pathToDeviceTopic = '$hubBaseTopic/$devicesTopicTypeName/$deviceId';
 
     if (deviceComponentKey != null) {
@@ -222,7 +234,7 @@ class MqttServerRepository extends IMqttServerRepository {
     }
     final List<ChangeRecord>? a =
         await readingFromMqttOnce('$pathToDeviceTopic/type');
-    print('This is a $a');
+    logger.v('This is a $a');
     return DeviceEntityDtoAbstract();
   }
 }

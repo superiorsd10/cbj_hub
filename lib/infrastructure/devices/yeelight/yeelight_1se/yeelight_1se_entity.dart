@@ -227,6 +227,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   }
 
   /// Please override the following methods
+  @override
   Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
     // lightBrightness = GenericRgbwLightBrightness();
 

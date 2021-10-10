@@ -60,25 +60,21 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract lifx) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract lifx) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
   }
 
-  @override
   Future<void> manageHubRequestsForDevice(
     DeviceEntityAbstract lifxDE,
   ) async {
@@ -91,7 +87,6 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> updateDatabase({
     required String pathOfField,
     required Map<String, dynamic> fieldsToUpdate,

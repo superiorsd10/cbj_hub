@@ -11,31 +11,28 @@ part 'generic_light_device_dtos.g.dart';
 @freezed
 abstract class GenericSwitchDeviceDtos
     implements _$GenericSwitchDeviceDtos, DeviceEntityDtoAbstract {
-  factory GenericSwitchDeviceDtos(
-      {
-      // @JsonKey(ignore: true)
-      String? deviceDtoClass,
-      String? id,
-      required String? defaultName,
-      required String? roomId,
-      required String? roomName,
-      required String? deviceStateGRPC,
-      String? stateMassage,
-      required String? senderDeviceOs,
-      required String? senderDeviceModel,
-      required String? senderId,
-      required String? switchState,
-      required String? deviceTypes,
-      required String? compUuid,
-      required String? deviceVendor
+  factory GenericSwitchDeviceDtos({
+    // @JsonKey(ignore: true)
+    String? deviceDtoClass,
+    String? id,
+    required String? defaultName,
+    required String? roomId,
+    required String? roomName,
+    required String? deviceStateGRPC,
+    String? stateMassage,
+    required String? senderDeviceOs,
+    required String? senderDeviceModel,
+    required String? senderId,
+    required String? switchState,
+    required String? deviceTypes,
+    required String? compUuid,
+    required String? deviceVendor
 
-      // required ServerTimestampConverter() FieldValue serverTimeStamp,
-      }) = _GenericLightDeviceDtos;
+    // required ServerTimestampConverter() FieldValue serverTimeStamp,
+    ,
+  }) = _GenericLightDeviceDtos;
 
   GenericSwitchDeviceDtos._();
-
-  @override
-  final String deviceDtoClassInstance = (GenericSwitchDeviceDtos).toString();
 
   factory GenericSwitchDeviceDtos.fromDomain(GenericSwitchDE genericSwitchDe) {
     return GenericSwitchDeviceDtos(
@@ -60,6 +57,10 @@ abstract class GenericSwitchDeviceDtos
   factory GenericSwitchDeviceDtos.fromJson(Map<String, dynamic> json) =>
       _$GenericSwitchDeviceDtosFromJson(json);
 
+  @override
+  final String deviceDtoClassInstance = (GenericSwitchDeviceDtos).toString();
+
+  @override
   DeviceEntityAbstract toDomain() {
     return GenericSwitchDE(
       uniqueId: CoreUniqueId.fromUniqueString(id),

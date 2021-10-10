@@ -4,6 +4,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_light/esphome_light_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:multicast_dns/multicast_dns.dart';
@@ -13,25 +14,21 @@ class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
   @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
-  @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract espHome) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract espHome) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
   }
 
-  @override
   Future<void> manageHubRequestsForDevice(
     DeviceEntityAbstract espHomeDE,
   ) async {
@@ -41,17 +38,17 @@ class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
     if (device is ESPHomeLightEntity) {
       device.executeDeviceAction(espHomeDE);
     } else {
-      print('ESPHome device type does not exist');
+      logger.w('ESPHome device type does not exist');
     }
 
-    print('manageHubRequestsForDevice in ESPHome');
+    logger.v('manageHubRequestsForDevice in ESPHome');
   }
 
-  @override
-  Future<Either<CoreFailure, Unit>> updateDatabase(
-      {required String pathOfField,
-      required Map<String, dynamic> fieldsToUpdate,
-      String? forceUpdateLocation}) async {
+  Future<Either<CoreFailure, Unit>> updateDatabase({
+    required String pathOfField,
+    required Map<String, dynamic> fieldsToUpdate,
+    String? forceUpdateLocation,
+  }) async {
     // TODO: implement updateDatabase
     throw UnimplementedError();
   }
@@ -76,7 +73,7 @@ class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
         // Domain name will be something like "io.flutter.example@some-iphone.local._dartobservatory._tcp.local"
         final String bundleId =
             ptr.domainName; //.substring(0, ptr.domainName.indexOf('@'));
-        print(
+        logger.v(
           'Dart observatory instance found at '
           '${srv.target}:${srv.port} for "$bundleId".',
         );

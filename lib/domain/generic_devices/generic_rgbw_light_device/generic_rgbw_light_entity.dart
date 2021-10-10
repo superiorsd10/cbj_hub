@@ -47,27 +47,6 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
           stateMassage: stateMassage,
         );
 
-  /// State of the light on/off
-  GenericRgbwLightSwitchState? lightSwitchState;
-
-  /// Color temperature in int
-  GenericRgbwLightColorTemperature? lightColorTemperature;
-
-  /// Color alpha in double
-  GenericRgbwLightColorAlpha lightColorAlpha;
-
-  /// Color hue in double
-  GenericRgbwLightColorHue lightColorHue;
-
-  /// Color saturation in double
-  GenericRgbwLightColorSaturation lightColorSaturation;
-
-  /// Color value in double
-  GenericRgbwLightColorValue lightColorValue;
-
-  /// Brightness 0-100%
-  GenericRgbwLightBrightness lightBrightness;
-
   /// Empty instance of GenericLightEntity
   factory GenericRgbwLightDE.empty() => GenericRgbwLightDE(
         uniqueId: CoreUniqueId(),
@@ -91,6 +70,27 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
         lightColorSaturation: GenericRgbwLightColorSaturation(''),
         lightColorValue: GenericRgbwLightColorValue(''),
       );
+
+  /// State of the light on/off
+  GenericRgbwLightSwitchState? lightSwitchState;
+
+  /// Color temperature in int
+  GenericRgbwLightColorTemperature? lightColorTemperature;
+
+  /// Color alpha in double
+  GenericRgbwLightColorAlpha lightColorAlpha;
+
+  /// Color hue in double
+  GenericRgbwLightColorHue lightColorHue;
+
+  /// Color saturation in double
+  GenericRgbwLightColorSaturation lightColorSaturation;
+
+  /// Color value in double
+  GenericRgbwLightColorValue lightColorValue;
+
+  /// Brightness 0-100%
+  GenericRgbwLightBrightness lightBrightness;
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields

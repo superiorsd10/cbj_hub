@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_api_object.dart';
+import 'package:cbj_hub/utils.dart';
 
 class SwitcherDiscover {
   static const switcherUdpPort = 20002;
@@ -22,7 +23,7 @@ class SwitcherDiscover {
         yield switcherApiObject;
       }
     } catch (e) {
-      print('Switcher discover devices got and exception: $e');
+      logger.e('Switcher discover devices got and exception: $e');
     }
   }
 
@@ -42,7 +43,7 @@ class SwitcherDiscover {
         yield switcherApiObject;
       }
     } catch (e) {
-      print('Switcher discover devices got and exception: $e');
+      logger.e('Switcher discover devices got and exception: $e');
     }
   }
 }

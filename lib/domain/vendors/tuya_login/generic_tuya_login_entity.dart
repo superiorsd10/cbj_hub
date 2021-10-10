@@ -23,6 +23,16 @@ class GenericTuyaLoginDE extends LoginEntityAbstract {
           loginVendor: CoreLoginVendor(VendorsAndServices.tuyaSmart.name),
         );
 
+  /// Empty instance of GenericTuyaEntity
+  factory GenericTuyaLoginDE.empty() => GenericTuyaLoginDE(
+        senderUniqueId: CoreLoginSenderId.fromUniqueString(''),
+        tuyaUserName: GenericTuyaLoginUserName(''),
+        tuyaUserPassword: GenericTuyaLoginUserPassword(''),
+        tuyaCountryCode: GenericTuyaLoginCountryCode(''),
+        tuyaBizType: GenericTuyaLoginBizType(''),
+        tuyaRegion: GenericTuyaLoginRegion(''),
+      );
+
   /// User name
   GenericTuyaLoginUserName tuyaUserName;
 
@@ -37,16 +47,6 @@ class GenericTuyaLoginDE extends LoginEntityAbstract {
 
   /// Region of the user, can be cn, eu, us
   GenericTuyaLoginRegion tuyaRegion;
-
-  /// Empty instance of GenericTuyaEntity
-  factory GenericTuyaLoginDE.empty() => GenericTuyaLoginDE(
-        senderUniqueId: CoreLoginSenderId.fromUniqueString(''),
-        tuyaUserName: GenericTuyaLoginUserName(''),
-        tuyaUserPassword: GenericTuyaLoginUserPassword(''),
-        tuyaCountryCode: GenericTuyaLoginCountryCode(''),
-        tuyaBizType: GenericTuyaLoginBizType(''),
-        tuyaRegion: GenericTuyaLoginRegion(''),
-      );
 
   Option<CoreLoginFailure<dynamic>> get failureOption =>
       senderUniqueId.value.fold((f) => some(f), (_) => none());

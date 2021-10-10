@@ -17,6 +17,7 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/generic_vendors_login/vendor_helper.dart';
 import 'package:cbj_hub/injection.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -41,25 +42,20 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   Future startLocalServer() async {
     final server = Server([HubAppServer()]);
     await server.serve(port: hubPort);
-    print('Hub Server listening for apps clients on port ${server.port}...');
+    logger.i('Hub Server listening for apps clients on port ${server.port}...');
   }
 
   Future startRemotePipesConnection() async {
     RemotePipesClient.createStreamWithHub('172.104.231.123', 50051);
     // RemotePipesClient.createStreamWithHub('192.168.31.154', 50051);
     // RemotePipesClient.createStreamWithHub('127.0.0.1', 50051);
-    print('Creating connection with remote pipes');
+    logger.i('Creating connection with remote pipes');
   }
 
   @override
   void sendToApp(Stream<MqttPublishMessage> dataToSend) {
     dataToSend.listen((MqttPublishMessage event) async {
-      print('Got AppRequestsToHub');
-
-      // final DeviceEntity deviceEntityToSend = getIt<ILocalDbRepository>()
-      //     .getSmartDevices()
-      //     .firstWhere((element) =>
-      //         element.id!.getOrCrash() == event.variableHeader?.topicName);
+      logger.i('Got AppRequestsToHub');
 
       (await getIt<ISavedDevicesRepo>().getAllDevices())
           .forEach((String id, deviceEntityToSend) {
@@ -67,17 +63,13 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
             DeviceHelper.convertDomainToDto(deviceEntityToSend);
         HubRequestsToApp.streamRequestsToApp.sink.add(deviceDtoAbstract);
       });
-
-      // print('Will send the topic "${event.payload.variableHeader?.topicName}" '
-      //     'change with massage '
-      //     '"${String.fromCharCodes(event.payload.message!)}" to the app ');
     });
   }
 
   @override
   Future<void> getFromApp(Stream<ClientStatusRequests> request) async {
     request.listen((event) async {
-      print('Got From App');
+      logger.i('Got From App');
 
       if (event.sendingType == SendingType.deviceType) {
         final DeviceEntityAbstract deviceEntityFromApp =
@@ -90,9 +82,9 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
         sendLoginToVendor(loginEntityFromApp);
       } else {
-        print('Request from app does not support this sending device type');
+        logger.w('Request from app does not support this sending device type');
       }
-    }).onError((error) => print('Stream getFromApp have error $error'));
+    }).onError((error) => logger.e('Stream getFromApp have error $error'));
   }
 
   static Future<void> sendToMqtt(
@@ -105,7 +97,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         allDevices[deviceEntityFromApp.getDeviceId()];
 
     if (savedDeviceEntity == null) {
-      print('Device id does not match existing device');
+      logger.w('Device id does not match existing device');
       return;
     }
 
@@ -143,7 +135,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       deviceFromApp =
           MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
     } else {
-      print('Cant find device from app type');
+      logger.w('Cant find device from app type');
       return;
     }
     ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);

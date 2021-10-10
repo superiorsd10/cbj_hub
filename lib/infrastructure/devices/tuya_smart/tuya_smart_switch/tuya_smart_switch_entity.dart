@@ -10,6 +10,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_lig
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:yeedart/yeedart.dart';
 
@@ -71,17 +72,18 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
       if (actionToPreform.toString() != switchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => print('Error turning tuya_smart light on'),
-            (r) => print('Light turn on success'),
+            (l) => logger.e('Error turning tuya_smart light on'),
+            (r) => logger.i('Light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => print('Error turning tuya_smart light off'),
-            (r) => print('Light turn off success'),
+            (l) => logger.e('Error turning tuya_smart light off'),
+            (r) => logger.i('Light turn off success'),
           );
         } else {
-          print(
-              'actionToPreform is not set correctly on TuyaSmart JbtA70RgbcwWfEntity');
+          logger.w(
+            'actionToPreform is not set correctly on TuyaSmart JbtA70RgbcwWfEntity',
+          );
         }
       }
     }

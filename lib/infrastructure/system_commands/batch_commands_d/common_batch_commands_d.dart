@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cbj_hub/infrastructure/system_commands/system_commands_base_class_d.dart';
+import 'package:cbj_hub/utils.dart';
 
 class CommonBatchCommandsD implements SystemCommandsBaseClassD {
   @override
@@ -50,8 +51,9 @@ class CommonBatchCommandsD implements SystemCommandsBaseClassD {
   @override
   Future<String> getFileContent(fileFullPath) async {
     final String fileText = await Process.run(
-            'cmd', <String>['/C', 'more', fileFullPath.toString()])
-        .then((ProcessResult result) {
+      'cmd',
+      <String>['/C', 'more', fileFullPath.toString()],
+    ).then((ProcessResult result) {
       return result.stdout.toString();
     });
     return fileText;
@@ -71,8 +73,9 @@ class CommonBatchCommandsD implements SystemCommandsBaseClassD {
       fileContent = await getFileContent('$fileFullPath.txt');
     }
     if (fileContent.isEmpty) {
-      print(
-          'Config file does not exist or empty, path searching: $fileFullPath');
+      logger.w(
+        'Config file does not exist or empty, path searching: $fileFullPath',
+      );
       return '';
     }
     return fileContent.substring(0, fileContent.indexOf('\r'));
