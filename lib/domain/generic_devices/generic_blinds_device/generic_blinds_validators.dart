@@ -2,7 +2,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:dartz/dartz.dart';
 
 Either<CoreFailure<String>, String> validateGenericBlindsStateNotEmty(
-    String input) {
+  String input,
+) {
   if (input != null) {
     return right(input);
   } else {

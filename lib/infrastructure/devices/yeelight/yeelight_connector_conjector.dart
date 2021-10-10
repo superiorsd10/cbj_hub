@@ -6,11 +6,11 @@ import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_helpers.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import 'package:yeedart/yeedart.dart';
-import 'package:cbj_hub/utils.dart';
 
 @singleton
 class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
@@ -45,7 +45,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
             companyDevices.addEntries([deviceAsEntry]);
 
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-            print('New yeelight devices where add');
+            logger.i('New yeelight devices where add');
           }
         }
         await Future.delayed(const Duration(minutes: 3));
@@ -56,25 +56,21 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract yeelight) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract yeelight) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
   }
 
-  @override
   Future<void> manageHubRequestsForDevice(
     DeviceEntityAbstract yeelightDE,
   ) async {
@@ -84,11 +80,10 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
     if (device is Yeelight1SeEntity) {
       device.executeDeviceAction(yeelightDE);
     } else {
-      print('Yeelight device type does not exist');
+      logger.w('Yeelight device type does not exist');
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> updateDatabase({
     required String pathOfField,
     required Map<String, dynamic> fieldsToUpdate,
@@ -118,7 +113,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
         // Domain name will be something like "io.flutter.example@some-iphone.local._dartobservatory._tcp.local"
         final String bundleId =
             ptr.domainName; //.substring(0, ptr.domainName.indexOf('@'));
-        print(
+        logger.v(
           'Dart observatory instance found at '
           '${srv.target}:${srv.port} for "$bundleId".',
         );

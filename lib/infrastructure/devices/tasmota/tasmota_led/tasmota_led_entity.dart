@@ -8,8 +8,8 @@ import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
-import 'package:dartz/dartz.dart';
 import 'package:cbj_hub/utils.dart';
+import 'package:dartz/dartz.dart';
 
 class TasmotaLedEntity extends GenericLightDE {
   TasmotaLedEntity({
@@ -49,25 +49,27 @@ class TasmotaLedEntity extends GenericLightDE {
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity) async {
+      DeviceEntityAbstract newEntity,) async {
     if (newEntity is! GenericLightDE) {
       return left(const CoreFailure.actionExcecuter(
-          failedValue: 'Not the correct type'));
+          failedValue: 'Not the correct type',),);
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
         lightSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.lightSwitchState!.getOrCrash());
+          newEntity.lightSwitchState!.getOrCrash(),);
 
       if (actionToPreform == DeviceActions.on) {
         (await turnOnLight()).fold(
-            (l) => logger.e('Error turning tasmota light on'),
-            (r) => print('Light turn on success'));
+          (l) => logger.e('Error turning tasmota light on'),
+          (r) => logger.i('Light turn on success'),
+        );
       } else if (actionToPreform == DeviceActions.off) {
         (await turnOffLight()).fold(
-            (l) => logger.e('Error turning tasmota light off'),
-            (r) => print('Light turn off success'));
+          (l) => logger.e('Error turning tasmota light off'),
+          (r) => logger.i('Light turn off success'),
+        );
       } else {
         logger.e('actionToPreform is not set correctly on Tasmota Led');
       }
@@ -82,7 +84,7 @@ class TasmotaLedEntity extends GenericLightDE {
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
-          'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power', 'ON');
+          'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power', 'ON',);
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
@@ -95,7 +97,7 @@ class TasmotaLedEntity extends GenericLightDE {
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
-          'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power', 'OFF');
+          'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power', 'OFF',);
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());

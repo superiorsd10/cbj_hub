@@ -9,10 +9,10 @@ import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:yeedart/yeedart.dart';
-import 'package:cbj_hub/utils.dart';
 
 class Yeelight1SeEntity extends GenericRgbwLightDE {
   Yeelight1SeEntity({
@@ -96,15 +96,15 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
             (l) => logger.e('Error turning yeelight light on'),
-            (r) => print('Light turn on success'),
+            (r) => logger.i('Light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
             (l) => logger.e('Error turning yeelight light off'),
-            (r) => print('Light turn off success'),
+            (r) => logger.i('Light turn off success'),
           );
         } else {
-          logger.e('actionToPreform is not set correctly on Yeelight 1SE');
+          logger.i('actionToPreform is not set correctly on Yeelight 1SE');
         }
       }
     }
@@ -125,7 +125,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       ))
           .fold(
         (l) => logger.e('Error changing yeelight light color'),
-        (r) => print('Light changed color successfully'),
+        (r) => logger.i('Light changed color successfully'),
       );
     }
 
@@ -157,7 +157,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
         );
         if (response == null) {
-          print('Device cant be discovered');
+          logger.v('Device cant be discovered');
           return left(const CoreFailure.unexpected());
         }
         yeelightPackageObject?.disconnect();
@@ -203,7 +203,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
         );
         if (response == null) {
-          print('Device cant be discovered');
+          logger.v('Device cant be discovered');
 
           return left(const CoreFailure.unexpected());
         }
@@ -227,6 +227,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   }
 
   /// Please override the following methods
+  @override
   Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
     // lightBrightness = GenericRgbwLightBrightness();
 
@@ -258,7 +259,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
         );
         if (response == null) {
-          print('Device cant be discovered');
+          logger.v('Device cant be discovered');
           return left(const CoreFailure.unexpected());
         }
 
@@ -328,7 +329,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
         );
         if (response == null) {
-          print('Device cant be discovered');
+          logger.v('Device cant be discovered');
           return left(const CoreFailure.unexpected());
         }
 

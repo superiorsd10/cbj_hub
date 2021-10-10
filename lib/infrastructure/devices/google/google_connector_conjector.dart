@@ -20,25 +20,21 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
 
   Future<void> _discoverNewDevices() async {}
 
-  @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract google) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract google) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
   }
 
-  @override
   Future<void> manageHubRequestsForDevice(DeviceEntityAbstract googleDE) async {
     final DeviceEntityAbstract? device = companyDevices[googleDE.getDeviceId()];
 
@@ -49,11 +45,11 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
     }
   }
 
-  @override
-  Future<Either<CoreFailure, Unit>> updateDatabase(
-      {required String pathOfField,
-      required Map<String, dynamic> fieldsToUpdate,
-      String? forceUpdateLocation}) async {
+  Future<Either<CoreFailure, Unit>> updateDatabase({
+    required String pathOfField,
+    required Map<String, dynamic> fieldsToUpdate,
+    String? forceUpdateLocation,
+  }) async {
     // TODO: implement updateDatabase
     throw UnimplementedError();
   }
@@ -73,11 +69,12 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
       // other mDNS queries are running elsewhere on the machine.
       await for (final SrvResourceRecord srv
           in client.lookup<SrvResourceRecord>(
-              ResourceRecordQuery.service(ptr.domainName))) {
+        ResourceRecordQuery.service(ptr.domainName),
+      )) {
         // Domain name will be something like "io.flutter.example@some-iphone.local._dartobservatory._tcp.local"
         final String bundleId =
             ptr.domainName; //.substring(0, ptr.domainName.indexOf('@'));
-        print(
+        logger.v(
           'Dart observatory instance found at '
           '${srv.target}:${srv.port} for "$bundleId".',
         );

@@ -9,6 +9,7 @@ import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_switch.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_switch/tuya_smart_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/utils.dart';
 
 class TuyaSmartHelpers {
   static DeviceEntityAbstract addDiscoverdDevice(
@@ -67,7 +68,7 @@ class TuyaSmartHelpers {
         switchState: GenericSwitchState(tuyaSmartDevice.state.toString()),
       );
     } else {
-      print('Tuya type does not exist');
+      logger.e('Tuya type does not exist');
       throw 'Error Tuya type does not exist ${tuyaSmartDevice.haType}';
     }
     return tuyaSmartDE;

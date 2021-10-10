@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cbj_hub/utils.dart';
 import 'package:http/http.dart';
 
 import 'tuya_device_abstract.dart';
@@ -24,7 +25,7 @@ class CloudTuya {
 
   /// Country code (International dialing number) sometimes can be called
   /// "Country Calling Code" without the +.
-  /// You can yours from here https://www.countrycode.org
+  /// You can find yours from here https://www.countrycode.org
   String countryCode;
 
   /// App business can be: tuya, smart_life, jinvoo_smart
@@ -65,8 +66,8 @@ class CloudTuya {
     final String responseBody = response.body;
 
     if (responseBody.contains('error')) {
-      print('Error: $responseBody');
-      print('Will try again in 60s');
+      logger.e('Error: $responseBody');
+      logger.i('Will try again in 60s');
       await Future.delayed(const Duration(seconds: 60));
       // Do not remove the await
       await login();
@@ -106,7 +107,6 @@ class CloudTuya {
     final dynamic a = json.decode(responseBody);
     final dynamic devicesList = a['payload']['devices'];
 
-    print('Devices:\n$devicesList');
     final List<TuyaDeviceAbstract> tuyaDeviceList = [];
 
     if (devicesList == null) {
@@ -152,7 +152,7 @@ class CloudTuya {
 
     final dynamic a = json.decode(responseBody);
     final dynamic scenesList = a['payload']['scenes'];
-    print('Scenes:\n$scenesList');
+    logger.v('Scenes:\n$scenesList');
 
     return scenesList;
   }

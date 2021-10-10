@@ -19,7 +19,8 @@ abstract class IMqttServerRepository {
 
   /// Stream of chosen topic, example tasmota discover new devices topic
   Stream<List<MqttReceivedMessage<MqttMessage?>>> streamOfChosenSubscription(
-      String topicPath);
+    String topicPath,
+  );
 
   /// Get hub subscription and for each device change it will call method to
   /// notify the needed devices
@@ -30,7 +31,8 @@ abstract class IMqttServerRepository {
 
   /// Publish all device properties
   Future<void> publishDeviceEntity(
-      DeviceEntityAbstract deviceEntityDtoAbstract);
+    DeviceEntityAbstract deviceEntityDtoAbstract,
+  );
 
   /// Read mqtt last massage in given topic
   Future<List<ChangeRecord>?> readingFromMqttOnce(String topic);

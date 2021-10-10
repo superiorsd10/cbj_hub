@@ -11,31 +11,28 @@ part 'generic_boiler_device_dtos.g.dart';
 @freezed
 abstract class GenericBoilerDeviceDtos
     implements _$GenericBoilerDeviceDtos, DeviceEntityDtoAbstract {
-  factory GenericBoilerDeviceDtos(
-      {
-      // @JsonKey(ignore: true)
-      String? deviceDtoClass,
-      String? id,
-      required String? defaultName,
-      required String? roomId,
-      required String? roomName,
-      required String? deviceStateGRPC,
-      String? stateMassage,
-      required String? senderDeviceOs,
-      required String? senderDeviceModel,
-      required String? senderId,
-      required String? boilerSwitchState,
-      required String? deviceTypes,
-      required String? compUuid,
-      required String? deviceVendor
+  factory GenericBoilerDeviceDtos({
+    // @JsonKey(ignore: true)
+    String? deviceDtoClass,
+    String? id,
+    required String? defaultName,
+    required String? roomId,
+    required String? roomName,
+    required String? deviceStateGRPC,
+    String? stateMassage,
+    required String? senderDeviceOs,
+    required String? senderDeviceModel,
+    required String? senderId,
+    required String? boilerSwitchState,
+    required String? deviceTypes,
+    required String? compUuid,
+    required String? deviceVendor
 
-      // required ServerTimestampConverter() FieldValue serverTimeStamp,
-      }) = _GenericBoilerDeviceDtos;
+    // required ServerTimestampConverter() FieldValue serverTimeStamp,
+    ,
+  }) = _GenericBoilerDeviceDtos;
 
   GenericBoilerDeviceDtos._();
-
-  @override
-  final String deviceDtoClassInstance = (GenericBoilerDeviceDtos).toString();
 
   factory GenericBoilerDeviceDtos.fromDomain(GenericBoilerDE genericBoilerDE) {
     return GenericBoilerDeviceDtos(
@@ -60,6 +57,10 @@ abstract class GenericBoilerDeviceDtos
   factory GenericBoilerDeviceDtos.fromJson(Map<String, dynamic> json) =>
       _$GenericBoilerDeviceDtosFromJson(json);
 
+  @override
+  final String deviceDtoClassInstance = (GenericBoilerDeviceDtos).toString();
+
+  @override
   DeviceEntityAbstract toDomain() {
     return GenericBoilerDE(
       uniqueId: CoreUniqueId.fromUniqueString(id),

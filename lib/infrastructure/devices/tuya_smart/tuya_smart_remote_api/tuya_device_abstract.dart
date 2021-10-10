@@ -13,7 +13,7 @@ abstract class TuyaDeviceAbstract {
   });
 
   factory TuyaDeviceAbstract.fromInternalLinkedHashMap(dynamic deviceHashMap) {
-    String haDeviceTypeString = deviceHashMap['ha_type'] as String;
+    final String haDeviceTypeString = deviceHashMap['ha_type'] as String;
     if (haDeviceTypeString == 'light') {
       return TuyaLight.fromInternalLinkedHashMap(deviceHashMap);
     } else if (haDeviceTypeString == 'switch') {

@@ -11,18 +11,19 @@ import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_e
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:cbj_hub/injection.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 @singleton
 class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
-  @override
-  static Map<String, DeviceEntityAbstract> companyDevices = {};
-
   TasmotaConnectorConjector() {
     discoverNewDevices();
   }
+
+  @override
+  static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> discoverNewDevices() async {
     getIt<IMqttServerRepository>()
@@ -54,7 +55,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
       if (tasmotaDeviceToAdd == null) {
         return;
       }
-      print('Adding tasmota device');
+      logger.v('Adding tasmota device');
       final MapEntry<String, DeviceEntityAbstract> deviceAsEntry = MapEntry(
         tasmotaDeviceToAdd.uniqueId.getOrCrash()!,
         tasmotaDeviceToAdd,
@@ -71,9 +72,8 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   static Future<DeviceEntityAbstract?> mqttToDevice(
-      MapEntry<String, dynamic> deviceChangeFromMqtt) async {
-    DeviceEntityAbstract? tasmotaDeviceToAdd;
-
+    MapEntry<String, dynamic> deviceChangeFromMqtt,
+  ) async {
     final List<String> topicsSplitted = deviceChangeFromMqtt.key.split('/');
     if (topicsSplitted.length < 3) {
       return null;
@@ -99,10 +99,9 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
 
     final String name = getValueFromMqttResult(pt, 'dn')!;
 
-    DeviceActions deviceActions = DeviceActions.actionNotSupported;
+    final DeviceActions deviceActions = DeviceActions.actionNotSupported;
 
-    // Than device is light or switch
-    tasmotaDeviceToAdd = TasmotaLedEntity(
+    return TasmotaLedEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName(name),
       roomId: CoreUniqueId.newDevicesRoom(),
@@ -118,7 +117,6 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
       tasmotaDeviceTopicName: TasmotaDeviceTopicName(deviceTopic),
       tasmotaDeviceId: TasmotaDeviceId(deviceId),
     );
-    return tasmotaDeviceToAdd;
   }
 
   static String? getValueFromMqttResult(String result, String valueName) {
@@ -132,43 +130,40 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
     return value;
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tasmota) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract tasmota) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
   }
 
-  @override
   Future<void> manageHubRequestsForDevice(
-      DeviceEntityAbstract tasmotaDE) async {
+    DeviceEntityAbstract tasmotaDE,
+  ) async {
     final DeviceEntityAbstract? device =
         companyDevices[tasmotaDE.getDeviceId()];
 
     if (device is TasmotaLedEntity) {
       device.executeDeviceAction(tasmotaDE);
     } else {
-      print('Tasmota device type does not exist');
+      logger.w('Tasmota device type does not exist');
     }
-    print('manageHubRequestsForDevice in Tasmota');
+    logger.v('manageHubRequestsForDevice in Tasmota');
   }
 
-  @override
-  Future<Either<CoreFailure, Unit>> updateDatabase(
-      {required String pathOfField,
-      required Map<String, dynamic> fieldsToUpdate,
-      String? forceUpdateLocation}) async {
+  Future<Either<CoreFailure, Unit>> updateDatabase({
+    required String pathOfField,
+    required Map<String, dynamic> fieldsToUpdate,
+    String? forceUpdateLocation,
+  }) async {
     // TODO: implement updateDatabase
     throw UnimplementedError();
   }

@@ -4,6 +4,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/xiaomi_io/xiaomi_io_gpx3021gl/xiaomi_io_gpx3021gl_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
@@ -22,7 +23,7 @@ class XiaomiIoConnectorConjector implements AbstractCompanyConnectorConjector {
     //
     //   await for (final tup.Tuple2<InternetAddress, MiIoPacket> miDevice
     //       in MiIo.instance.discover(internetAddress)) {
-    //     print('miDevice devices $miDevice');
+    //     logger.v('miDevice devices $miDevice');
     //     // MiIo.instance.send(address, packet);
     //   }
     //
@@ -30,7 +31,7 @@ class XiaomiIoConnectorConjector implements AbstractCompanyConnectorConjector {
     //   //
     //   // MiIoPacket a = await MiIo.instance.hello(internetAddress);
     //   // MiIoPacket ab = await MiIo.instance.send(internetAddress, a);
-    //   // print('This is mi packets $a');
+    //   // logger.v('This is mi packets $a');
     // } on MiIoError catch (e) {
     //   logger.e(
     //     'Command failed with error from xiaomi device:\n'
@@ -40,29 +41,25 @@ class XiaomiIoConnectorConjector implements AbstractCompanyConnectorConjector {
     // } on Exception catch (e) {
     //   logger.e('Xiaomi command failed with exception:\n$e');
     // } catch (e) {
-    //   print('All else');
+    //   logger.v('All else');
     // }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract xiaomiIo) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract xiaomiIo) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
-  @override
   Future<void> initiateHubConnection() {
     // TODO: implement initiateHubConnection
     throw UnimplementedError();
   }
 
-  @override
   Future<void> manageHubRequestsForDevice(
     DeviceEntityAbstract xiaomiDE,
   ) async {
@@ -71,15 +68,15 @@ class XiaomiIoConnectorConjector implements AbstractCompanyConnectorConjector {
     if (device is XiaomiIoGpx4021GlEntity) {
       device.executeDeviceAction(xiaomiDE);
     } else {
-      print('XiaomiIo device type does not exist');
+      logger.w('XiaomiIo device type does not exist');
     }
   }
 
-  @override
-  Future<Either<CoreFailure, Unit>> updateDatabase(
-      {required String pathOfField,
-      required Map<String, dynamic> fieldsToUpdate,
-      String? forceUpdateLocation}) async {
+  Future<Either<CoreFailure, Unit>> updateDatabase({
+    required String pathOfField,
+    required Map<String, dynamic> fieldsToUpdate,
+    String? forceUpdateLocation,
+  }) async {
     // TODO: implement updateDatabase
     throw UnimplementedError();
   }

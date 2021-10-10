@@ -1,32 +1,52 @@
-import 'package:cbj_hub/domain/vendors/lifx_login/generic_lifx_login_value_objects.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/core_login_failures.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/value_login_objects_core.dart';
+import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
-import 'package:cbj_hub/infrastructure/generic_vendors_login/generic_lifx_login/generic_lifx_login_dtos.dart';
 import 'package:cbj_hub/infrastructure/generic_vendors_login/generic_login_abstract/login_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/generic_vendors_login/generic_tuya_login/generic_tuya_login_dtos.dart';
 import 'package:dartz/dartz.dart';
 
-/// Abstract smart GenericLifx that exist inside a computer, the
-/// implementations will be actual GenericLifx like blinds lifxs and more
-class GenericLifxLoginDE extends LoginEntityAbstract {
-  /// All public field of GenericLifx entity
-  GenericLifxLoginDE({
+/// Abstract smart GenericTuya that exist inside a computer, the
+/// implementations will be actual GenericTuya like blinds tuyas and more
+class GenericTuyaLoginDE extends LoginEntityAbstract {
+  /// All public field of GenericTuya entity
+  GenericTuyaLoginDE({
     required CoreLoginSenderId senderUniqueId,
-    required this.lifxApiKey,
+    required this.tuyaUserName,
+    required this.tuyaUserPassword,
+    required this.tuyaCountryCode,
+    required this.tuyaBizType,
+    required this.tuyaRegion,
   }) : super(
           senderUniqueId: senderUniqueId,
           loginVendor: CoreLoginVendor(VendorsAndServices.tuyaSmart.name),
         );
 
-  /// Empty instance of GenericLifxEntity
-  factory GenericLifxLoginDE.empty() => GenericLifxLoginDE(
+  /// Empty instance of GenericTuyaEntity
+  factory GenericTuyaLoginDE.empty() => GenericTuyaLoginDE(
         senderUniqueId: CoreLoginSenderId.fromUniqueString(''),
-        lifxApiKey: GenericLifxLoginApiKey(''),
+        tuyaUserName: GenericTuyaLoginUserName(''),
+        tuyaUserPassword: GenericTuyaLoginUserPassword(''),
+        tuyaCountryCode: GenericTuyaLoginCountryCode(''),
+        tuyaBizType: GenericTuyaLoginBizType(''),
+        tuyaRegion: GenericTuyaLoginRegion(''),
       );
 
-  /// Lifx api key
-  GenericLifxLoginApiKey lifxApiKey;
+  /// User name
+  GenericTuyaLoginUserName tuyaUserName;
+
+  /// User password
+  GenericTuyaLoginUserPassword tuyaUserPassword;
+
+  /// User current countryCode or countryCode of registration not sure
+  GenericTuyaLoginCountryCode tuyaCountryCode;
+
+  /// App business can be: tuya, smart_life, jinvoo_smart
+  GenericTuyaLoginBizType tuyaBizType;
+
+  /// Region of the user, can be cn, eu, us
+  GenericTuyaLoginRegion tuyaRegion;
 
   Option<CoreLoginFailure<dynamic>> get failureOption =>
       senderUniqueId.value.fold((f) => some(f), (_) => none());
@@ -54,10 +74,14 @@ class GenericLifxLoginDE extends LoginEntityAbstract {
 
   @override
   LoginEntityDtoAbstract toInfrastructure() {
-    return GenericLifxLoginDtos(
+    return GenericTuyaLoginDtos(
       senderUniqueId: senderUniqueId.getOrCrash(),
       loginVendor: loginVendor.getOrCrash(),
-      lifxApiKey: lifxApiKey.getOrCrash(),
+      userName: tuyaUserName.getOrCrash(),
+      userPassword: tuyaUserPassword.getOrCrash(),
+      countryCode: tuyaCountryCode.getOrCrash(),
+      bizType: tuyaBizType.getOrCrash(),
+      region: tuyaRegion.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
   }
