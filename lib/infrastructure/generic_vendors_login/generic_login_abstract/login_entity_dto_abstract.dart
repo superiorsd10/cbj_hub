@@ -1,6 +1,7 @@
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_vendors_login/generic_lifx_login/generic_lifx_login_dtos.dart';
+import 'package:cbj_hub/infrastructure/generic_vendors_login/generic_tuya_login/generic_tuya_login_dtos.dart';
 
 class LoginEntityDtoAbstract {
   LoginEntityDtoAbstract();
@@ -17,6 +18,8 @@ class LoginEntityDtoAbstract {
 
     if (jsonLoginDtoClass == VendorsAndServices.lifx.toString()) {
       loginEntityDtoAbstract = GenericLifxLoginDtos.fromJson(json);
+    } else if (jsonLoginDtoClass == VendorsAndServices.tuyaSmart.toString()) {
+      loginEntityDtoAbstract = GenericTuyaLoginDtos.fromJson(json);
     } else {
       throw 'DtoClassTypeDoesNotExist';
     }
