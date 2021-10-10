@@ -24,7 +24,7 @@ class CloudTuya {
 
   /// Country code (International dialing number) sometimes can be called
   /// "Country Calling Code" without the +.
-  /// You can yours from here https://www.countrycode.org
+  /// You can find yours from here https://www.countrycode.org
   String countryCode;
 
   /// App business can be: tuya, smart_life, jinvoo_smart
@@ -106,7 +106,6 @@ class CloudTuya {
     final dynamic a = json.decode(responseBody);
     final dynamic devicesList = a['payload']['devices'];
 
-    print('Devices:\n$devicesList');
     final List<TuyaDeviceAbstract> tuyaDeviceList = [];
 
     if (devicesList == null) {

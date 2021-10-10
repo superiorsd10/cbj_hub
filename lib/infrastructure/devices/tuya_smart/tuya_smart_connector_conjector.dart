@@ -50,7 +50,7 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
                 break;
               }
             } else {
-              logger.i('Please add new tuya device type');
+              logger.i('Please add new Tuya device type ${tuyaDevice.haType}');
               break;
             }
           }
@@ -75,13 +75,13 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tuya_smart) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tuyaSmart) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract tuya_smart) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract tuyaSmart) {
     // TODO: implement delete
     throw UnimplementedError();
   }
