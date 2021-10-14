@@ -32,3 +32,18 @@ class SwitcherPort extends ValueObjectCore<String> {
   @override
   final Either<CoreFailure<String>, String> value;
 }
+
+/// Switcher communication port
+class SwitcherMacAddress extends ValueObjectCore<String> {
+  factory SwitcherMacAddress(String? input) {
+    assert(input != null);
+    return SwitcherMacAddress._(
+      validateSwitcherMacAddressNotEmpty(input!),
+    );
+  }
+
+  const SwitcherMacAddress._(this.value);
+
+  @override
+  final Either<CoreFailure<String>, String> value;
+}

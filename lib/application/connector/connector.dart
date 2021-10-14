@@ -25,13 +25,16 @@ class Connector {
         await savedDevicesRepo.getAllDevices();
 
     for (final String deviceId in allDevices.keys) {
-      ConnectorStreamToMqtt.toMqttController.add(allDevices.entries.firstWhere(
-          (MapEntry<String, DeviceEntityAbstract> a) => a.key == deviceId));
+      ConnectorStreamToMqtt.toMqttController.add(
+        allDevices.entries.firstWhere(
+          (MapEntry<String, DeviceEntityAbstract> a) => a.key == deviceId,
+        ),
+      );
     }
 
     Future.delayed(const Duration(milliseconds: 3000)).whenComplete(() {
       print('Go');
-      IAppCommunicationRepository appCommunication =
+      final IAppCommunicationRepository appCommunication =
           getIt<IAppCommunicationRepository>();
     });
 
@@ -39,7 +42,8 @@ class Connector {
     // appCommunication.sendToApp();
 
     CompanysConnectorConjector.updateAllDevicesReposWithDeviceChanges(
-        ConnectorDevicesStreamFromMqtt.fromMqttStream);
+      ConnectorDevicesStreamFromMqtt.fromMqttStream,
+    );
 
     ConnectorDevicesStreamFromMqtt.fromMqttStream.listen((deviceFromMqtt) {
       savedDevicesRepo.addOrUpdateDevice(deviceFromMqtt);
@@ -47,7 +51,8 @@ class Connector {
   }
 
   static Future<void> updateDevicesFromMqttDeviceChange(
-      MapEntry<String, Map<String, dynamic>> deviceChangeFromMqtt) async {
+    MapEntry<String, Map<String, dynamic>> deviceChangeFromMqtt,
+  ) async {
     final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
 
     final Map<String, DeviceEntityAbstract> allDevices =
@@ -60,24 +65,24 @@ class Connector {
       if (d.getDeviceId() == deviceChangeFromMqtt.key) {
         final Map<String, dynamic> deviceAsJson = d.toInfrastructure().toJson();
 
-        for (final String propery in devicePropertyAndValues.keys) {
+        for (final String property in devicePropertyAndValues.keys) {
           final String pt = MqttPublishPayload.bytesToStringAsString(
-                  (devicePropertyAndValues[propery] as MqttPublishMessage)
-                      .payload
-                      .message)
-              .replaceAll('\n', '');
+            (devicePropertyAndValues[property] as MqttPublishMessage)
+                .payload
+                .message,
+          ).replaceAll('\n', '');
 
           final Uint8Buffer valueMessage =
-              (devicePropertyAndValues[propery] as MqttPublishMessage)
+              (devicePropertyAndValues[property] as MqttPublishMessage)
                   .payload
                   .message;
           final String propertyValueString = String.fromCharCodes(valueMessage);
           if (propertyValueString.contains('value')) {
             final Map<String, dynamic> propertyValueJson =
                 jsonDecode(propertyValueString) as Map<String, dynamic>;
-            deviceAsJson[propery] = propertyValueJson['value'];
+            deviceAsJson[property] = propertyValueJson['value'];
           } else {
-            deviceAsJson[propery] = propertyValueString;
+            deviceAsJson[property] = propertyValueString;
           }
           final DeviceEntityAbstract savedDeviceWithSameIdAsMqtt =
               DeviceEntityDtoAbstract.fromJson(deviceAsJson).toDomain();

@@ -23,7 +23,8 @@ class TasmotaLedEntity extends GenericLightDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericLightSwitchState lightSwitchState,
+    required GenericSwitchState lightSwitchState,
+    required this.tasmotaDeviceId,
     required this.tasmotaDeviceTopicName,
   }) : super(
           uniqueId: uniqueId,
@@ -42,6 +43,7 @@ class TasmotaLedEntity extends GenericLightDE {
         );
 
   TasmotaDeviceTopicName tasmotaDeviceTopicName;
+  TasmotaDeviceId tasmotaDeviceId;
 
   /// Please override the following methods
   @override
@@ -58,13 +60,15 @@ class TasmotaLedEntity extends GenericLightDE {
           newEntity.lightSwitchState!.getOrCrash());
 
       if (actionToPreform == DeviceActions.on) {
-        (await turnOnLight()).fold((l) => print('Error turning light on'),
+        (await turnOnLight()).fold(
+            (l) => print('Error turning tasmota light on'),
             (r) => print('Light turn on success'));
       } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffLight()).fold((l) => print('Error turning light off'),
+        (await turnOffLight()).fold(
+            (l) => print('Error turning tasmota light off'),
             (r) => print('Light turn off success'));
       } else {
-        print('actionToPreform is not set correctly');
+        print('actionToPreform is not set correctly on Tasmota Led');
       }
     }
 
@@ -73,7 +77,7 @@ class TasmotaLedEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
+    lightSwitchState = GenericSwitchState(DeviceActions.on.toString());
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
@@ -86,7 +90,7 @@ class TasmotaLedEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    lightSwitchState = GenericLightSwitchState(DeviceActions.off.toString());
+    lightSwitchState = GenericSwitchState(DeviceActions.off.toString());
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
