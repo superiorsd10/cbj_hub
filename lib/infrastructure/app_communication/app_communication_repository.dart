@@ -81,6 +81,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
             VendorHelper.convertJsonStringToDomain(event.allRemoteCommands);
 
         sendLoginToVendor(loginEntityFromApp);
+      } else if (event.sendingType == SendingType.firstConnection) {
+        AppCommunicationRepository.sendAllDevicesToHubRequestsStream();
       } else {
         logger.w('Request from app does not support this sending device type');
       }
@@ -147,6 +149,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     CompanysConnectorConjector.setVendorLoginCredentials(loginEntityFromApp);
   }
 
+  /// Trigger to send all devices from hub to app using the
+  /// HubRequestsToApp stream
   static Future<void> sendAllDevicesToHubRequestsStream() async {
     (await getIt<ISavedDevicesRepo>().getAllDevices())
         .map((String id, DeviceEntityAbstract d) {
