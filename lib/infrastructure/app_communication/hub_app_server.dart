@@ -23,9 +23,6 @@ class HubAppServer extends CbjHubServiceBase {
 
       getIt<IAppCommunicationRepository>().getFromApp(request);
 
-      // For the app to receive all current devices
-      AppCommunicationRepository.sendAllDevicesToHubRequestsStream();
-
       yield* HubRequestsToApp.streamRequestsToApp
           .map(
             (DeviceEntityDtoAbstract deviceEntityDto) =>

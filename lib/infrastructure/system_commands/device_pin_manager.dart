@@ -64,7 +64,7 @@ class DevicePinListManager extends DevicePinListManagerAbstract {
 
       logger.v('phys type is $physicalDeviceType');
     } catch (e) {
-      logger.e('Board type does not exist');
+      logger.w('Board type does not exist');
     }
     logger.i(
       'This device is of type:'

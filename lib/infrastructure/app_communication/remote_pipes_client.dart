@@ -39,10 +39,6 @@ class RemotePipesClient {
             .handleError((error) => logger.e('Stream have error $error')),
       );
 
-      /// Trigger to send all devices from hub to app using the
-      /// HubRequestsToApp stream
-      AppCommunicationRepository.sendAllDevicesToHubRequestsStream();
-
       /// All responses from the app->remote pipes going int the hub
       getIt<IAppCommunicationRepository>().getFromApp(response);
     } catch (e) {
