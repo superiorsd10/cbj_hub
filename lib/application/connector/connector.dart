@@ -10,7 +10,6 @@ import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_en
 import 'package:cbj_hub/injection.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:typed_data/src/typed_buffer.dart';
 
 class Connector {
   static Future<void> startConnector() async {
@@ -33,7 +32,6 @@ class Connector {
     }
 
     Future.delayed(const Duration(milliseconds: 3000)).whenComplete(() {
-      print('Go');
       final IAppCommunicationRepository appCommunication =
           getIt<IAppCommunicationRepository>();
     });
@@ -72,7 +70,7 @@ class Connector {
                 .message,
           ).replaceAll('\n', '');
 
-          final Uint8Buffer valueMessage =
+          final valueMessage =
               (devicePropertyAndValues[property] as MqttPublishMessage)
                   .payload
                   .message;

@@ -10,13 +10,13 @@ void main(List<String> arguments) async {
   try {
     SharedVariables(arguments[0]);
   } catch (error) {
-    logger.e('Path/argument 1 is not specified\nerror: $error');
+    logger.w('Path/argument 1 is not specified\nerror: $error');
   }
 
   //  Setting device model and checking if configuration for this model exist
   await DevicePinListManager().setPhysicalDeviceType();
 
-  print('');
+  logger.v('');
 
   await BootUp.setup();
 }

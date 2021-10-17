@@ -9,6 +9,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_bli
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_api_object.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
 class SwitcherRunnerEntity extends GenericBlindsDE {
@@ -47,16 +48,17 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
         ) {
     if (switcherPort == null) {
       switcherPort =
-          SwitcherPort(SwitcherApiObject.SWITCHER_TCP_PORT2.toString());
+          SwitcherPort(SwitcherApiObject.switcherTcpPort2.toString());
     }
     switcherObject = SwitcherApiObject(
-        deviceType: SwitcherDevicesTypes.switcherRunner,
-        deviceId: switcherDeviceId.getOrCrash(),
-        switcherIp: lastKnownIp.getOrCrash(),
-        switcherName: defaultName.getOrCrash()!,
-        macAddress: switcherMacAddress.getOrCrash(),
-        powerConsumption: powerConsumption.getOrCrash(),
-        port: int.parse(switcherPort!.getOrCrash()));
+      deviceType: SwitcherDevicesTypes.switcherRunner,
+      deviceId: switcherDeviceId.getOrCrash(),
+      switcherIp: lastKnownIp.getOrCrash(),
+      switcherName: defaultName.getOrCrash()!,
+      macAddress: switcherMacAddress.getOrCrash(),
+      powerConsumption: powerConsumption.getOrCrash(),
+      port: int.parse(switcherPort!.getOrCrash()),
+    );
   }
 
   /// Switcher device unique id that came withe the device
@@ -97,21 +99,21 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
       if (actionToPreform.toString() != blindsSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.moveUp) {
           (await moveUpBlinds()).fold(
-            (l) => print('Error turning blinds up'),
-            (r) => print('Blinds up success'),
+            (l) => logger.e('Error turning blinds up'),
+            (r) => logger.i('Blinds up success'),
           );
         } else if (actionToPreform == DeviceActions.stop) {
           (await stopBlinds()).fold(
-            (l) => print('Error stopping blinds '),
-            (r) => print('Blinds stop success'),
+            (l) => logger.e('Error stopping blinds '),
+            (r) => logger.i('Blinds stop success'),
           );
         } else if (actionToPreform == DeviceActions.moveDown) {
           (await moveDownBlinds()).fold(
-            (l) => print('Error turning blinds down'),
-            (r) => print('Blinds down success'),
+            (l) => logger.e('Error turning blinds down'),
+            (r) => logger.i('Blinds down success'),
           );
         } else {
-          print('actionToPreform is not set correctly on Switcher Runner');
+          logger.e('actionToPreform is not set correctly on Switcher Runner');
         }
       }
     }
@@ -157,6 +159,5 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
-    return left(const CoreFailure.unexpected());
   }
 }

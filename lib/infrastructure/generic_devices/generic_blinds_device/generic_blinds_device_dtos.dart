@@ -11,31 +11,28 @@ part 'generic_blinds_device_dtos.g.dart';
 @freezed
 abstract class GenericBlindsDeviceDtos
     implements _$GenericBlindsDeviceDtos, DeviceEntityDtoAbstract {
-  factory GenericBlindsDeviceDtos(
-      {
-      // @JsonKey(ignore: true)
-      String? deviceDtoClass,
-      String? id,
-      required String? defaultName,
-      required String? roomId,
-      required String? roomName,
-      required String? deviceStateGRPC,
-      String? stateMassage,
-      required String? senderDeviceOs,
-      required String? senderDeviceModel,
-      required String? senderId,
-      required String? blindsSwitchState,
-      required String? deviceTypes,
-      required String? compUuid,
-      required String? deviceVendor
+  factory GenericBlindsDeviceDtos({
+    // @JsonKey(ignore: true)
+    String? deviceDtoClass,
+    String? id,
+    required String? defaultName,
+    required String? roomId,
+    required String? roomName,
+    required String? deviceStateGRPC,
+    String? stateMassage,
+    required String? senderDeviceOs,
+    required String? senderDeviceModel,
+    required String? senderId,
+    required String? blindsSwitchState,
+    required String? deviceTypes,
+    required String? compUuid,
+    required String? deviceVendor
 
-      // required ServerTimestampConverter() FieldValue serverTimeStamp,
-      }) = _GenericBlindsDeviceDtos;
+    // required ServerTimestampConverter() FieldValue serverTimeStamp,
+    ,
+  }) = _GenericBlindsDeviceDtos;
 
   GenericBlindsDeviceDtos._();
-
-  @override
-  final String deviceDtoClassInstance = (GenericBlindsDeviceDtos).toString();
 
   factory GenericBlindsDeviceDtos.fromDomain(GenericBlindsDE genericBlindsDE) {
     return GenericBlindsDeviceDtos(
@@ -60,6 +57,10 @@ abstract class GenericBlindsDeviceDtos
   factory GenericBlindsDeviceDtos.fromJson(Map<String, dynamic> json) =>
       _$GenericBlindsDeviceDtosFromJson(json);
 
+  @override
+  final String deviceDtoClassInstance = (GenericBlindsDeviceDtos).toString();
+
+  @override
   DeviceEntityAbstract toDomain() {
     return GenericBlindsDE(
       uniqueId: CoreUniqueId.fromUniqueString(id),

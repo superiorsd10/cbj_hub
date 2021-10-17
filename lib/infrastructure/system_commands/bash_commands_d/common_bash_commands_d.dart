@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cbj_hub/infrastructure/system_commands/system_commands_base_class_d.dart';
+import 'package:cbj_hub/utils.dart';
 
 class CommonBashCommandsD implements SystemCommandsBaseClassD {
   @override
@@ -44,10 +45,8 @@ class CommonBashCommandsD implements SystemCommandsBaseClassD {
 
     blkid = blkid.substring(0, blkid.indexOf('\n'));
 
-    String uuid = blkid.substring(blkid.indexOf('UUID="') + 6);
-    uuid = uuid.substring(0, uuid.indexOf('"'));
-
-    return uuid;
+    final String uuid = blkid.substring(blkid.indexOf('UUID="') + 6);
+    return uuid.substring(0, uuid.indexOf('"'));
   }
 
   @override
@@ -57,7 +56,7 @@ class CommonBashCommandsD implements SystemCommandsBaseClassD {
 //      String hostName = result.stdout;
 //      hostName = hostName.substring(
 //          0, hostName.length - 1); //  Removes the invisible new line at the end
-//      print('Host name: ' + hostName);
+//      logger.v('Host name: ' + hostName);
       return result.stdout.toString();
     });
     return hostName.substring(0, hostName.indexOf('\n'));
@@ -75,15 +74,15 @@ class CommonBashCommandsD implements SystemCommandsBaseClassD {
       final List<String> etcReleaseFilesNames = [];
       for (final FileSystemEntity f in allContents) {
         if (f.toString().contains('release')) {
-          etcReleaseFilesNames.add(f.path.toString());
+          etcReleaseFilesNames.add(f.path);
         }
       }
       for (final String releaseContent in etcReleaseFilesNames) {
         etcReleaseFiles += File(releaseContent).readAsStringSync();
       }
     } catch (error) {
-      print('Error getting all files from /etc/that end with release');
-      print('error: $error');
+      logger.e('Error getting all files from /etc/that end with release');
+      logger.e('error: $error');
     }
     return etcReleaseFiles;
   }

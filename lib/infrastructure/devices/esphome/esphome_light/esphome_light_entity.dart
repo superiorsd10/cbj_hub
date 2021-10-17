@@ -7,6 +7,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_ligh
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_api/esphome_api.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
 class ESPHomeLightEntity extends GenericLightDE {
@@ -51,7 +52,8 @@ class ESPHomeLightEntity extends GenericLightDE {
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity) async {
+    DeviceEntityAbstract newEntity,
+  ) async {
     if (newEntity is! GenericLightDE) {
       return left(
         const CoreFailure.actionExcecuter(
@@ -68,16 +70,16 @@ class ESPHomeLightEntity extends GenericLightDE {
 
       if (actionToPreform == DeviceActions.on) {
         (await turnOnLight()).fold(
-          (l) => print('Error turning ESPHome light on'),
-          (r) => print('Light turn on success'),
+          (l) => logger.e('Error turning ESPHome light on'),
+          (r) => logger.i('Light turn on success'),
         );
       } else if (actionToPreform == DeviceActions.off) {
         (await turnOffLight()).fold(
-          (l) => print('Error turning ESPHome light off'),
-          (r) => print('Light turn off success'),
+          (l) => logger.e('Error turning ESPHome light off'),
+          (r) => logger.i('Light turn off success'),
         );
       } else {
-        print('actionToPreform is not set correctly ESPHome light');
+        logger.e('actionToPreform is not set correctly ESPHome light');
       }
     }
 
@@ -89,7 +91,7 @@ class ESPHomeLightEntity extends GenericLightDE {
     lightSwitchState = GenericSwitchState(DeviceActions.on.toString());
 
     try {
-      print('Turn on ESPHome device');
+      logger.v('Turn on ESPHome device');
       EspHomeApi espHomeApi;
       try {
         espHomeApi = EspHomeApi.createWithAddress(deviceMdnsName.getOrCrash());
@@ -107,7 +109,9 @@ class ESPHomeLightEntity extends GenericLightDE {
       // await EspHomeApi.listEntitiesRequest();
       // await EspHomeApi.subscribeStatesRequest();
       await espHomeApi.switchCommandRequest(
-          int.parse(espHomeSwitchKey.getOrCrash()), true);
+        int.parse(espHomeSwitchKey.getOrCrash()),
+        true,
+      );
       await espHomeApi.disconnect();
       return right(unit);
     } catch (e) {
@@ -121,7 +125,7 @@ class ESPHomeLightEntity extends GenericLightDE {
 
     try {
       try {
-        print('Turn off ESPHome device');
+        logger.v('Turn off ESPHome device');
         EspHomeApi espHomeApi;
         try {
           espHomeApi =
@@ -140,13 +144,14 @@ class ESPHomeLightEntity extends GenericLightDE {
         // await EspHomeApi.listEntitiesRequest();
         // await EspHomeApi.subscribeStatesRequest();
         await espHomeApi.switchCommandRequest(
-            int.parse(espHomeSwitchKey.getOrCrash()), false);
+          int.parse(espHomeSwitchKey.getOrCrash()),
+          false,
+        );
         await espHomeApi.disconnect();
         return right(unit);
       } catch (exception) {
         return left(const CoreFailure.unexpected());
       }
-      return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }

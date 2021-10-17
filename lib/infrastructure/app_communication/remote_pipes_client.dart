@@ -6,6 +6,7 @@ import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart'
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/injection.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
 
 class RemotePipesClient {
@@ -15,7 +16,9 @@ class RemotePipesClient {
   // createStreamWithRemotePipes
   ///  Turn smart device on
   static Future<void> createStreamWithHub(
-      String addressToHub, int hubPort) async {
+    String addressToHub,
+    int hubPort,
+  ) async {
     channel = await _createCbjHubClient(addressToHub, hubPort);
     stub = CbjHubClient(channel!);
 
@@ -25,29 +28,29 @@ class RemotePipesClient {
       response = stub!.hubTransferDevices(
         /// Transfer all requests from hub to the remote pipes->app
         HubRequestsToApp.streamRequestsToApp
-            .map((DeviceEntityDtoAbstract deviceEntityDto) =>
-                RequestsAndStatusFromHub(
-                  sendingType: SendingType.deviceType,
-                  allRemoteCommands:
-                      DeviceHelper.convertDtoToJsonString(deviceEntityDto),
-                ))
-            .handleError((error) => print('Stream have error $error')),
+            .map(
+              (DeviceEntityDtoAbstract deviceEntityDto) =>
+                  RequestsAndStatusFromHub(
+                sendingType: SendingType.deviceType,
+                allRemoteCommands:
+                    DeviceHelper.convertDtoToJsonString(deviceEntityDto),
+              ),
+            )
+            .handleError((error) => logger.e('Stream have error $error')),
       );
-
-      /// Trigger to send all devices from hub to app using the
-      /// HubRequestsToApp stream
-      AppCommunicationRepository.sendAllDevicesToHubRequestsStream();
 
       /// All responses from the app->remote pipes going int the hub
       getIt<IAppCommunicationRepository>().getFromApp(response);
     } catch (e) {
-      print('Caught error: $e');
+      logger.e('Caught error: $e');
       await channel?.shutdown();
     }
   }
 
   static Future<ClientChannel> _createCbjHubClient(
-      String deviceIp, int hubPort) async {
+    String deviceIp,
+    int hubPort,
+  ) async {
     await channel?.shutdown();
     return ClientChannel(
       deviceIp,

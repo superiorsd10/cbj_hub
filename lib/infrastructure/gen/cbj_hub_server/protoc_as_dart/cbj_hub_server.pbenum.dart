@@ -426,6 +426,16 @@ class SendingType extends $pb.ProtobufEnum {
       const $core.bool.fromEnvironment('protobuf.omit_enum_names')
           ? ''
           : 'bindingsType');
+  static const SendingType vendorLoginType = SendingType._(
+      9,
+      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+          ? ''
+          : 'vendorLoginType');
+  static const SendingType firstConnection = SendingType._(
+      10,
+      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+          ? ''
+          : 'firstConnection');
 
   static const $core.List<SendingType> values = <SendingType>[
     undefinedType,
@@ -437,6 +447,8 @@ class SendingType extends $pb.ProtobufEnum {
     scheduleType,
     routineType,
     bindingsType,
+    vendorLoginType,
+    firstConnection,
   ];
 
   static final $core.Map<$core.int, SendingType> _byValue =

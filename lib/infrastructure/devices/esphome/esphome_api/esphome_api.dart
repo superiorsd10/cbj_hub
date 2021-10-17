@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cbj_hub/infrastructure/gen/aioesphomeapi/protoc_as_dart/aioesphomeapi/api.pbserver.dart';
+import 'package:cbj_hub/utils.dart';
 
 class EspHomeApi {
   EspHomeApi(this.fSocket);
@@ -27,99 +28,98 @@ class EspHomeApi {
 
         /// ConnectResponse
         if (responseType == 4) {
-          print('responseType is ConnectResponse');
-          print('ConnectResponse data: ${utf8.decode(data.sublist(3))}');
-          print('Data: $data');
+          logger.v('responseType is ConnectResponse');
+          logger.v('ConnectResponse data: ${utf8.decode(data.sublist(3))}');
+          logger.v('Data: $data');
           if (data.length > 3) {
-            print('Password is wrong');
+            logger.v('Password is wrong');
             devicePass = null;
           } else {
-            print('Correct password');
+            logger.v('Correct password');
           }
-          print('');
+          logger.v('');
         }
 
         /// HelloResponse
         else if (responseType == 2) {
-          print('responseType is HelloResponse');
+          logger.v('responseType is HelloResponse');
           final HelloResponse? helloResponseData = bytesToHelloResponse(data);
-          print('HelloResponse data: ${helloResponseData?.serverInfo}');
-          print('');
+          logger.v('HelloResponse data: ${helloResponseData?.serverInfo}');
+          logger.v('');
         }
 
         /// DeviceInfoResponse
         else if (responseType == 10) {
-          print('responseType is DeviceInfoResponse');
-          // print('DeviceInfoResponse data: ${utf8.decode(data.sublist(3))}');
-          print('DeviceInfoResponse data: $data');
-          print('');
+          logger.v('responseType is DeviceInfoResponse');
+          logger.v('DeviceInfoResponse data: $data');
+          logger.v('');
         }
 
         /// PingRequest
         else if (responseType == 7) {
-          print('responseType is PingResponse');
-          print('PingResponse data: ${utf8.decode(data.sublist(3))}');
-          print('');
+          logger.v('responseType is PingResponse');
+          logger.v('PingResponse data: ${utf8.decode(data.sublist(3))}');
+          logger.v('');
         }
 
         /// PingResponse
         else if (responseType == 8) {
-          print('responseType is PingResponse');
-          print('PingResponse data: ${utf8.decode(data.sublist(3))}');
-          print('');
+          logger.v('responseType is PingResponse');
+          logger.v('PingResponse data: ${utf8.decode(data.sublist(3))}');
+          logger.v('');
         }
 
         /// ListEntitiesSwitchResponse
         else if (responseType == 17) {
-          print('responseType is ListEntitiesSwitchResponse');
+          logger.v('responseType is ListEntitiesSwitchResponse');
           String dataPayload = '';
 
           try {
             dataPayload = data.length > 3 ? utf8.decode(data.sublist(3)) : '';
 
-            print('ListEntitiesSwitchResponse data payload:'
-                ' $dataPayload');
+            logger.v(
+              'ListEntitiesSwitchResponse data payload:'
+              ' $dataPayload',
+            );
           } catch (e) {
-            print('ListEntitiesSwitchResponse data bytes:'
-                ' $data');
+            logger.v(
+              'ListEntitiesSwitchResponse data bytes:'
+              ' $data',
+            );
           }
-          print('');
+          logger.v('');
         }
 
         /// ListEntitiesDoneResponse
         else if (responseType == 19) {
-          print('responseType is ListEntitiesDoneResponse');
-          print(
+          logger.v('responseType is ListEntitiesDoneResponse');
+          logger.v(
             'ListEntitiesDoneResponse data: ${utf8.decode(data.sublist(3))}',
           );
-          print('');
+          logger.v('');
         }
 
         /// PingResponse
         else if (responseType == 26) {
-          print('responseType is SwitchStateResponse');
-          print('SwitchStateResponse data: $data}');
-          // print('SwitchStateResponse data: ${utf8.decode(data.sublist(3))}');
-          print('');
+          logger.v('responseType is SwitchStateResponse');
+          logger.v('SwitchStateResponse data: $data}');
+          logger.v('');
         } else {
-          print('responseType is else');
-          print('Listen to data $data');
-          print('');
+          logger.v('responseType is else');
+          logger.v('Listen to data $data');
+          logger.v('');
         }
-        // print('Hello data2: ${utf8.decode(data)}');
-        // serverResponse = String.fromCharCodes(data);
-        // print('Server: $serverResponse');
       },
 
       // handle errors
       onError: (error) {
-        print(error);
+        logger.e(error);
         socket.destroy();
       },
 
       // handle server ending connection
       onDone: () {
-        print('Server left.');
+        logger.v('Server left.');
         socket.destroy();
       },
     );
@@ -215,7 +215,9 @@ class EspHomeApi {
 
   ///  Turn smart device on
   Future<void> connectRequestToEsp(
-      String addressToServer, String password) async {
+    String addressToServer,
+    String password,
+  ) async {
     // connect to the socket server
     final socket = await fSocket;
 
@@ -261,7 +263,7 @@ class EspHomeApi {
   Future<void> ping() async {
     // connect to the socket server
     final socket = await fSocket;
-    print(
+    logger.v(
       'Connected request to: '
       '${socket.remoteAddress.address}:${socket.remotePort}',
     );
@@ -297,7 +299,7 @@ class EspHomeApi {
   Future<void> deviceInfoRequestToEsp() async {
     // connect to the socket server
     final socket = await fSocket;
-    print(
+    logger.v(
       'Connected request to:'
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
     );
@@ -333,7 +335,7 @@ class EspHomeApi {
   Future<void> subscribeStatesRequest() async {
     // connect to the socket server
     final socket = await fSocket;
-    print(
+    logger.v(
       'Connected request to:'
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
     );
@@ -368,12 +370,12 @@ class EspHomeApi {
   ///  Turn smart device on
   Future<void> switchCommandRequest(int deviceKey, bool changeTostate) async {
     if (devicePass == null) {
-      print('Please call sendConnect, password is missing');
+      logger.v('Please call sendConnect, password is missing');
       return;
     }
     // connect to the socket server
     final socket = await fSocket;
-    print(
+    logger.v(
       'Connected request to:'
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
     );
@@ -406,7 +408,7 @@ class EspHomeApi {
 
     final ByteData byteData = ByteData.view(message.buffer);
 
-    print(myHexKeyList);
+    logger.v(myHexKeyList);
 
     /// A zero byte.
     byteData.setUint8(0, 0x00);
@@ -424,7 +426,7 @@ class EspHomeApi {
       byteData.setUint8(a, myHexKeyList[a - numOfByteBeforeData]);
     }
 
-    print('switchCommandRequest message: $message');
+    logger.v('switchCommandRequest message: $message');
 
 //  * The message object encoded as a ProtoBuf message
     socket.add(message);
@@ -434,12 +436,12 @@ class EspHomeApi {
   ///  Turn smart device on
   Future<void> listEntitiesRequest() async {
     if (devicePass == null) {
-      print('Please call sendConnect, password is missing');
+      logger.v('Please call sendConnect, password is missing');
       return;
     }
     // connect to the socket server
     final socket = await fSocket;
-    print(
+    logger.v(
       'Connected request to:'
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
     );
@@ -464,7 +466,7 @@ class EspHomeApi {
     ///  * VarInt denoting the type of message.
     byteData.setUint8(2, 11);
 
-    print('ListEntitiesRequest message: $message');
+    logger.v('ListEntitiesRequest message: $message');
 
 //  * The message object encoded as a ProtoBuf message
     socket.add(message);
@@ -480,9 +482,7 @@ class EspHomeApi {
 
     final List<int> responseBytes = bytes.sublist(3);
     helloResponse.serverInfo = utf8.decode(responseBytes);
-    for (final int b in responseBytes) {
-      // print('This is my $b');
-    }
+
     return helloResponse;
   }
 }
