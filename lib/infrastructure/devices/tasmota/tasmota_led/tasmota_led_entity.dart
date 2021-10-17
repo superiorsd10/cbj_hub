@@ -49,16 +49,21 @@ class TasmotaLedEntity extends GenericLightDE {
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity,) async {
+    DeviceEntityAbstract newEntity,
+  ) async {
     if (newEntity is! GenericLightDE) {
-      return left(const CoreFailure.actionExcecuter(
-          failedValue: 'Not the correct type',),);
+      return left(
+        const CoreFailure.actionExcecuter(
+          failedValue: 'Not the correct type',
+        ),
+      );
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
         lightSwitchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-          newEntity.lightSwitchState!.getOrCrash(),);
+        newEntity.lightSwitchState!.getOrCrash(),
+      );
 
       if (actionToPreform == DeviceActions.on) {
         (await turnOnLight()).fold(
@@ -84,7 +89,9 @@ class TasmotaLedEntity extends GenericLightDE {
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
-          'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power', 'ON',);
+        'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power',
+        'ON',
+      );
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
@@ -97,7 +104,9 @@ class TasmotaLedEntity extends GenericLightDE {
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
-          'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power', 'OFF',);
+        'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power',
+        'OFF',
+      );
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
