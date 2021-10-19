@@ -10,7 +10,6 @@ import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
-import 'package:cbj_hub/infrastructure/app_communication/remote_pipes_client.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
@@ -46,8 +45,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   }
 
   Future startRemotePipesConnection() async {
-    RemotePipesClient.createStreamWithHub('172.104.231.123', 50051);
-    // RemotePipesClient.createStreamWithHub('192.168.31.154', 50051);
+    // RemotePipesClient.createStreamWithHub('192.168.31.65', 50051);
+    // RemotePipesClient.createStreamWithHub('192.46.239.56', 50051);
     // RemotePipesClient.createStreamWithHub('127.0.0.1', 50051);
     logger.i('Creating connection with remote pipes');
   }
@@ -86,7 +85,13 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       } else {
         logger.w('Request from app does not support this sending device type');
       }
-    }).onError((error) => logger.e('Stream getFromApp have error $error'));
+    }).onError((error) {
+      if (error is GrpcError && error.code == 1) {
+        logger.v('Client have disconnected');
+      } else {
+        logger.e('Client stream error: $error');
+      }
+    });
   }
 
   static Future<void> sendToMqtt(
