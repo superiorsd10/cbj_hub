@@ -42,9 +42,9 @@ class CloudTuya {
 
   String? tokens;
 
-  Future<void> login() async {
+  Future<bool> login() async {
     if (tokens != null) {
-      return;
+      return true;
     }
     final Uri uriTemp = Uri.parse('$uri/auth.do');
     final Map<String, String> headers = {
@@ -66,22 +66,29 @@ class CloudTuya {
     final String responseBody = response.body;
 
     if (responseBody.contains('error')) {
-      logger.e('Error: $responseBody');
-      logger.i('Will try again in 60s');
-      await Future.delayed(const Duration(seconds: 60));
-      // Do not remove the await
-      await login();
-      return;
+      if (responseBody.contains('you cannot auth exceed once in 60 seconds')) {
+        logger.w('Tuya login warning: $responseBody\nWill try again in 60s');
+        await Future.delayed(const Duration(seconds: 60));
+        // Do not remove the await
+        return await login();
+      }
+      logger.e('Tuya login error: $responseBody');
+
+      return false;
     }
     final String accessToken =
         responseBody.substring(responseBody.indexOf('access_token') + 15);
     tokens = accessToken.substring(0, accessToken.indexOf('"'));
+    return true;
   }
 
   /// Find all devices associated to the login user
   Future<List<TuyaDeviceAbstract>> findDevices() async {
     if (tokens == null) {
-      await login();
+      final bool loginSuccess = await login();
+      if (!loginSuccess) {
+        return [];
+      }
     }
     final Uri uriTemp = Uri.parse('$uri/skill');
 
@@ -127,7 +134,10 @@ class CloudTuya {
   /// Find all scenes associated to the login user
   Future<dynamic> findScenes() async {
     if (tokens == null) {
-      await login();
+      final bool loginSuccess = await login();
+      if (!loginSuccess) {
+        return [];
+      }
     }
     final Uri uriTemp = Uri.parse('$uri/skill');
 
@@ -175,7 +185,10 @@ class CloudTuya {
 
   Future<String> setState(String deviceId, String command) async {
     if (tokens == null) {
-      await login();
+      final bool loginSuccess = await login();
+      if (!loginSuccess) {
+        return '';
+      }
     }
     final Uri uriTemp = Uri.parse('$uri/skill');
 
