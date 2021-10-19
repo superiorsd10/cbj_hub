@@ -24,6 +24,10 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
       bizType: genericTuyaLoginDE.tuyaBizType.getOrCrash(),
       region: genericTuyaLoginDE.tuyaRegion.getOrCrash(),
     );
+    final bool loginSuccess = await cloudTuya.login();
+    if (!loginSuccess) {
+      return 'Error';
+    }
     _discoverNewDevices();
     return 'Success';
   }
@@ -49,8 +53,15 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
                 deviceExist = true;
                 break;
               }
+            } else if (savedDevice is TuyaSmartSwitchEntity) {
+              if (tuyaDevice.id ==
+                  savedDevice.tuyaSmartDeviceId!.getOrCrash()) {
+                deviceExist = true;
+                break;
+              }
             } else {
               logger.i('Please add new Tuya device type ${tuyaDevice.haType}');
+              deviceExist = true;
               break;
             }
           }
