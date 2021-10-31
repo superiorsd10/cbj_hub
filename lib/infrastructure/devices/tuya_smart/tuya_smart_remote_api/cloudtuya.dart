@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cbj_hub/utils.dart';
 import 'package:http/http.dart';
 
 import 'tuya_device_abstract.dart';
@@ -24,7 +25,7 @@ class CloudTuya {
 
   /// Country code (International dialing number) sometimes can be called
   /// "Country Calling Code" without the +.
-  /// You can yours from here https://www.countrycode.org
+  /// You can find yours from here https://www.countrycode.org
   String countryCode;
 
   /// App business can be: tuya, smart_life, jinvoo_smart
@@ -41,9 +42,9 @@ class CloudTuya {
 
   String? tokens;
 
-  Future<void> login() async {
+  Future<bool> login() async {
     if (tokens != null) {
-      return;
+      return true;
     }
     final Uri uriTemp = Uri.parse('$uri/auth.do');
     final Map<String, String> headers = {
@@ -65,22 +66,29 @@ class CloudTuya {
     final String responseBody = response.body;
 
     if (responseBody.contains('error')) {
-      print('Error: $responseBody');
-      print('Will try again in 60s');
-      await Future.delayed(const Duration(seconds: 60));
-      // Do not remove the await
-      await login();
-      return;
+      if (responseBody.contains('you cannot auth exceed once in 60 seconds')) {
+        logger.w('Tuya login warning: $responseBody\nWill try again in 60s');
+        await Future.delayed(const Duration(seconds: 60));
+        // Do not remove the await
+        return await login();
+      }
+      logger.e('Tuya login error: $responseBody');
+
+      return false;
     }
     final String accessToken =
         responseBody.substring(responseBody.indexOf('access_token') + 15);
     tokens = accessToken.substring(0, accessToken.indexOf('"'));
+    return true;
   }
 
   /// Find all devices associated to the login user
   Future<List<TuyaDeviceAbstract>> findDevices() async {
     if (tokens == null) {
-      await login();
+      final bool loginSuccess = await login();
+      if (!loginSuccess) {
+        return [];
+      }
     }
     final Uri uriTemp = Uri.parse('$uri/skill');
 
@@ -106,7 +114,6 @@ class CloudTuya {
     final dynamic a = json.decode(responseBody);
     final dynamic devicesList = a['payload']['devices'];
 
-    print('Devices:\n$devicesList');
     final List<TuyaDeviceAbstract> tuyaDeviceList = [];
 
     if (devicesList == null) {
@@ -127,7 +134,10 @@ class CloudTuya {
   /// Find all scenes associated to the login user
   Future<dynamic> findScenes() async {
     if (tokens == null) {
-      await login();
+      final bool loginSuccess = await login();
+      if (!loginSuccess) {
+        return [];
+      }
     }
     final Uri uriTemp = Uri.parse('$uri/skill');
 
@@ -152,7 +162,7 @@ class CloudTuya {
 
     final dynamic a = json.decode(responseBody);
     final dynamic scenesList = a['payload']['scenes'];
-    print('Scenes:\n$scenesList');
+    logger.v('Scenes:\n$scenesList');
 
     return scenesList;
   }
@@ -175,7 +185,10 @@ class CloudTuya {
 
   Future<String> setState(String deviceId, String command) async {
     if (tokens == null) {
-      await login();
+      final bool loginSuccess = await login();
+      if (!loginSuccess) {
+        return '';
+      }
     }
     final Uri uriTemp = Uri.parse('$uri/skill');
 

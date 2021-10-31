@@ -39,9 +39,6 @@ abstract class GenericRgbwLightDeviceDtos
 
   GenericRgbwLightDeviceDtos._();
 
-  @override
-  final String deviceDtoClassInstance = (GenericRgbwLightDeviceDtos).toString();
-
   factory GenericRgbwLightDeviceDtos.fromDomain(
     GenericRgbwLightDE genericRgbwLightDE,
   ) {
@@ -75,6 +72,10 @@ abstract class GenericRgbwLightDeviceDtos
   factory GenericRgbwLightDeviceDtos.fromJson(Map<String, dynamic> json) =>
       _$GenericRgbwLightDeviceDtosFromJson(json);
 
+  @override
+  final String deviceDtoClassInstance = (GenericRgbwLightDeviceDtos).toString();
+
+  @override
   DeviceEntityAbstract toDomain() {
     return GenericRgbwLightDE(
       uniqueId: CoreUniqueId.fromUniqueString(id),

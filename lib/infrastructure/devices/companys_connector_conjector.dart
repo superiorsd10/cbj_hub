@@ -1,5 +1,8 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
+import 'package:cbj_hub/domain/vendors/lifx_login/generic_lifx_login_entity.dart';
+import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
+import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
@@ -13,7 +16,7 @@ import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 
 class CompanysConnectorConjector {
-  static updateAllDevicesReposWithDeviceChanges(
+  static void updateAllDevicesReposWithDeviceChanges(
     Stream<DeviceEntityAbstract> allDevices,
   ) {
     allDevices.listen((deviceEntityAbstract) {
@@ -51,7 +54,8 @@ class CompanysConnectorConjector {
     });
   }
 
-  static addAllDevicesToItsRepos(Map<String, DeviceEntityAbstract> allDevices) {
+  static void addAllDevicesToItsRepos(
+      Map<String, DeviceEntityAbstract> allDevices) {
     for (final String deviceId in allDevices.keys) {
       final MapEntry<String, DeviceEntityAbstract> currentDeviceMapEntry =
           MapEntry<String, DeviceEntityAbstract>(
@@ -62,7 +66,7 @@ class CompanysConnectorConjector {
     }
   }
 
-  static addDeviceToItsRepo(
+  static void addDeviceToItsRepo(
     MapEntry<String, DeviceEntityAbstract> deviceEntityAbstract,
   ) {
     final MapEntry<String, DeviceEntityAbstract> devicesEntry =
@@ -92,11 +96,21 @@ class CompanysConnectorConjector {
     } else if (deviceVendor == VendorsAndServices.lifx.toString()) {
       LifxConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else {
-      print('Cannot add device entity to its repo, type not supported');
+      logger.w('Cannot add device entity to its repo, type not supported');
     }
   }
 
   static void addDiscoverdDeviceToHub(DeviceEntityAbstract deviceEntity) {
     getIt<ISavedDevicesRepo>().addOrUpdateDevice(deviceEntity);
+  }
+
+  static void setVendorLoginCredentials(LoginEntityAbstract loginEntity) {
+    if (loginEntity is GenericLifxLoginDE) {
+      getIt<LifxConnectorConjector>().accountLogin(loginEntity);
+    } else if (loginEntity is GenericTuyaLoginDE) {
+      getIt<TuyaSmartConnectorConjector>().accountLogin(loginEntity);
+    } else {
+      logger.w('Vendor login type ${loginEntity.runtimeType} is not supported');
+    }
   }
 }

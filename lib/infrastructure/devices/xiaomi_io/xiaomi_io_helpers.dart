@@ -8,11 +8,12 @@ import 'package:yeedart/yeedart.dart';
 
 class XiaomiIoHelpers {
   static DeviceEntityAbstract addDiscoverdDevice(
-      DiscoveryResponse xiaomi_ioDevice) {
-    final XiaomiIoGpx4021GlEntity xiaomi_ioDE = XiaomiIoGpx4021GlEntity(
+    DiscoveryResponse xiaomiIoDevice,
+  ) {
+    final XiaomiIoGpx4021GlEntity xiaomiIoDE = XiaomiIoGpx4021GlEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName(
-        xiaomi_ioDevice.name != '' ? xiaomi_ioDevice.name : 'XiaomiIo test 2',
+        xiaomiIoDevice.name != '' ? xiaomiIoDevice.name : 'XiaomiIo test 2',
       ),
       roomId: CoreUniqueId.newDevicesRoom(),
       roomName: DeviceRoomName('Discovered'),
@@ -22,24 +23,24 @@ class XiaomiIoHelpers {
       senderId: DeviceSenderId(),
       compUuid: DeviceCompUuid('34asdfrsd23gggg'),
       deviceMdnsName: DeviceMdnsName('yeelink-light-colora_miap9C52'),
-      lastKnownIp: DeviceLastKnownIp(xiaomi_ioDevice.address.address),
+      lastKnownIp: DeviceLastKnownIp(xiaomiIoDevice.address.address),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      xiaomi_ioDeviceId: XiaomiIoDeviceId(xiaomi_ioDevice.id.toString()),
-      xiaomi_ioPort: XiaomiIoPort(xiaomi_ioDevice.port.toString()),
+      xiaomiIoDeviceId: XiaomiIoDeviceId(xiaomiIoDevice.id.toString()),
+      xiaomiIoPort: XiaomiIoPort(xiaomiIoDevice.port.toString()),
       lightSwitchState:
-          GenericRgbwLightSwitchState(xiaomi_ioDevice.powered.toString()),
+          GenericRgbwLightSwitchState(xiaomiIoDevice.powered.toString()),
       lightColorTemperature: GenericRgbwLightColorTemperature(
-        xiaomi_ioDevice.colorTemperature.toString(),
+        xiaomiIoDevice.colorTemperature.toString(),
       ),
       lightBrightness:
-          GenericRgbwLightBrightness(xiaomi_ioDevice.brightness.toString()),
+          GenericRgbwLightBrightness(xiaomiIoDevice.brightness.toString()),
       lightColorAlpha: GenericRgbwLightColorAlpha('1.0'),
       lightColorHue: GenericRgbwLightColorHue('0.0'),
       lightColorSaturation: GenericRgbwLightColorSaturation('1.0'),
       lightColorValue: GenericRgbwLightColorValue('1.0'),
     );
 
-    return xiaomi_ioDE;
+    return xiaomiIoDE;
   }
 }

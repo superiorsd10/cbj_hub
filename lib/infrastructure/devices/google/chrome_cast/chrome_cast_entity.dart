@@ -9,6 +9,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv
 import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/google/google_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
 class ChromeCastEntity extends GenericSmartTvDE {
@@ -58,7 +59,8 @@ class ChromeCastEntity extends GenericSmartTvDE {
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity) async {
+    DeviceEntityAbstract newEntity,
+  ) async {
     if (newEntity is! GenericRgbwLightDE) {
       return left(
         const CoreFailure.actionExcecuter(
@@ -75,17 +77,17 @@ class ChromeCastEntity extends GenericSmartTvDE {
 
       if (actionToPreform.toString() != smartTvSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
-          (await turnOnLight()).fold(
-            (l) => print('Error turning chrome cast light on'),
-            (r) => print('Light turn on success'),
+          (await turnOnSmartTv()).fold(
+            (l) => logger.e('Error turning chrome cast light on'),
+            (r) => logger.i('Light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffLight()).fold(
-            (l) => print('Error turning chrome cast light off'),
-            (r) => print('Light turn off success'),
+          (await turnOffSmartTv()).fold(
+            (l) => logger.e('Error turning chrome cast light off'),
+            (r) => logger.i('Light turn off success'),
           );
         } else {
-          print('actionToPreform is not set correctly on Chrome Cast');
+          logger.e('actionToPreform is not set correctly on Chrome Cast');
         }
       }
     }
@@ -94,7 +96,7 @@ class ChromeCastEntity extends GenericSmartTvDE {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOnLight() async {
+  Future<Either<CoreFailure, Unit>> turnOnSmartTv() async {
     try {} catch (e) {
       return left(const CoreFailure.unexpected());
     }
@@ -102,7 +104,7 @@ class ChromeCastEntity extends GenericSmartTvDE {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOffLight() async {
+  Future<Either<CoreFailure, Unit>> turnOffSmartTv() async {
     try {} catch (e) {
       return left(const CoreFailure.unexpected());
     }

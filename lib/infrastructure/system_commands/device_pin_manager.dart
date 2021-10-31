@@ -1,5 +1,6 @@
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/infrastructure/system_commands/system_commands_manager_d.dart';
+import 'package:cbj_hub/utils.dart';
 
 ///  This class save all the configuration of the pins per device,
 ///  every device have different pin for each task,
@@ -20,7 +21,8 @@ abstract class DevicePinListManagerAbstract {
   Future setPhysicalDeviceType();
 
   PhysicalDeviceType? convertPhysicalDeviceTypeStringToPhysicalDeviceTypeObject(
-      String physicalDeviceType);
+    String physicalDeviceType,
+  );
 }
 
 class DevicePinListManager extends DevicePinListManagerAbstract {
@@ -36,16 +38,18 @@ class DevicePinListManager extends DevicePinListManagerAbstract {
     final List<String> etcReleaseFilesAsList = etcReleaseOutput.split('\n');
     try {
       String deviceHostName = etcReleaseFilesAsList.firstWhere(
-          (etcReleaseSingleLine) => etcReleaseSingleLine.contains('BOARD'));
+        (etcReleaseSingleLine) => etcReleaseSingleLine.contains('BOARD'),
+      );
       deviceHostName =
           deviceHostName.substring(deviceHostName.indexOf('=') + 1);
-      print('Now');
-      print(deviceHostName);
+      logger.v('Now');
+      logger.v(deviceHostName);
       deviceHostName = deviceHostName.replaceAll('-', '').replaceAll(' ', '');
 
       physicalDeviceType =
           convertPhysicalDeviceTypeStringToPhysicalDeviceTypeObject(
-              deviceHostName);
+        deviceHostName,
+      );
 
       final String? raspberryPiVersion =
           await systemCommandsManager.getRaspberryPiDeviceVersion();
@@ -55,22 +59,25 @@ class DevicePinListManager extends DevicePinListManagerAbstract {
           raspberryPiVersion
               .toLowerCase()
               .contains('Raspberry_Pi'.toLowerCase())) {
-        physicalDeviceType = PhysicalDeviceType.RaspberryPi;
+        physicalDeviceType = PhysicalDeviceType.raspberryPi;
       }
 
-      print('phys type is $physicalDeviceType');
+      logger.v('phys type is $physicalDeviceType');
     } catch (e) {
-      print('Board type does not exist');
+      logger.w('Board type does not exist');
     }
-    print('This device is of type:'
-        ' ${EnumHelper.physicalDeviceTypeToString(physicalDeviceType)}');
+    logger.i(
+      'This device is of type:'
+      ' ${EnumHelper.physicalDeviceTypeToString(physicalDeviceType)}',
+    );
   }
 
   ///  Return physicalDeviceType object if
   ///  string physicalDeviceType exist (in general) else return null
   @override
   PhysicalDeviceType? convertPhysicalDeviceTypeStringToPhysicalDeviceTypeObject(
-      String physicalDeviceType) {
+    String physicalDeviceType,
+  ) {
     //  Loop through all the physical devices types
     for (final PhysicalDeviceType physicalDeviceTypeTemp
         in PhysicalDeviceType.values) {

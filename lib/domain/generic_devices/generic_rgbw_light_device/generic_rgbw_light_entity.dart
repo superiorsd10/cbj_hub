@@ -5,6 +5,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/generic_rgbw_light_device/generic_rgbw_light_device_dtos.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
 /// Abstract smart GenericLight that exist inside a computer, the
@@ -46,27 +47,6 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
           stateMassage: stateMassage,
         );
 
-  /// State of the light on/off
-  GenericRgbwLightSwitchState? lightSwitchState;
-
-  /// Color temperature in int
-  GenericRgbwLightColorTemperature? lightColorTemperature;
-
-  /// Color alpha in double
-  GenericRgbwLightColorAlpha lightColorAlpha;
-
-  /// Color hue in double
-  GenericRgbwLightColorHue lightColorHue;
-
-  /// Color saturation in double
-  GenericRgbwLightColorSaturation lightColorSaturation;
-
-  /// Color value in double
-  GenericRgbwLightColorValue lightColorValue;
-
-  /// Brightness 0-100%
-  GenericRgbwLightBrightness lightBrightness;
-
   /// Empty instance of GenericLightEntity
   factory GenericRgbwLightDE.empty() => GenericRgbwLightDE(
         uniqueId: CoreUniqueId(),
@@ -90,6 +70,27 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
         lightColorSaturation: GenericRgbwLightColorSaturation(''),
         lightColorValue: GenericRgbwLightColorValue(''),
       );
+
+  /// State of the light on/off
+  GenericRgbwLightSwitchState? lightSwitchState;
+
+  /// Color temperature in int
+  GenericRgbwLightColorTemperature? lightColorTemperature;
+
+  /// Color alpha in double
+  GenericRgbwLightColorAlpha lightColorAlpha;
+
+  /// Color hue in double
+  GenericRgbwLightColorHue lightColorHue;
+
+  /// Color saturation in double
+  GenericRgbwLightColorSaturation lightColorSaturation;
+
+  /// Color value in double
+  GenericRgbwLightColorValue lightColorValue;
+
+  /// Brightness 0-100%
+  GenericRgbwLightBrightness lightBrightness;
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
@@ -149,7 +150,7 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
     DeviceEntityAbstract newEntity,
   ) async {
-    print('Please override this method in the non generic implementation');
+    logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist',
@@ -159,7 +160,7 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    print('Please override this method in the non generic implementation');
+    logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist',
@@ -169,7 +170,7 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    print('Please override this method in the non generic implementation');
+    logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist',
@@ -179,7 +180,7 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
-    print('Please override this method in the non generic implementation');
+    logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist',
@@ -194,7 +195,7 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
     required String lightColorSaturationNewValue,
     required String lightColorValueNewValue,
   }) async {
-    print('Please override this method in the non generic implementation');
+    logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
         failedValue: 'Action does not exist',

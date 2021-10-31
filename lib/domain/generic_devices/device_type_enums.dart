@@ -2,17 +2,17 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 
 ///  List of all physical devices types
 enum PhysicalDeviceType {
-  NanoPiDuo2,
-  NanoPiAir,
-  NanoPiNeo,
-  NanoPiNeo2,
-  RaspberryPi,
-  NotSupported,
+  nanoPiDuo2,
+  nanoPiAir,
+  nanoPiNeo,
+  nanoPiNeo2,
+  raspberryPi,
+  notSupported,
 }
 
 enum RaspberryPiType {
-  Raspberry_Pi_3_Model_B_Rev_1_2,
-  Raspberry_Pi_4_Model_B_Rev_1_4,
+  raspberryPi3ModelBRev1_2,
+  raspberryPi4ModelBRev1_4,
 }
 
 class EnumHelper {
@@ -28,7 +28,9 @@ class EnumHelper {
     String deviceTypeAsStringTemp = deviceTypeAsString;
     if (deviceTypeAsStringTemp.contains('Object')) {
       deviceTypeAsStringTemp = deviceTypeAsStringTemp.substring(
-          0, deviceTypeAsStringTemp.indexOf('Object'));
+        0,
+        deviceTypeAsStringTemp.indexOf('Object'),
+      );
     }
     for (final DeviceTypes deviceType in DeviceTypes.values) {
       if (dTToString(deviceType) == deviceTypeAsStringTemp) {
@@ -42,7 +44,9 @@ class EnumHelper {
     String deviceTypeAsStringTemp = deviceVendorAsString;
     if (deviceTypeAsStringTemp.contains('Object')) {
       deviceTypeAsStringTemp = deviceTypeAsStringTemp.substring(
-          0, deviceTypeAsStringTemp.indexOf('Object'));
+        0,
+        deviceTypeAsStringTemp.indexOf('Object'),
+      );
     }
     for (final VendorsAndServices deviceType in VendorsAndServices.values) {
       if (deviceVendorToString(deviceType) == deviceTypeAsStringTemp) {
@@ -89,15 +93,16 @@ class EnumHelper {
 
   /// Return the corresponding SmartDeviceBaseAbstract Object of the deviceType
   static dynamic deviceTypeToSmartDeviceBaseAbstractObject(
-      DeviceTypes deviceType) {
+    DeviceTypes deviceType,
+  ) {
     throw Exception('$deviceType Conditioner was not implemented yet');
-
-    return null;
   }
 
   /// Returning the non abstract of this SmartDeviceBaseAbstract
   static Type getTheNonAbstractObjectOfSmartDeviceBaseAbstract(
-      dynamic smartDeviceBaseAbstract, DeviceTypes deviceType) {
+    dynamic smartDeviceBaseAbstract,
+    DeviceTypes deviceType,
+  ) {
     throw Exception('$deviceType Conditioner was not implemented yet');
   }
 }

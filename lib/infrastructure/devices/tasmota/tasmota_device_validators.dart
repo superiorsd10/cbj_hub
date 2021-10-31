@@ -2,7 +2,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:dartz/dartz.dart';
 
 Either<CoreFailure<String>, String> validateTasmotaDeviceTopicNameNotEmpty(
-    String input) {
+  String input,
+) {
   if (input != null) {
     return right(input);
   } else {
@@ -11,7 +12,8 @@ Either<CoreFailure<String>, String> validateTasmotaDeviceTopicNameNotEmpty(
 }
 
 Either<CoreFailure<String>, String> validateTasmotaDeviceIdNotEmpty(
-    String input) {
+  String input,
+) {
   if (input != null) {
     return right(input);
   } else {

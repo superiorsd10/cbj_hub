@@ -65,7 +65,8 @@ abstract class DeviceEntityAbstract {
 
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity);
+    DeviceEntityAbstract newEntity,
+  );
 }
 
 class DeviceEntityNotAbstract extends DeviceEntityAbstract {
@@ -73,9 +74,10 @@ class DeviceEntityNotAbstract extends DeviceEntityAbstract {
       : super(
           uniqueId: CoreUniqueId(),
           deviceVendor: DeviceVendor(
-              VendorsAndServices.vendorsAndServicesNotSupported.toString()),
+            VendorsAndServices.vendorsAndServicesNotSupported.toString(),
+          ),
           deviceStateGRPC: DeviceState(DeviceTypes.typeNotSupported.toString()),
-          compUuid: DeviceCompUuid(Uuid().v1().toString()),
+          compUuid: DeviceCompUuid(const Uuid().v1().toString()),
           defaultName: DeviceDefaultName('No Name'),
           deviceTypes: DeviceType(DeviceTypes.light.toString()),
           roomId: CoreUniqueId(),
@@ -86,6 +88,7 @@ class DeviceEntityNotAbstract extends DeviceEntityAbstract {
           stateMassage: DeviceStateMassage('go'),
         );
 
+  @override
   DeviceEntityDtoAbstract toInfrastructure() {
     return DeviceEntityDtoAbstract();
   }
@@ -98,7 +101,8 @@ class DeviceEntityNotAbstract extends DeviceEntityAbstract {
 
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
-      DeviceEntityAbstract newEntity) {
+    DeviceEntityAbstract newEntity,
+  ) {
     // TODO: implement executeDeviceAction
     throw UnimplementedError();
   }

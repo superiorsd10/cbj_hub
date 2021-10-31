@@ -10,7 +10,8 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 
 class SwitcherHelpers {
   static DeviceEntityAbstract? addDiscoverdDevice(
-      SwitcherApiObject switcherDevice) {
+    SwitcherApiObject switcherDevice,
+  ) {
     if (switcherDevice.deviceType == SwitcherDevicesTypes.switcherRunner ||
         switcherDevice.deviceType == SwitcherDevicesTypes.switcherRunnerMini) {
       DeviceActions deviceActions = DeviceActions.actionNotSupported;
