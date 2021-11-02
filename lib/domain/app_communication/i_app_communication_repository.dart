@@ -5,4 +5,6 @@ abstract class IAppCommunicationRepository {
   Future<void> getFromApp(Stream<ClientStatusRequests> request);
 
   void sendToApp(Stream<MqttPublishMessage> dataToSend);
+
+  Future<void> startRemotePipesConnection(String remotePipesDomain);
 }
