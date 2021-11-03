@@ -1,9 +1,13 @@
+import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv_value_objects.dart';
-import 'package:cbj_hub/domain/saved_devices/local_db/i_local_db_repository.dart';
+import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
+import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
+import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
+import 'package:cbj_hub/infrastructure/core/singleton/my_singleton.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_light/esphome_light_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/google/chrome_cast/chrome_cast_entity.dart';
@@ -13,10 +17,45 @@ import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_e
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/infrastructure/local_db/hive_objects/hub_entity_hive_model.dart';
+import 'package:cbj_hub/infrastructure/local_db/hive_objects/remote_pipes_hive_model.dart';
+import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
+import 'package:cbj_hub/injection.dart';
+import 'package:cbj_hub/utils.dart';
+import 'package:dartz/dartz.dart';
+import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: ILocalDbRepository)
-class LocalDbRepository extends ILocalDbRepository {
+class HiveRepository extends ILocalDbRepository {
+  HiveRepository() {
+    asyncConstractor();
+  }
+
+  Future<void> asyncConstractor() async {
+    String? localDbPath = await MySingleton.getLocalDbPath();
+
+    if (localDbPath == null) {
+      logger.e('Cant find local DB path');
+      localDbPath = '/';
+    }
+
+    Hive.init(localDbPath);
+    Hive.registerAdapter(RemotePipesHiveModelAdapter());
+    Hive.registerAdapter(HubEntityHiveModelAdapter());
+    loadFromDb();
+  }
+
+  Future<void> loadFromDb() async {
+    (await getRemotePipesDnsName()).fold(
+        (l) =>
+            logger.w('No Remote Pipes Dns name was found in the local storage'),
+        (r) {
+      getIt<IAppCommunicationRepository>().startRemotePipesConnection(r);
+      logger.i('Remote Pipes DNS name was "$r" found');
+    });
+  }
+
   @override
   Map<String, DeviceEntityAbstract> getSmartDevicesFromDb() {
     final String guyRoomId = CoreUniqueId().getOrCrash()!;
@@ -115,7 +154,107 @@ class LocalDbRepository extends ILocalDbRepository {
   }
 
   @override
-  void saveSmartDevices(List<DeviceEntityAbstract> deviceList) {
+  Future<void> saveSmartDevices(List<DeviceEntityAbstract> deviceList) async {
     // TODO: implement saveSmartDevices
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveAndActivateRemotePipesDomainToDb(
+    RemotePipesEntity remotePipes,
+  ) async {
+    final RemotePipesDtos remotePipesDtos = remotePipes.toInfrastructure();
+
+    final String rpDomainName = remotePipesDtos.domainName;
+
+    getIt<IAppCommunicationRepository>()
+        .startRemotePipesConnection(rpDomainName);
+
+    return saveRemotePipes(remotePipesDomainName: rpDomainName);
+  }
+
+  @override
+  Future<Either<LocalDbFailures, String>> getHubEntityLastKnownIp() async {
+    // TODO: implement getHubEntityLastKnownIp
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<LocalDbFailures, String>> getHubEntityNetworkBssid() async {
+    // TODO: implement getHubEntityNetworkBssid
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<LocalDbFailures, String>> getHubEntityNetworkName() async {
+    // TODO: implement getHubEntityNetworkName
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<LocalDbFailures, String>> getRemotePipesDnsName() async {
+    try {
+      final Box<RemotePipesHiveModel> remotePipesBox =
+          await Hive.openBox<RemotePipesHiveModel>(remotePipesBoxName);
+
+      final List<RemotePipesHiveModel> remotePipesHiveModelFromDb =
+          remotePipesBox.values.toList().cast<RemotePipesHiveModel>();
+
+      if (remotePipesHiveModelFromDb.isNotEmpty) {
+        final String remotePipesDnsName =
+            remotePipesHiveModelFromDb[0].domainName;
+        logger.i(
+          'Remote pipes domain name is: '
+          '${remotePipesHiveModelFromDb[0].domainName}',
+        );
+        await remotePipesBox.close();
+
+        return right(remotePipesDnsName);
+      }
+      await remotePipesBox.close();
+      logger.i("Didn't find any remote pipes in the local DB");
+    } catch (e) {
+      logger.e('Local DB hive error: $e');
+    }
+    return left(const LocalDbFailures.unexpected());
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveHubEntity({
+    required String hubNetworkBssid,
+    required String networkName,
+    required String lastKnownIp,
+  }) async {
+    // TODO: implement saveHubEntity
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveRemotePipes({
+    required String remotePipesDomainName,
+  }) async {
+    try {
+      final Box<RemotePipesHiveModel> remotePipesBox =
+          await Hive.openBox<RemotePipesHiveModel>(remotePipesBoxName);
+
+      final RemotePipesHiveModel remotePipesHiveModel = RemotePipesHiveModel()
+        ..domainName = remotePipesDomainName;
+
+      if (remotePipesBox.isNotEmpty) {
+        await remotePipesBox.putAt(0, remotePipesHiveModel);
+      } else {
+        remotePipesBox.add(remotePipesHiveModel);
+      }
+
+      await remotePipesBox.close();
+      logger.i(
+        'Remote Pipes got saved to local storage with domain name is: '
+        '$remotePipesDomainName',
+      );
+    } catch (e) {
+      logger.e('Error saving Remote Pipes to local storage');
+      return left(const LocalDbFailures.unexpected());
+    }
+
+    return right(unit);
   }
 }

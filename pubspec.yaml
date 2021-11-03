@@ -25,6 +25,8 @@ dependencies:
   get_it: ^7.2.0
   # High performance, open-source universal RPC framework
   grpc: ^3.0.2
+  # Lightweight and blazing fast key-value database
+  hive: ^2.0.4
   # Convenient code generator for get_it
   injectable: ^1.5.0
   # Defines the annotations used by json_serializable to create code for JSON serialization and deserialization.
@@ -55,10 +57,11 @@ dependencies:
 dev_dependencies:
   # A build system for Dart code generation and modular compilation.
   build_runner:
-
   # A generator for injectable library
   # Code generator for unions/pattern-matching/copy.
   freezed: ^0.14.5
+  # Automatically generates Hive TypeAdapters to store any class
+  hive_generator: ^1.1.0
   # Injectable is a convenient code generator for get_it.
   injectable_generator: ^1.5.2
   # Library for mocks

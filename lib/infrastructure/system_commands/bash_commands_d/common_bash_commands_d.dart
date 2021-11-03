@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:cbj_hub/infrastructure/core/singleton/my_singleton.dart';
 import 'package:cbj_hub/infrastructure/system_commands/system_commands_base_class_d.dart';
+import 'package:cbj_hub/infrastructure/system_commands/system_commands_manager_d.dart';
 import 'package:cbj_hub/utils.dart';
 
 class CommonBashCommandsD implements SystemCommandsBaseClassD {
@@ -109,5 +111,21 @@ class CommonBashCommandsD implements SystemCommandsBaseClassD {
   bool doesExistAndStringContainUuid(String blkid, String driveName) {
     return blkid.contains(driveName) &&
         (blkid.substring(blkid.indexOf(driveName))).contains('UUID="');
+  }
+
+  @override
+  Future<String> getLocalDbPath() async {
+    String localDbFolderPath;
+    final String? snapCommonEnvironmentVariablePath =
+        await SystemCommandsManager().getSnapCommonEnvironmentVariable();
+
+    if (snapCommonEnvironmentVariablePath == null) {
+      final String? currentUserName = await MySingleton.getCurrentUserName();
+      localDbFolderPath = '/home/$currentUserName/Documents/hive';
+    } else {
+      // /var/snap/cbj-hub/common/hive
+      localDbFolderPath = '$snapCommonEnvironmentVariablePath/hive';
+    }
+    return localDbFolderPath;
   }
 }
