@@ -6,7 +6,7 @@ import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 
 void main(List<String> arguments) async {
-  await configureInjection(Env.devPc);
+  await configureInjection(Env.prod);
 
   try {
     SharedVariables(arguments[0]);

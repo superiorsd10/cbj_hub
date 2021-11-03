@@ -30,6 +30,10 @@ class SystemCommandsManager {
     return systemCommandsBaseClassD!.getCurrentUserName();
   }
 
+  Future<String> getLocalDbPath() {
+    return systemCommandsBaseClassD!.getLocalDbPath();
+  }
+
   Future<String> getDeviceHostName() {
     return systemCommandsBaseClassD!.getDeviceHostName();
   }

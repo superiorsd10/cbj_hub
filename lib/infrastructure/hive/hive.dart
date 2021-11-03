@@ -37,7 +37,7 @@
 //               await MySingleton.getCurrentUserName();
 //           hiveFolderPath = '/home/$currentUserName/Documents/hive';
 //         } else {
-//           // /var/snap/cybear-jinni/common/hive
+//           // /var/snap/cbj-hub/common/hive
 //           hiveFolderPath = '$snapCommonEnvironmentVariablePath/hive';
 //         }
 //         print('Path of hive: $hiveFolderPath');

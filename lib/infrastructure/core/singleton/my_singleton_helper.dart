@@ -10,4 +10,9 @@ class MySingletonHelper {
     final SystemCommandsManager systemCommandsManager = SystemCommandsManager();
     return systemCommandsManager.getCurrentUserName();
   }
+
+  static Future<String> getLocalDbPath() {
+    final SystemCommandsManager systemCommandsManager = SystemCommandsManager();
+    return systemCommandsManager.getLocalDbPath();
+  }
 }

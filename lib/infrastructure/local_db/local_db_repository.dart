@@ -20,8 +20,8 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/hub_entity_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/remote_pipes_hive_model.dart';
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
-import 'package:cbj_hub/infrastructure/system_commands/system_commands_manager_d.dart';
 import 'package:cbj_hub/injection.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
@@ -33,19 +33,27 @@ class HiveRepository extends ILocalDbRepository {
   }
 
   Future<void> asyncConstractor() async {
-    String hiveFolderPath;
-    final String? snapCommonEnvironmentVariablePath =
-        await SystemCommandsManager().getSnapCommonEnvironmentVariable();
-    if (snapCommonEnvironmentVariablePath == null) {
-      final String? currentUserName = await MySingleton.getCurrentUserName();
-      hiveFolderPath = '/home/$currentUserName/Documents/hive';
-    } else {
-      // /var/snap/cybear-jinni/common/hive
-      hiveFolderPath = '$snapCommonEnvironmentVariablePath/hive';
+    String? localDbPath = await MySingleton.getLocalDbPath();
+
+    if (localDbPath == null) {
+      logger.e('Cant find local DB path');
+      localDbPath = '/';
     }
 
+    Hive.init(localDbPath);
     Hive.registerAdapter(RemotePipesHiveModelAdapter());
     Hive.registerAdapter(HubEntityHiveModelAdapter());
+    loadFromDb();
+  }
+
+  Future<void> loadFromDb() async {
+    (await getRemotePipesDnsName()).fold(
+        (l) =>
+            logger.w('No Remote Pipes Dns name was found in the local storage'),
+        (r) {
+      getIt<IAppCommunicationRepository>().startRemotePipesConnection(r);
+      logger.i('Remote Pipes DNS name was "$r" found');
+    });
   }
 
   @override
@@ -146,7 +154,7 @@ class HiveRepository extends ILocalDbRepository {
   }
 
   @override
-  Future<void>  saveSmartDevices(List<DeviceEntityAbstract> deviceList) async  {
+  Future<void> saveSmartDevices(List<DeviceEntityAbstract> deviceList) async {
     // TODO: implement saveSmartDevices
   }
 
@@ -177,15 +185,37 @@ class HiveRepository extends ILocalDbRepository {
   }
 
   @override
-  Future<Either<LocalDbFailures, String>> getHubEntityNetworkName() async  {
+  Future<Either<LocalDbFailures, String>> getHubEntityNetworkName() async {
     // TODO: implement getHubEntityNetworkName
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<LocalDbFailures, String>> getRemotePipesDnsName() async  {
-    // TODO: implement getRemotePipesDnsName
-    throw UnimplementedError();
+  Future<Either<LocalDbFailures, String>> getRemotePipesDnsName() async {
+    try {
+      final Box<RemotePipesHiveModel> remotePipesBox =
+          await Hive.openBox<RemotePipesHiveModel>(remotePipesBoxName);
+
+      final List<RemotePipesHiveModel> remotePipesHiveModelFromDb =
+          remotePipesBox.values.toList().cast<RemotePipesHiveModel>();
+
+      if (remotePipesHiveModelFromDb.isNotEmpty) {
+        final String remotePipesDnsName =
+            remotePipesHiveModelFromDb[0].domainName;
+        logger.i(
+          'Remote pipes domain name is: '
+          '${remotePipesHiveModelFromDb[0].domainName}',
+        );
+        await remotePipesBox.close();
+
+        return right(remotePipesDnsName);
+      }
+      await remotePipesBox.close();
+      logger.i("Didn't find any remote pipes in the local DB");
+    } catch (e) {
+      logger.e('Local DB hive error: $e');
+    }
+    return left(const LocalDbFailures.unexpected());
   }
 
   @override
@@ -202,8 +232,29 @@ class HiveRepository extends ILocalDbRepository {
   Future<Either<LocalDbFailures, Unit>> saveRemotePipes({
     required String remotePipesDomainName,
   }) async {
+    try {
+      final Box<RemotePipesHiveModel> remotePipesBox =
+          await Hive.openBox<RemotePipesHiveModel>(remotePipesBoxName);
 
-    /// TODO: Save the remote pipes info to local storage
+      final RemotePipesHiveModel remotePipesHiveModel = RemotePipesHiveModel()
+        ..domainName = remotePipesDomainName;
+
+      if (remotePipesBox.isNotEmpty) {
+        await remotePipesBox.putAt(0, remotePipesHiveModel);
+      } else {
+        remotePipesBox.add(remotePipesHiveModel);
+      }
+
+      await remotePipesBox.close();
+      logger.i(
+        'Remote Pipes got saved to local storage with domain name is: '
+        '$remotePipesDomainName',
+      );
+    } catch (e) {
+      logger.e('Error saving Remote Pipes to local storage');
+      return left(const LocalDbFailures.unexpected());
+    }
+
     return right(unit);
   }
 }

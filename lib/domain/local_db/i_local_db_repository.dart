@@ -7,6 +7,9 @@ abstract class ILocalDbRepository {
   String remotePipesBoxName = 'remotePipesBox';
   String hubEntityBoxName = 'hubEntityBox';
 
+  /// Will load all the local database content into the program
+  Future<void> loadFromDb();
+
   Future<void> saveSmartDevices(List<DeviceEntityAbstract> deviceList);
 
   Map<String, DeviceEntityAbstract> getSmartDevicesFromDb();
