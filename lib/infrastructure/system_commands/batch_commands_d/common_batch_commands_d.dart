@@ -100,4 +100,13 @@ class CommonBatchCommandsD implements SystemCommandsBaseClassD {
     });
     return driveLetter.substring(0, driveLetter.indexOf('\r'));
   }
+
+  @override
+  Future<String> getLocalDbPath() async {
+    final String cbjFullPath = (await getCurrentDriveLetter()) +
+        r'\Users\' +
+        (await getCurrentUserName()) +
+        r'\Documents\cbjinni\'; // Will only work if the program located in the os driver
+    return cbjFullPath;
+  }
 }

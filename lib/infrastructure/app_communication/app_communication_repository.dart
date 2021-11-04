@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
@@ -7,14 +8,18 @@ import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_bli
 import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
+import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
+import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
+import 'package:cbj_hub/infrastructure/app_communication/remote_pipes_client.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/generic_vendors_login/vendor_helper.dart';
+import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
@@ -31,7 +36,6 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       hubPort = 50055;
     }
     startLocalServer();
-    startRemotePipesConnection();
   }
 
   /// Port to connect to the cbj hub, will change according to the current
@@ -44,10 +48,15 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     logger.i('Hub Server listening for apps clients on port ${server.port}...');
   }
 
-  Future startRemotePipesConnection() async {
-    // RemotePipesClient.createStreamWithHub('192.168.31.65', 50051);
-    // RemotePipesClient.createStreamWithHub('192.46.239.56', 50051);
-    // RemotePipesClient.createStreamWithHub('127.0.0.1', 50051);
+  @override
+  Future<void> startRemotePipesConnection(String remotePipesDomain) async {
+    RemotePipesClient.createStreamWithHub(
+      remotePipesDomain,
+      // 'homeservice-one-service.default.g.com',
+      50056,
+    );
+    // Here for easy find and local testing
+    // RemotePipesClient.createStreamWithHub('127.0.0.1', 50056);
     logger.i('Creating connection with remote pipes');
   }
 
@@ -82,6 +91,15 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         sendLoginToVendor(loginEntityFromApp);
       } else if (event.sendingType == SendingType.firstConnection) {
         AppCommunicationRepository.sendAllDevicesToHubRequestsStream();
+      } else if (event.sendingType == SendingType.remotePipesInformation) {
+        final Map<String, dynamic> jsonDecoded =
+            jsonDecode(event.allRemoteCommands) as Map<String, dynamic>;
+
+        final RemotePipesEntity remotePipes =
+            RemotePipesDtos.fromJson(jsonDecoded).toDomain();
+
+        getIt<ILocalDbRepository>()
+            .saveAndActivateRemotePipesDomainToDb(remotePipes);
       } else {
         logger.w('Request from app does not support this sending device type');
       }
