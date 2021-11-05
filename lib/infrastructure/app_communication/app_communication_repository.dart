@@ -6,6 +6,7 @@ import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_empty_device/generic_empty_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
@@ -90,7 +91,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
         sendLoginToVendor(loginEntityFromApp);
       } else if (event.sendingType == SendingType.firstConnection) {
-        AppCommunicationRepository.sendAllDevicesToHubRequestsStream();
+        AppCommunicationRepository.sendAllDevicesFromHubRequestsStream();
       } else if (event.sendingType == SendingType.remotePipesInformation) {
         final Map<String, dynamic> jsonDecoded =
             jsonDecode(event.allRemoteCommands) as Map<String, dynamic>;
@@ -174,12 +175,20 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
   /// Trigger to send all devices from hub to app using the
   /// HubRequestsToApp stream
-  static Future<void> sendAllDevicesToHubRequestsStream() async {
-    (await getIt<ISavedDevicesRepo>().getAllDevices())
-        .map((String id, DeviceEntityAbstract d) {
-      HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
-      return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
-    });
+  static Future<void> sendAllDevicesFromHubRequestsStream() async {
+    final Map<String, DeviceEntityAbstract> allDevices =
+        await getIt<ISavedDevicesRepo>().getAllDevices();
+    if (allDevices.isNotEmpty) {
+      allDevices.map((String id, DeviceEntityAbstract d) {
+        HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
+        return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
+      });
+    } else {
+      logger.w("Can't find smart devices in the network, sending empty");
+      final DeviceEntityAbstract emptyDevice = GenericEmptyDE.empty();
+      HubRequestsToApp.streamRequestsToApp.sink
+          .add(emptyDevice.toInfrastructure());
+    }
   }
 }
 
