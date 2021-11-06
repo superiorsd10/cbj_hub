@@ -51,8 +51,8 @@ class HiveRepository extends ILocalDbRepository {
         (l) =>
             logger.w('No Remote Pipes Dns name was found in the local storage'),
         (r) {
-      getIt<IAppCommunicationRepository>()
-          .startRemotePipesConnection('guy-service.cbjinni.com');
+      getIt<IAppCommunicationRepository>().startRemotePipesConnection(r);
+
       logger.i('Remote Pipes DNS name was "$r" found');
     });
   }
