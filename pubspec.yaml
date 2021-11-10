@@ -37,8 +37,6 @@ dependencies:
   kt_dart: ^0.10.0
   # Implementation of the LIFX HTTP API
   lifx_http_api: ^0.0.13
-  # Collection of lint rules for Dart and Flutter projects
-  lint: ^1.7.2
   # Small, easy to use and extensible logger which prints beautiful logs.
   logger: ^1.1.0
   # A server and browser based MQTT client for Dart.
@@ -60,14 +58,14 @@ dev_dependencies:
 
   # A generator for injectable library
   # Code generator for unions/pattern-matching/copy.
-  freezed: ^0.15.0+1
+  freezed: ^0.15.1+1
   # Automatically generates Hive TypeAdapters to store any class
   hive_generator: ^1.1.1
   # Injectable is a convenient code generator for get_it.
   injectable_generator: ^1.5.2
+  # Collection of lint rules for Dart and Flutter projects
+  lint: ^1.7.2
   # Library for mocks
   mockito: ^5.0.16
-  # The Dart analyzer settings and best practices used internally at Google.
-  pedantic: ^1.11.1
   # A full featured library for writing and running Dart tests across platforms.
   test: ^1.19.3
