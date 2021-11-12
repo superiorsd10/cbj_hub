@@ -195,7 +195,7 @@ class MqttServerRepository extends IMqttServerRepository {
 
   /// PING response received
   void pong() {
-    logger.v('Ping response client callback invoked');
+    logger.v('Ping response MQTT client callback invoked');
   }
 
   /// Convert device entity properties to mqtt topic and massage

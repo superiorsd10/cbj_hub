@@ -3,15 +3,15 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/generic_empty_device/generic_empty_validators.dart';
 import 'package:dartz/dartz.dart';
 
-class GenericSwitchState extends ValueObjectCore<String> {
-  factory GenericSwitchState(String? input) {
+class GenericEmptySwitchState extends ValueObjectCore<String> {
+  factory GenericEmptySwitchState(String? input) {
     assert(input != null);
-    return GenericSwitchState._(
+    return GenericEmptySwitchState._(
       validateGenericEmptyStateNotEmty(input!),
     );
   }
 
-  const GenericSwitchState._(this.value);
+  const GenericEmptySwitchState._(this.value);
 
   @override
   final Either<CoreFailure<String>, String> value;
