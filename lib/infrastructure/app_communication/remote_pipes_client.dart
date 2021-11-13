@@ -6,6 +6,7 @@ import 'package:cbj_hub/infrastructure/app_communication/app_communication_repos
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/generic_ping_device/generic_ping_device_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
@@ -33,15 +34,16 @@ class RemotePipesClient {
       response = stub!.hubTransferDevices(
         /// Transfer all requests from hub to the remote pipes->app
         HubRequestsToApp.streamRequestsToApp
-            .map(
-              (DeviceEntityDtoAbstract deviceEntityDto) =>
-                  RequestsAndStatusFromHub(
-                sendingType: SendingType.deviceType,
-                allRemoteCommands:
-                    DeviceHelper.convertDtoToJsonString(deviceEntityDto),
-              ),
-            )
-            .handleError((error) => logger.e('Stream have error $error')),
+            .map((DeviceEntityDtoAbstract deviceEntityDto) {
+          if (deviceEntityDto is! GenericPingDeviceDtos) {
+            grpcDartKeepAliveWorkaround(HubRequestsToApp.streamRequestsToApp);
+          }
+          return RequestsAndStatusFromHub(
+            sendingType: SendingType.deviceType,
+            allRemoteCommands:
+                DeviceHelper.convertDtoToJsonString(deviceEntityDto),
+          );
+        }).handleError((error) => logger.e('Stream have error $error')),
       );
 
       /// All responses from the app->remote pipes going int the hub
@@ -57,6 +59,7 @@ class RemotePipesClient {
   static Future<void> grpcDartKeepAliveWorkaround(
     BehaviorSubject<DeviceEntityDtoAbstract> sendRequest,
   ) async {
+    grpcKeepAlive?.cancel();
     final GenericPingDE genericEmptyDE = GenericPingDE.empty();
     grpcKeepAlive = Timer.periodic(const Duration(minutes: 9), (Timer t) {
       logger.v('Ping device to Remote Pipes');
