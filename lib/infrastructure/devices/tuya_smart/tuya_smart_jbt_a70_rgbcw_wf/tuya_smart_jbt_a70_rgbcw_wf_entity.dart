@@ -80,12 +80,12 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning tuya smart light on'),
+            (l) => logger.e('Error turning tuya smart light on\n$l'),
             (r) => logger.d('Light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning tuya smart light off'),
+            (l) => logger.e('Error turning tuya smart light off\n$l'),
             (r) => logger.d('Light turn off success'),
           );
         } else {
@@ -112,7 +112,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
         lightColorValueNewValue: newEntity.lightColorValue.getOrCrash(),
       ))
           .fold(
-        (l) => logger.e('Error changing Tuya light color'),
+        (l) => logger.e('Error changing Tuya light color\n$l'),
         (r) => logger.i('Light changed color successfully'),
       );
     }

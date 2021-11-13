@@ -73,6 +73,12 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   /// Yeelight package object require to close previews request before new one
   Device? yeelightPackageObject;
 
+  int sendNewColorEachMiliseconds = 200;
+  Timer? timeFromLastColorChange;
+  // HSVColor? lastColoredPicked;
+
+  Either<CoreFailure, Unit>? timerFunctionResult;
+
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
@@ -95,12 +101,12 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning yeelight light on'),
+            (l) => logger.e('Error turning yeelight light on\n$l'),
             (r) => logger.i('Light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning yeelight light off'),
+            (l) => logger.e('Error turning yeelight light off\n$l'),
             (r) => logger.i('Light turn off success'),
           );
         } else {
@@ -124,7 +130,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         lightColorValueNewValue: newEntity.lightColorValue.getOrCrash(),
       ))
           .fold(
-        (l) => logger.e('Error changing yeelight light color'),
+        (l) => logger.e('Error changing Yeelight light color\n$l'),
         (r) => logger.i('Light changed color successfully'),
       );
     }
@@ -205,7 +211,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         if (response == null) {
           logger.v('Device cant be discovered');
 
-          return left(const CoreFailure.unexpected());
+          return left(const CoreFailure.unableToUpdate());
         }
 
         yeelightPackageObject?.disconnect();
@@ -222,7 +228,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         return right(unit);
       }
     } catch (e) {
-      return left(const CoreFailure.unexpected());
+      return left(CoreFailure.actionExcecuter(failedValue: e));
     }
   }
 
@@ -289,12 +295,44 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
     required String lightColorSaturationNewValue,
     required String lightColorValueNewValue,
   }) async {
-    lightColorAlpha = GenericRgbwLightColorAlpha(lightColorAlphaNewValue);
-    lightColorHue = GenericRgbwLightColorHue(lightColorHueNewValue);
-    lightColorSaturation =
-        GenericRgbwLightColorSaturation(lightColorSaturationNewValue);
-    lightColorValue = GenericRgbwLightColorValue(lightColorValueNewValue);
+    try {
+      lightColorAlpha = GenericRgbwLightColorAlpha(lightColorAlphaNewValue);
+      lightColorHue = GenericRgbwLightColorHue(lightColorHueNewValue);
+      lightColorSaturation =
+          GenericRgbwLightColorSaturation(lightColorSaturationNewValue);
+      lightColorValue = GenericRgbwLightColorValue(lightColorValueNewValue);
 
+      if (timeFromLastColorChange == null) {
+        timeFromLastColorChange = Timer(
+            Duration(milliseconds: sendNewColorEachMiliseconds), () async {
+          timeFromLastColorChange = null;
+          timerFunctionResult = await _sendChangeColorTemperature(
+            lightColorAlphaNewValue: lightColorAlphaNewValue,
+            lightColorHueNewValue: lightColorHueNewValue,
+            lightColorSaturationNewValue: lightColorSaturationNewValue,
+            lightColorValueNewValue: lightColorValueNewValue,
+          );
+        });
+        await Future.delayed(
+          Duration(milliseconds: sendNewColorEachMiliseconds),
+        );
+        final Either<CoreFailure, Unit> timerFunctionResultTemp =
+            timerFunctionResult!;
+        timerFunctionResult = null;
+        return timerFunctionResultTemp;
+      }
+      return right(unit);
+    } catch (e) {
+      return left(CoreFailure.actionExcecuter(failedValue: e));
+    }
+  }
+
+  Future<Either<CoreFailure, Unit>> _sendChangeColorTemperature({
+    required String lightColorAlphaNewValue,
+    required String lightColorHueNewValue,
+    required String lightColorSaturationNewValue,
+    required String lightColorValueNewValue,
+  }) async {
     try {
       try {
         yeelightPackageObject?.disconnect();
@@ -314,6 +352,11 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           saturation: int.parse(
             lightColorSaturationNewValue.substring(2, 4),
           ),
+          duration: Duration(
+            milliseconds:
+                (sendNewColorEachMiliseconds - sendNewColorEachMiliseconds / 10)
+                    .toInt(),
+          ),
         );
         yeelightPackageObject!.disconnect();
 
@@ -330,7 +373,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         );
         if (response == null) {
           logger.v('Device cant be discovered');
-          return left(const CoreFailure.unexpected());
+          return left(const CoreFailure.unableToUpdate());
         }
 
         yeelightPackageObject =
@@ -347,6 +390,11 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         await yeelightPackageObject!.setHSV(
           hue: int.parse(lightColorHueNewValue),
           saturation: int.parse(lightColorSaturationNewValue),
+          duration: Duration(
+            milliseconds:
+                (sendNewColorEachMiliseconds - sendNewColorEachMiliseconds / 10)
+                    .toInt(),
+          ),
         );
 
         yeelightPackageObject?.disconnect();
@@ -354,7 +402,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         return right(unit);
       }
     } catch (e) {
-      return left(const CoreFailure.unexpected());
+      return left(CoreFailure.actionExcecuter(failedValue: e));
     }
   }
 }
