@@ -4,14 +4,14 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/generic_devices/generic_light_device/generic_light_device_dtos.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/generic_switch_device/generic_switch_device_dtos.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
-/// Abstract smart GenericLight that exist inside a computer, the
-/// implementations will be actual GenericLight like blinds lights and more
+/// Abstract smart GenericSwitch that exist inside a computer, the
+/// implementations will be actual GenericSwitch like blinds switchs and more
 class GenericSwitchDE extends DeviceEntityAbstract {
-  /// All public field of GenericLight entity
+  /// All public field of GenericSwitch entity
   GenericSwitchDE({
     required CoreUniqueId uniqueId,
     required CoreUniqueId roomId,
@@ -30,7 +30,7 @@ class GenericSwitchDE extends DeviceEntityAbstract {
           uniqueId: uniqueId,
           defaultName: defaultName,
           roomId: roomId,
-          deviceTypes: DeviceType(DeviceTypes.light.toString()),
+          deviceTypes: DeviceType(DeviceTypes.switch_.toString()),
           deviceVendor: deviceVendor,
           deviceStateGRPC: deviceStateGRPC,
           compUuid: compUuid,
@@ -41,7 +41,7 @@ class GenericSwitchDE extends DeviceEntityAbstract {
           stateMassage: stateMassage,
         );
 
-  /// Empty instance of GenericLightEntity
+  /// Empty instance of GenericSwitchEntity
   factory GenericSwitchDE.empty() => GenericSwitchDE(
         uniqueId: CoreUniqueId(),
         defaultName: DeviceDefaultName(''),
@@ -89,8 +89,8 @@ class GenericSwitchDE extends DeviceEntityAbstract {
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
-    return GenericLightDeviceDtos(
-      deviceDtoClass: (GenericLightDeviceDtos).toString(),
+    return GenericSwitchDeviceDtos(
+      deviceDtoClass: (GenericSwitchDeviceDtos).toString(),
       id: uniqueId.getOrCrash(),
       defaultName: defaultName.getOrCrash(),
       roomId: roomId.getOrCrash(),
@@ -102,7 +102,7 @@ class GenericSwitchDE extends DeviceEntityAbstract {
       senderId: senderId.getOrCrash(),
       deviceTypes: deviceTypes.getOrCrash(),
       compUuid: compUuid.getOrCrash(),
-      lightSwitchState: switchState!.getOrCrash(),
+      switchState: switchState!.getOrCrash(),
       deviceVendor: deviceVendor.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
@@ -122,7 +122,7 @@ class GenericSwitchDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> turnOnLight() async {
+  Future<Either<CoreFailure, Unit>> turnOnSwitch() async {
     logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
@@ -132,7 +132,7 @@ class GenericSwitchDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> turnOffLight() async {
+  Future<Either<CoreFailure, Unit>> turnOffSwitch() async {
     logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
