@@ -144,6 +144,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       savedDeviceEntity.lightColorHue = deviceEntityFromApp.lightColorHue;
       savedDeviceEntity.lightColorAlpha = deviceEntityFromApp.lightColorAlpha;
       savedDeviceEntity.lightColorValue = deviceEntityFromApp.lightColorValue;
+      savedDeviceEntity.lightBrightness = deviceEntityFromApp.lightBrightness;
 
       deviceFromApp =
           MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);

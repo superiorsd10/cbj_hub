@@ -101,13 +101,13 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning yeelight light on\n$l'),
-            (r) => logger.i('Light turn on success'),
+            (l) => logger.e('Error turning Yeelight light on\n$l'),
+            (r) => logger.i('Yeelight light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning yeelight light off\n$l'),
-            (r) => logger.i('Light turn off success'),
+            (l) => logger.e('Error turning Yeelight light off\n$l'),
+            (r) => logger.i('Yeelight light turn off success'),
           );
         } else {
           logger.i('actionToPreform is not set correctly on Yeelight 1SE');
@@ -131,7 +131,15 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       ))
           .fold(
         (l) => logger.e('Error changing Yeelight light color\n$l'),
-        (r) => logger.i('Light changed color successfully'),
+        (r) => logger.i('Yeelight changed color successfully'),
+      );
+    }
+
+    if (newEntity.lightBrightness.getOrCrash() !=
+        lightBrightness.getOrCrash()) {
+      (await adjustBrightness(newEntity.lightBrightness.getOrCrash())).fold(
+        (l) => logger.e('Error changing Yeelight brightness\n$l'),
+        (r) => logger.i('Yeelight changed brightness successfully'),
       );
     }
 
@@ -235,7 +243,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   /// Please override the following methods
   @override
   Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
-    // lightBrightness = GenericRgbwLightBrightness();
+    lightBrightness = GenericRgbwLightBrightness(brightness);
 
     try {
       try {
@@ -248,7 +256,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
         await yeelightPackageObject!.adjustBrightness(
           percentage: int.parse(lightBrightness.getOrCrash()),
-          duration: const Duration(seconds: 50),
+          duration: const Duration(milliseconds: 200),
         );
 
         yeelightPackageObject!.disconnect();
@@ -274,9 +282,9 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         lastKnownIp = DeviceLastKnownIp(response.address.address);
         yeelightPort = YeelightPort(response.port!.toString());
 
-        yeelightPackageObject!.adjustBrightness(
+        await yeelightPackageObject!.adjustBrightness(
           percentage: int.parse(lightBrightness.getOrCrash()),
-          duration: const Duration(seconds: 50),
+          duration: const Duration(milliseconds: 200),
         );
 
         yeelightPackageObject?.disconnect();
