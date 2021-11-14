@@ -305,17 +305,30 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       if (timeFromLastColorChange == null) {
         timeFromLastColorChange = Timer(
             Duration(milliseconds: sendNewColorEachMiliseconds), () async {
-          timeFromLastColorChange = null;
           timerFunctionResult = await _sendChangeColorTemperature(
             lightColorAlphaNewValue: lightColorAlphaNewValue,
             lightColorHueNewValue: lightColorHueNewValue,
             lightColorSaturationNewValue: lightColorSaturationNewValue,
             lightColorValueNewValue: lightColorValueNewValue,
           );
+          timeFromLastColorChange = null;
         });
         await Future.delayed(
-          Duration(milliseconds: sendNewColorEachMiliseconds),
+          Duration(
+            milliseconds: sendNewColorEachMiliseconds,
+          ),
         );
+        if (timerFunctionResult == null) {
+          await Future.delayed(
+            Duration(
+              milliseconds: sendNewColorEachMiliseconds * 2,
+            ),
+          );
+        }
+        if (timerFunctionResult == null) {
+          timeFromLastColorChange = null;
+          return left(const CoreFailure.unableToUpdate());
+        }
         final Either<CoreFailure, Unit> timerFunctionResultTemp =
             timerFunctionResult!;
         timerFunctionResult = null;
@@ -347,18 +360,23 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         //     lightColorTemperature!.getOrCrash(),
         //   ),
         // );
+        int saturationValue;
+        if (lightColorSaturationNewValue.length <= 3) {
+          saturationValue = 100;
+        } else {
+          saturationValue =
+              int.parse(lightColorSaturationNewValue.substring(2, 4));
+        }
+
         await yeelightPackageObject!.setHSV(
           hue: double.parse(lightColorHueNewValue).toInt(),
-          saturation: int.parse(
-            lightColorSaturationNewValue.substring(2, 4),
-          ),
+          saturation: saturationValue,
           duration: Duration(
             milliseconds:
-                (sendNewColorEachMiliseconds - sendNewColorEachMiliseconds / 10)
-                    .toInt(),
+                sendNewColorEachMiliseconds - sendNewColorEachMiliseconds ~/ 10,
           ),
         );
-        yeelightPackageObject!.disconnect();
+        yeelightPackageObject?.disconnect();
 
         return right(unit);
       } catch (e) {
@@ -387,13 +405,20 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         //   ),
         // );
 
+        int saturationValue;
+        if (lightColorSaturationNewValue.length <= 3) {
+          saturationValue = 100;
+        } else {
+          saturationValue =
+              int.parse(lightColorSaturationNewValue.substring(2, 4));
+        }
+
         await yeelightPackageObject!.setHSV(
-          hue: int.parse(lightColorHueNewValue),
-          saturation: int.parse(lightColorSaturationNewValue),
+          hue: double.parse(lightColorHueNewValue).toInt(),
+          saturation: saturationValue,
           duration: Duration(
             milliseconds:
-                (sendNewColorEachMiliseconds - sendNewColorEachMiliseconds / 10)
-                    .toInt(),
+                sendNewColorEachMiliseconds - sendNewColorEachMiliseconds ~/ 10,
           ),
         );
 
