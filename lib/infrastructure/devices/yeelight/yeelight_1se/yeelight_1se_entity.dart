@@ -361,7 +361,10 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         //   ),
         // );
         int saturationValue;
-        if (lightColorSaturationNewValue.length <= 3) {
+        if (lightColorSaturationNewValue.length <= 3 &&
+            lightColorSaturationNewValue == '0.0') {
+          saturationValue = 0;
+        } else if (lightColorSaturationNewValue.length <= 3) {
           saturationValue = 100;
         } else {
           saturationValue =
@@ -406,7 +409,10 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         // );
 
         int saturationValue;
-        if (lightColorSaturationNewValue.length <= 3) {
+        if (lightColorSaturationNewValue.length <= 3 &&
+            lightColorSaturationNewValue == '0.0') {
+          saturationValue = 0;
+        } else if (lightColorSaturationNewValue.length <= 3) {
           saturationValue = 100;
         } else {
           saturationValue =
