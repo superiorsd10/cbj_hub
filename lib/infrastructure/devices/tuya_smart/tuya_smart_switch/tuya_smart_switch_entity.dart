@@ -4,9 +4,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_light_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
@@ -56,7 +55,7 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
   Future<Either<CoreFailure, Unit>> executeDeviceAction(
     DeviceEntityAbstract newEntity,
   ) async {
-    if (newEntity is! GenericLightDE) {
+    if (newEntity is! GenericSwitchDE) {
       return left(
         const CoreFailure.actionExcecuter(
           failedValue: 'Not the correct type',
@@ -64,20 +63,20 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() != switchState!.getOrCrash()) {
+    if (newEntity.switchState!.getOrCrash() != switchState!.getOrCrash()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
+        newEntity.switchState!.getOrCrash(),
       );
 
       if (actionToPreform.toString() != switchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning tuya_smart light on'),
+            (l) => logger.e('Error turning tuya_smart light on\n$l'),
             (r) => logger.i('Light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning tuya_smart light off'),
+            (l) => logger.e('Error turning tuya_smart light off\n$l'),
             (r) => logger.i('Light turn off success'),
           );
         } else {
