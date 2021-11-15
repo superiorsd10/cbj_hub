@@ -74,12 +74,10 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   Device? yeelightPackageObject;
 
   int sendNewColorRequestEachMiliseconds = 200;
-  int sendNewBrightnessRequestEachMiliseconds = 500;
-  Timer? timeFromLastColorChange;
-  Either<CoreFailure, Unit>? timerColorFunctionResult;
+  bool doesWaitingToSendColorRequest = false;
 
-  Timer? timeFromLastBrightnessChange;
-  Either<CoreFailure, Unit>? timerBrightnessFunctionResult;
+  int sendNewBrightnessRequestEachMiliseconds = 200;
+  bool doesWaitingToSendBrightnessRequest = false;
 
   /// Please override the following methods
   @override
@@ -248,36 +246,25 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
     lightBrightness = GenericRgbwLightBrightness(brightness);
 
     try {
-      if (timeFromLastBrightnessChange == null) {
-        timeFromLastBrightnessChange = Timer(
-            Duration(milliseconds: sendNewBrightnessRequestEachMiliseconds),
-            () async {
-          timerBrightnessFunctionResult = await _sendSetBrightness();
-          timeFromLastBrightnessChange = null;
-        });
+      if (!doesWaitingToSendBrightnessRequest) {
+        doesWaitingToSendBrightnessRequest = true;
+        final Either<CoreFailure, Unit> brightnessResponse =
+            await _sendSetBrightness();
+
         await Future.delayed(
-          Duration(
-            milliseconds: sendNewBrightnessRequestEachMiliseconds,
-          ),
+          Duration(milliseconds: sendNewBrightnessRequestEachMiliseconds),
         );
-        if (timerBrightnessFunctionResult == null) {
-          await Future.delayed(
-            Duration(
-              milliseconds: sendNewBrightnessRequestEachMiliseconds * 2,
-            ),
-          );
-        }
-        if (timerBrightnessFunctionResult == null) {
-          timeFromLastBrightnessChange = null;
-          return left(const CoreFailure.unableToUpdate());
-        }
-        final Either<CoreFailure, Unit> timerFunctionResultTemp =
-            timerBrightnessFunctionResult!;
-        timerBrightnessFunctionResult = null;
-        return timerFunctionResultTemp;
+
+        doesWaitingToSendBrightnessRequest = false;
+
+        return brightnessResponse;
       }
       return right(unit);
     } catch (e) {
+      await Future.delayed(
+        Duration(milliseconds: sendNewBrightnessRequestEachMiliseconds),
+      );
+      doesWaitingToSendBrightnessRequest = false;
       return left(const CoreFailure.unexpected());
     }
   }
@@ -289,44 +276,33 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
     required String lightColorSaturationNewValue,
     required String lightColorValueNewValue,
   }) async {
-    try {
-      lightColorAlpha = GenericRgbwLightColorAlpha(lightColorAlphaNewValue);
-      lightColorHue = GenericRgbwLightColorHue(lightColorHueNewValue);
-      lightColorSaturation =
-          GenericRgbwLightColorSaturation(lightColorSaturationNewValue);
-      lightColorValue = GenericRgbwLightColorValue(lightColorValueNewValue);
+    lightColorAlpha = GenericRgbwLightColorAlpha(lightColorAlphaNewValue);
+    lightColorHue = GenericRgbwLightColorHue(lightColorHueNewValue);
+    lightColorSaturation =
+        GenericRgbwLightColorSaturation(lightColorSaturationNewValue);
+    lightColorValue = GenericRgbwLightColorValue(lightColorValueNewValue);
 
-      if (timeFromLastColorChange == null) {
-        timeFromLastColorChange =
-            Timer(Duration(milliseconds: sendNewColorRequestEachMiliseconds),
-                () async {
-          timerColorFunctionResult = await _sendChangeColorTemperature();
-          timeFromLastColorChange = null;
-        });
+    try {
+      if (!doesWaitingToSendColorRequest) {
+        doesWaitingToSendColorRequest = true;
+        final Either<CoreFailure, Unit> brightnessResponse =
+            await _sendChangeColorTemperature();
+
         await Future.delayed(
-          Duration(
-            milliseconds: sendNewColorRequestEachMiliseconds,
-          ),
+          Duration(milliseconds: sendNewColorRequestEachMiliseconds),
         );
-        if (timerColorFunctionResult == null) {
-          await Future.delayed(
-            Duration(
-              milliseconds: sendNewColorRequestEachMiliseconds * 2,
-            ),
-          );
-        }
-        if (timerColorFunctionResult == null) {
-          timeFromLastColorChange = null;
-          return left(const CoreFailure.unableToUpdate());
-        }
-        final Either<CoreFailure, Unit> timerFunctionResultTemp =
-            timerColorFunctionResult!;
-        timerColorFunctionResult = null;
-        return timerFunctionResultTemp;
+
+        doesWaitingToSendColorRequest = false;
+
+        return brightnessResponse;
       }
       return right(unit);
     } catch (e) {
-      return left(CoreFailure.actionExcecuter(failedValue: e));
+      await Future.delayed(
+        Duration(milliseconds: sendNewColorRequestEachMiliseconds),
+      );
+      doesWaitingToSendColorRequest = false;
+      return left(const CoreFailure.unexpected());
     }
   }
 
