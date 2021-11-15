@@ -73,11 +73,13 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   /// Yeelight package object require to close previews request before new one
   Device? yeelightPackageObject;
 
-  int sendNewColorEachMiliseconds = 200;
+  int sendNewColorRequestEachMiliseconds = 200;
+  int sendNewBrightnessRequestEachMiliseconds = 500;
   Timer? timeFromLastColorChange;
-  // HSVColor? lastColoredPicked;
+  Either<CoreFailure, Unit>? timerColorFunctionResult;
 
-  Either<CoreFailure, Unit>? timerFunctionResult;
+  Timer? timeFromLastBrightnessChange;
+  Either<CoreFailure, Unit>? timerBrightnessFunctionResult;
 
   /// Please override the following methods
   @override
@@ -137,7 +139,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
     if (newEntity.lightBrightness.getOrCrash() !=
         lightBrightness.getOrCrash()) {
-      (await adjustBrightness(newEntity.lightBrightness.getOrCrash())).fold(
+      (await setBrightness(newEntity.lightBrightness.getOrCrash())).fold(
         (l) => logger.e('Error changing Yeelight brightness\n$l'),
         (r) => logger.i('Yeelight changed brightness successfully'),
       );
@@ -242,9 +244,93 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
   /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
+  Future<Either<CoreFailure, Unit>> setBrightness(String brightness) async {
     lightBrightness = GenericRgbwLightBrightness(brightness);
 
+    try {
+      if (timeFromLastBrightnessChange == null) {
+        timeFromLastBrightnessChange = Timer(
+            Duration(milliseconds: sendNewBrightnessRequestEachMiliseconds),
+            () async {
+          timerBrightnessFunctionResult = await _sendSetBrightness();
+          timeFromLastBrightnessChange = null;
+        });
+        await Future.delayed(
+          Duration(
+            milliseconds: sendNewBrightnessRequestEachMiliseconds,
+          ),
+        );
+        if (timerBrightnessFunctionResult == null) {
+          await Future.delayed(
+            Duration(
+              milliseconds: sendNewBrightnessRequestEachMiliseconds * 2,
+            ),
+          );
+        }
+        if (timerBrightnessFunctionResult == null) {
+          timeFromLastBrightnessChange = null;
+          return left(const CoreFailure.unableToUpdate());
+        }
+        final Either<CoreFailure, Unit> timerFunctionResultTemp =
+            timerBrightnessFunctionResult!;
+        timerBrightnessFunctionResult = null;
+        return timerFunctionResultTemp;
+      }
+      return right(unit);
+    } catch (e) {
+      return left(const CoreFailure.unexpected());
+    }
+  }
+
+  @override
+  Future<Either<CoreFailure, Unit>> changeColorTemperature({
+    required String lightColorAlphaNewValue,
+    required String lightColorHueNewValue,
+    required String lightColorSaturationNewValue,
+    required String lightColorValueNewValue,
+  }) async {
+    try {
+      lightColorAlpha = GenericRgbwLightColorAlpha(lightColorAlphaNewValue);
+      lightColorHue = GenericRgbwLightColorHue(lightColorHueNewValue);
+      lightColorSaturation =
+          GenericRgbwLightColorSaturation(lightColorSaturationNewValue);
+      lightColorValue = GenericRgbwLightColorValue(lightColorValueNewValue);
+
+      if (timeFromLastColorChange == null) {
+        timeFromLastColorChange =
+            Timer(Duration(milliseconds: sendNewColorRequestEachMiliseconds),
+                () async {
+          timerColorFunctionResult = await _sendChangeColorTemperature();
+          timeFromLastColorChange = null;
+        });
+        await Future.delayed(
+          Duration(
+            milliseconds: sendNewColorRequestEachMiliseconds,
+          ),
+        );
+        if (timerColorFunctionResult == null) {
+          await Future.delayed(
+            Duration(
+              milliseconds: sendNewColorRequestEachMiliseconds * 2,
+            ),
+          );
+        }
+        if (timerColorFunctionResult == null) {
+          timeFromLastColorChange = null;
+          return left(const CoreFailure.unableToUpdate());
+        }
+        final Either<CoreFailure, Unit> timerFunctionResultTemp =
+            timerColorFunctionResult!;
+        timerColorFunctionResult = null;
+        return timerFunctionResultTemp;
+      }
+      return right(unit);
+    } catch (e) {
+      return left(CoreFailure.actionExcecuter(failedValue: e));
+    }
+  }
+
+  Future<Either<CoreFailure, Unit>> _sendChangeColorTemperature() async {
     try {
       try {
         yeelightPackageObject?.disconnect();
@@ -254,8 +340,104 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           port: int.parse(yeelightPort!.getOrCrash()),
         );
 
-        await yeelightPackageObject!.adjustBrightness(
-          percentage: int.parse(lightBrightness.getOrCrash()),
+        // await device.setColorTemperature(
+        //   colorTemperature: int.parse(
+        //     lightColorTemperature!.getOrCrash(),
+        //   ),
+        // );
+        int saturationValue;
+        if (lightColorSaturation.getOrCrash().length <= 3 &&
+            lightColorSaturation.getOrCrash() == '0.0') {
+          saturationValue = 0;
+        } else if (lightColorSaturation.getOrCrash().length <= 3) {
+          saturationValue = 100;
+        } else {
+          saturationValue =
+              int.parse(lightColorSaturation.getOrCrash().substring(2, 4));
+        }
+
+        await yeelightPackageObject!.setHSV(
+          hue: double.parse(lightColorHue.getOrCrash()).toInt(),
+          saturation: saturationValue,
+          duration: Duration(
+            milliseconds: sendNewColorRequestEachMiliseconds -
+                sendNewColorRequestEachMiliseconds ~/ 10,
+          ),
+        );
+        yeelightPackageObject?.disconnect();
+
+        return right(unit);
+      } catch (e) {
+        yeelightPackageObject?.disconnect();
+
+        await Future.delayed(const Duration(milliseconds: 150));
+
+        final responses = await Yeelight.discover();
+
+        final response = responses.firstWhereOrNull(
+          (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
+        );
+        if (response == null) {
+          logger.v('Device cant be discovered');
+          return left(const CoreFailure.unableToUpdate());
+        }
+
+        yeelightPackageObject =
+            Device(address: response.address, port: response.port!);
+        lastKnownIp = DeviceLastKnownIp(response.address.address);
+        yeelightPort = YeelightPort(response.port!.toString());
+
+        // await device.setColorTemperature(
+        //   colorTemperature: int.parse(
+        //     lightColorTemperature!.getOrCrash(),
+        //   ),
+        // );
+
+        int saturationValue;
+        if (lightColorSaturation.getOrCrash().length <= 3 &&
+            lightColorSaturation.getOrCrash() == '0.0') {
+          saturationValue = 0;
+        } else if (lightColorSaturation.getOrCrash().length <= 3) {
+          saturationValue = 100;
+        } else {
+          saturationValue =
+              int.parse(lightColorSaturation.getOrCrash().substring(2, 4));
+        }
+
+        await yeelightPackageObject!.setHSV(
+          hue: double.parse(lightColorHue.getOrCrash()).toInt(),
+          saturation: saturationValue,
+          duration: Duration(
+            milliseconds: sendNewColorRequestEachMiliseconds -
+                sendNewColorRequestEachMiliseconds ~/ 10,
+          ),
+        );
+
+        yeelightPackageObject?.disconnect();
+
+        return right(unit);
+      }
+    } catch (e) {
+      return left(CoreFailure.actionExcecuter(failedValue: e));
+    }
+  }
+
+  Future<Either<CoreFailure, Unit>> _sendSetBrightness() async {
+    try {
+      try {
+        yeelightPackageObject?.disconnect();
+
+        yeelightPackageObject = Device(
+          address: InternetAddress(lastKnownIp!.getOrCrash()),
+          port: int.parse(yeelightPort!.getOrCrash()),
+        );
+
+        await yeelightPackageObject!.turnOn();
+
+        await yeelightPackageObject!.setBrightness(
+          brightness: int.parse(
+            lightBrightness.getOrCrash(),
+          ),
           duration: const Duration(milliseconds: 200),
         );
 
@@ -282,8 +464,12 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         lastKnownIp = DeviceLastKnownIp(response.address.address);
         yeelightPort = YeelightPort(response.port!.toString());
 
-        await yeelightPackageObject!.adjustBrightness(
-          percentage: int.parse(lightBrightness.getOrCrash()),
+        await yeelightPackageObject!.turnOn();
+
+        await yeelightPackageObject!.setBrightness(
+          brightness: int.parse(
+            lightBrightness.getOrCrash(),
+          ),
           duration: const Duration(milliseconds: 200),
         );
 
@@ -291,157 +477,9 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
         return right(unit);
       }
-    } catch (e) {
+    } catch (error) {
+      logger.e('Error in Yeelight Device\n$error');
       return left(const CoreFailure.unexpected());
-    }
-  }
-
-  @override
-  Future<Either<CoreFailure, Unit>> changeColorTemperature({
-    required String lightColorAlphaNewValue,
-    required String lightColorHueNewValue,
-    required String lightColorSaturationNewValue,
-    required String lightColorValueNewValue,
-  }) async {
-    try {
-      lightColorAlpha = GenericRgbwLightColorAlpha(lightColorAlphaNewValue);
-      lightColorHue = GenericRgbwLightColorHue(lightColorHueNewValue);
-      lightColorSaturation =
-          GenericRgbwLightColorSaturation(lightColorSaturationNewValue);
-      lightColorValue = GenericRgbwLightColorValue(lightColorValueNewValue);
-
-      if (timeFromLastColorChange == null) {
-        timeFromLastColorChange = Timer(
-            Duration(milliseconds: sendNewColorEachMiliseconds), () async {
-          timerFunctionResult = await _sendChangeColorTemperature(
-            lightColorAlphaNewValue: lightColorAlphaNewValue,
-            lightColorHueNewValue: lightColorHueNewValue,
-            lightColorSaturationNewValue: lightColorSaturationNewValue,
-            lightColorValueNewValue: lightColorValueNewValue,
-          );
-          timeFromLastColorChange = null;
-        });
-        await Future.delayed(
-          Duration(
-            milliseconds: sendNewColorEachMiliseconds,
-          ),
-        );
-        if (timerFunctionResult == null) {
-          await Future.delayed(
-            Duration(
-              milliseconds: sendNewColorEachMiliseconds * 2,
-            ),
-          );
-        }
-        if (timerFunctionResult == null) {
-          timeFromLastColorChange = null;
-          return left(const CoreFailure.unableToUpdate());
-        }
-        final Either<CoreFailure, Unit> timerFunctionResultTemp =
-            timerFunctionResult!;
-        timerFunctionResult = null;
-        return timerFunctionResultTemp;
-      }
-      return right(unit);
-    } catch (e) {
-      return left(CoreFailure.actionExcecuter(failedValue: e));
-    }
-  }
-
-  Future<Either<CoreFailure, Unit>> _sendChangeColorTemperature({
-    required String lightColorAlphaNewValue,
-    required String lightColorHueNewValue,
-    required String lightColorSaturationNewValue,
-    required String lightColorValueNewValue,
-  }) async {
-    try {
-      try {
-        yeelightPackageObject?.disconnect();
-
-        yeelightPackageObject = Device(
-          address: InternetAddress(lastKnownIp!.getOrCrash()),
-          port: int.parse(yeelightPort!.getOrCrash()),
-        );
-
-        // await device.setColorTemperature(
-        //   colorTemperature: int.parse(
-        //     lightColorTemperature!.getOrCrash(),
-        //   ),
-        // );
-        int saturationValue;
-        if (lightColorSaturationNewValue.length <= 3 &&
-            lightColorSaturationNewValue == '0.0') {
-          saturationValue = 0;
-        } else if (lightColorSaturationNewValue.length <= 3) {
-          saturationValue = 100;
-        } else {
-          saturationValue =
-              int.parse(lightColorSaturationNewValue.substring(2, 4));
-        }
-
-        await yeelightPackageObject!.setHSV(
-          hue: double.parse(lightColorHueNewValue).toInt(),
-          saturation: saturationValue,
-          duration: Duration(
-            milliseconds:
-                sendNewColorEachMiliseconds - sendNewColorEachMiliseconds ~/ 10,
-          ),
-        );
-        yeelightPackageObject?.disconnect();
-
-        return right(unit);
-      } catch (e) {
-        yeelightPackageObject?.disconnect();
-
-        await Future.delayed(const Duration(milliseconds: 150));
-
-        final responses = await Yeelight.discover();
-
-        final response = responses.firstWhereOrNull(
-          (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
-        );
-        if (response == null) {
-          logger.v('Device cant be discovered');
-          return left(const CoreFailure.unableToUpdate());
-        }
-
-        yeelightPackageObject =
-            Device(address: response.address, port: response.port!);
-        lastKnownIp = DeviceLastKnownIp(response.address.address);
-        yeelightPort = YeelightPort(response.port!.toString());
-
-        // await device.setColorTemperature(
-        //   colorTemperature: int.parse(
-        //     lightColorTemperature!.getOrCrash(),
-        //   ),
-        // );
-
-        int saturationValue;
-        if (lightColorSaturationNewValue.length <= 3 &&
-            lightColorSaturationNewValue == '0.0') {
-          saturationValue = 0;
-        } else if (lightColorSaturationNewValue.length <= 3) {
-          saturationValue = 100;
-        } else {
-          saturationValue =
-              int.parse(lightColorSaturationNewValue.substring(2, 4));
-        }
-
-        await yeelightPackageObject!.setHSV(
-          hue: double.parse(lightColorHueNewValue).toInt(),
-          saturation: saturationValue,
-          duration: Duration(
-            milliseconds:
-                sendNewColorEachMiliseconds - sendNewColorEachMiliseconds ~/ 10,
-          ),
-        );
-
-        yeelightPackageObject?.disconnect();
-
-        return right(unit);
-      }
-    } catch (e) {
-      return left(CoreFailure.actionExcecuter(failedValue: e));
     }
   }
 }

@@ -149,7 +149,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
+  Future<Either<CoreFailure, Unit>> setBrightness(String brightness) async {
     logger.w('Tuya api currently does not support adjusting the brightness');
     return left(
       const CoreFailure.actionExcecuter(
