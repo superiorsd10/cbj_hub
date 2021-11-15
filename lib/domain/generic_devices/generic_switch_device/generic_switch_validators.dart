@@ -1,7 +1,7 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:dartz/dartz.dart';
 
-Either<CoreFailure<String>, String> validateGenericLightStateNotEmty(
+Either<CoreFailure<String>, String> validateGenericSwitchStateNotEmty(
   String input,
 ) {
   if (input != null) {

@@ -135,7 +135,7 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> adjustBrightness(String brightness) async {
+  Future<Either<CoreFailure, Unit>> setBrightness(String brightness) async {
     logger.w('Philips adjust brightness method is not implemented yet');
     return left(
       const CoreFailure.actionExcecuter(
