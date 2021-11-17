@@ -117,6 +117,14 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
       );
     }
 
+    if (newEntity.lightBrightness.getOrCrash() !=
+        lightBrightness.getOrCrash()) {
+      (await setBrightness(newEntity.lightBrightness.getOrCrash())).fold(
+        (l) => logger.e('Error changing Tuya brightness\n$l'),
+        (r) => logger.i('Tuya changed brightness successfully'),
+      );
+    }
+
     return right(unit);
   }
 
@@ -150,12 +158,19 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> setBrightness(String brightness) async {
-    logger.w('Tuya api currently does not support adjusting the brightness');
-    return left(
-      const CoreFailure.actionExcecuter(
-        failedValue: 'Action does not exist',
-      ),
-    );
+    // logger.w('Tuya api currently does not support adjusting the brightness');
+
+    lightBrightness = GenericRgbwLightBrightness(brightness);
+
+    try {
+      TuyaSmartConnectorConjector.cloudTuya.setBrightness(
+        tuyaSmartDeviceId!.getOrCrash(),
+        lightBrightness.getOrCrash(),
+      );
+      return right(unit);
+    } catch (e) {
+      return left(const CoreFailure.unexpected());
+    }
   }
 
   @override

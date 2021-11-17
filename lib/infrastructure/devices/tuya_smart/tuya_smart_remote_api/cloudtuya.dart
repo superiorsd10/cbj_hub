@@ -183,7 +183,11 @@ class CloudTuya {
     return response;
   }
 
-  Future<String> setState(String deviceId, String command) async {
+  Future<String> setState({
+    required String deviceId,
+    String? commendName,
+    required String command,
+  }) async {
     if (tokens == null) {
       final bool loginSuccess = await login();
       if (!loginSuccess) {
@@ -194,9 +198,11 @@ class CloudTuya {
 
     final Map<String, String> headers = {'Content-Type': 'application/json'};
 
+    commendName ??= 'turnOnOff';
+
     final String data = json.encode({
       'header': {
-        'name': 'turnOnOff',
+        'name': commendName,
         'namespace': 'control',
         'payloadVersion': '1',
       },
@@ -219,10 +225,19 @@ class CloudTuya {
   }
 
   Future<String> turnOn(String deviceId) async {
-    return setState(deviceId, '1');
+    return setState(deviceId: deviceId, command: '1');
   }
 
   Future<String> turnOff(String deviceId) async {
-    return setState(deviceId, '0');
+    return setState(deviceId: deviceId, command: '0');
+  }
+
+  /// Set Tuya device brightness
+  Future<String> setBrightness(String deviceId, String value) async {
+    return setState(
+      deviceId: deviceId,
+      commendName: 'brightnessSet',
+      command: value,
+    );
   }
 }

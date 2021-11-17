@@ -76,7 +76,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   int sendNewColorRequestEachMiliseconds = 200;
   bool doesWaitingToSendColorRequest = false;
 
-  int sendNewBrightnessRequestEachMiliseconds = 200;
+  int sendNewBrightnessRequestEachMiliseconds = 500;
   bool doesWaitingToSendBrightnessRequest = false;
 
   /// Please override the following methods
