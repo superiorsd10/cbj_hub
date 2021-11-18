@@ -77,8 +77,8 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
   Timer? executeStateTimer;
 
   /// How much time to wait between execute of methods
-  /// TODO: Test if we can lower this number to 1000 and requests do not
-  /// get denied
+  // TODO: Test if we can lower this number to 1000 and requests do not
+  // get denied
   final int sendNewRequestToDeviceEachMilliseconds = 1100;
 
   /// Please override the following methods
@@ -279,7 +279,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       await yeelightPackageObject!.turnOn();
       return right(unit);
     } catch (e) {
-      /// TODO: Maybe can be removed, need testing
+      // TODO: Maybe can be removed, need testing
       await Future.delayed(const Duration(milliseconds: 150));
       final responses = await Yeelight.discover();
 

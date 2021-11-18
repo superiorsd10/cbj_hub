@@ -46,4 +46,10 @@ class HubAppServer extends CbjHubServiceBase {
     // TODO: implement registerHub
     throw UnimplementedError();
   }
+
+  @override
+  Future<CompHubInfo> getCompHubInfo(ServiceCall call, CompHubInfo request) {
+    // TODO: implement getCompHubInfo
+    throw UnimplementedError();
+  }
 }
