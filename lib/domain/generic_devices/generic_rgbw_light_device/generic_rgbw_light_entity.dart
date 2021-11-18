@@ -188,6 +188,9 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
     );
   }
 
+  //TODO: all current implementation of this method acualy change color
+  // color temperature is for white colors and only contains color
+  // temperature and does not have Hue value
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> changeColorTemperature({
     required String lightColorAlphaNewValue,
