@@ -183,7 +183,12 @@ class CloudTuya {
     return response;
   }
 
-  Future<String> setState(String deviceId, String command) async {
+  Future<String> setState({
+    required String deviceId,
+    required String action,
+    required String valueName,
+    required String newState,
+  }) async {
     if (tokens == null) {
       final bool loginSuccess = await login();
       if (!loginSuccess) {
@@ -196,14 +201,14 @@ class CloudTuya {
 
     final String data = json.encode({
       'header': {
-        'name': 'turnOnOff',
+        'name': action,
         'namespace': 'control',
         'payloadVersion': '1',
       },
       'payload': {
         'accessToken': tokens,
         'devId': deviceId,
-        'value': command,
+        valueName: newState,
       },
     });
 
@@ -219,10 +224,61 @@ class CloudTuya {
   }
 
   Future<String> turnOn(String deviceId) async {
-    return setState(deviceId, '1');
+    return setState(
+      deviceId: deviceId,
+      action: 'turnOnOff',
+      valueName: 'value',
+      newState: '1',
+    );
   }
 
   Future<String> turnOff(String deviceId) async {
-    return setState(deviceId, '0');
+    return setState(
+      deviceId: deviceId,
+      action: 'turnOnOff',
+      valueName: 'value',
+      newState: '0',
+    );
+  }
+
+  /// Set Tuya device brightness
+  Future<String> setBrightness(String deviceId, String value) async {
+    return setState(
+      deviceId: deviceId,
+      action: 'brightnessSet',
+      valueName: 'value',
+      newState: value,
+    );
+  }
+
+  /// Set device color
+  Future<String> setColor({
+    required String deviceId,
+    required String hue,
+    required String saturation,
+    required String brightness,
+  }) async {
+    final String newColor =
+        '{ "hue": $hue, "saturation": $saturation, "brightness": $brightness }';
+
+    return setState(
+      deviceId: deviceId,
+      action: 'colorSet',
+      valueName: 'color',
+      newState: newColor,
+    );
+  }
+
+  /// Set device color temperature
+  Future<String> setColorTemperature(
+    String deviceId,
+    String newTemperature,
+  ) async {
+    return setState(
+      deviceId: deviceId,
+      action: 'colorTemperatureSet',
+      valueName: 'value',
+      newState: newTemperature,
+    );
   }
 }
