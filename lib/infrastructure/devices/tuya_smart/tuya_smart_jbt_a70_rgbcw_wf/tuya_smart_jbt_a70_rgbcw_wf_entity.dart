@@ -60,9 +60,9 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
 
   /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction(
-    DeviceEntityAbstract newEntity,
-  ) async {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction({
+    required DeviceEntityAbstract newEntity,
+  }) async {
     if (newEntity is! GenericRgbwLightDE) {
       return left(
         const CoreFailure.actionExcecuter(
@@ -80,12 +80,12 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning tuya smart light on\n$l'),
+            (l) => logger.e('Error turning Tuya smart light on\n$l'),
             (r) => logger.d('Light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning tuya smart light off\n$l'),
+            (l) => logger.e('Error turning Tuya smart light off\n$l'),
             (r) => logger.d('Light turn off success'),
           );
         } else {
@@ -97,6 +97,18 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
       }
     }
 
+    if (newEntity.lightColorTemperature.getOrCrash() !=
+        lightColorTemperature.getOrCrash()) {
+      (await changeColorTemperature(
+        lightColorTemperatureNewValue:
+            newEntity.lightColorTemperature.getOrCrash(),
+      ))
+          .fold(
+        (l) => logger.e('Error changing Tuya temperature\n$l'),
+        (r) => logger.i('Tuya changed temperature successfully'),
+      );
+    }
+
     if (newEntity.lightColorAlpha.getOrCrash() !=
             lightColorAlpha.getOrCrash() ||
         newEntity.lightColorHue.getOrCrash() != lightColorHue.getOrCrash() ||
@@ -104,7 +116,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
             lightColorSaturation.getOrCrash() ||
         newEntity.lightColorValue.getOrCrash() !=
             lightColorValue.getOrCrash()) {
-      (await changeColorTemperature(
+      (await changeColorHsv(
         lightColorAlphaNewValue: newEntity.lightColorAlpha.getOrCrash(),
         lightColorHueNewValue: newEntity.lightColorHue.getOrCrash(),
         lightColorSaturationNewValue:
@@ -173,6 +185,24 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> changeColorTemperature({
+    required String lightColorTemperatureNewValue,
+  }) async {
+    lightColorTemperature =
+        GenericRgbwLightColorTemperature(lightColorTemperatureNewValue);
+
+    try {
+      TuyaSmartConnectorConjector.cloudTuya.setColorTemperature(
+        deviceId: tuyaSmartDeviceId!.getOrCrash(),
+        newTemperature: lightColorTemperatureNewValue,
+      );
+      return right(unit);
+    } catch (e) {
+      return left(const CoreFailure.unexpected());
+    }
+  }
+
+  @override
+  Future<Either<CoreFailure, Unit>> changeColorHsv({
     required String lightColorAlphaNewValue,
     required String lightColorHueNewValue,
     required String lightColorSaturationNewValue,
@@ -185,7 +215,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
     lightColorValue = GenericRgbwLightColorValue(lightColorValueNewValue);
 
     try {
-      TuyaSmartConnectorConjector.cloudTuya.setColor(
+      TuyaSmartConnectorConjector.cloudTuya.setColorHsv(
         deviceId: tuyaSmartDeviceId!.getOrCrash(),
         hue: lightColorHue.getOrCrash(),
         saturation: lightColorSaturation.getOrCrash(),

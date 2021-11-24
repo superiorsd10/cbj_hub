@@ -81,9 +81,9 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
 
   /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction(
-    DeviceEntityAbstract newEntity,
-  ) async {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction({
+    required DeviceEntityAbstract newEntity,
+  }) async {
     if (newEntity is! GenericBlindsDE) {
       return left(
         const CoreFailure.actionExcecuter(failedValue: 'Not the correct type'),

@@ -50,7 +50,6 @@ class HubAppServer extends CbjHubServiceBase {
 
     final CbjHubIno cbjHubIno = CbjHubIno(
       deviceName: 'cbj Hub',
-      // pubspecYamlVersion: packageInfo.version,
       protoLastGenDate: hubServerProtocGenDate,
     );
 

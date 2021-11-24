@@ -76,9 +76,9 @@ class XiaomiIoGpx4021GlEntity extends GenericRgbwLightDE {
 
   /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction(
-    DeviceEntityAbstract newEntity,
-  ) async {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction({
+    required DeviceEntityAbstract newEntity,
+  }) async {
     if (newEntity is! GenericRgbwLightDE) {
       return left(
         const CoreFailure.actionExcecuter(
@@ -147,6 +147,18 @@ class XiaomiIoGpx4021GlEntity extends GenericRgbwLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> changeColorTemperature({
+    required String lightColorTemperatureNewValue,
+  }) async {
+    logger.w('Please override this method in the non generic implementation');
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
+  }
+
+  @override
+  Future<Either<CoreFailure, Unit>> changeColorHsv({
     required String lightColorAlphaNewValue,
     required String lightColorHueNewValue,
     required String lightColorSaturationNewValue,
