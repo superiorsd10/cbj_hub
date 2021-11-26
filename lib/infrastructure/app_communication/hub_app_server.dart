@@ -51,6 +51,7 @@ class HubAppServer extends CbjHubServiceBase {
     final CbjHubIno cbjHubIno = CbjHubIno(
       deviceName: 'cbj Hub',
       protoLastGenDate: hubServerProtocGenDate,
+      dartSdkVersion: Platform.version,
     );
 
     final CompHubSpecs compHubSpecs = CompHubSpecs(
