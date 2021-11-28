@@ -48,9 +48,9 @@ class TasmotaLedEntity extends GenericLightDE {
 
   /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction(
-    DeviceEntityAbstract newEntity,
-  ) async {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction({
+    required DeviceEntityAbstract newEntity,
+  }) async {
     if (newEntity is! GenericLightDE) {
       return left(
         const CoreFailure.actionExcecuter(

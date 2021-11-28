@@ -33,9 +33,9 @@ import 'package:rxdart/rxdart.dart';
 class AppCommunicationRepository extends IAppCommunicationRepository {
   AppCommunicationRepository() {
     if (currentEnv == Env.prod) {
-      hubPort = 60055;
-    } else {
       hubPort = 50055;
+    } else {
+      hubPort = 60055;
     }
     startLocalServer();
   }
@@ -141,6 +141,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       savedDeviceEntity.lightSwitchState = deviceEntityFromApp.lightSwitchState;
       savedDeviceEntity.lightColorSaturation =
           deviceEntityFromApp.lightColorSaturation;
+      savedDeviceEntity.lightColorTemperature =
+          deviceEntityFromApp.lightColorTemperature;
       savedDeviceEntity.lightColorHue = deviceEntityFromApp.lightColorHue;
       savedDeviceEntity.lightColorAlpha = deviceEntityFromApp.lightColorAlpha;
       savedDeviceEntity.lightColorValue = deviceEntityFromApp.lightColorValue;

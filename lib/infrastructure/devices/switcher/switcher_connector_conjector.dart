@@ -88,9 +88,9 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
         companyDevices[switcherDE.getDeviceId()];
 
     if (device is SwitcherV2Entity) {
-      device.executeDeviceAction(switcherDE);
+      device.executeDeviceAction(newEntity: switcherDE);
     } else if (device is SwitcherRunnerEntity) {
-      device.executeDeviceAction(switcherDE);
+      device.executeDeviceAction(newEntity: switcherDE);
     } else {
       logger.w('Switcher device type does not exist');
     }

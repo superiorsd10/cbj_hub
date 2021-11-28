@@ -252,7 +252,7 @@ class CloudTuya {
   }
 
   /// Set device color
-  Future<String> setColor({
+  Future<String> setColorHsv({
     required String deviceId,
     required String hue,
     required String saturation,
@@ -270,10 +270,10 @@ class CloudTuya {
   }
 
   /// Set device color temperature
-  Future<String> setColorTemperature(
-    String deviceId,
-    String newTemperature,
-  ) async {
+  Future<String> setColorTemperature({
+    required String deviceId,
+    required String newTemperature,
+  }) async {
     return setState(
       deviceId: deviceId,
       action: 'colorTemperatureSet',

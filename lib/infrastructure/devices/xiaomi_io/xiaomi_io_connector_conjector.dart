@@ -66,7 +66,7 @@ class XiaomiIoConnectorConjector implements AbstractCompanyConnectorConjector {
     final DeviceEntityAbstract? device = companyDevices[xiaomiDE.getDeviceId()];
 
     if (device is XiaomiIoGpx4021GlEntity) {
-      device.executeDeviceAction(xiaomiDE);
+      device.executeDeviceAction(newEntity: xiaomiDE);
     } else {
       logger.w('XiaomiIo device type does not exist');
     }

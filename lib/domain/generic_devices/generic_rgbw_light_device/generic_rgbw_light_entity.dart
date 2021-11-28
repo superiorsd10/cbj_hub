@@ -75,7 +75,7 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
   GenericRgbwLightSwitchState? lightSwitchState;
 
   /// Color temperature in int
-  GenericRgbwLightColorTemperature? lightColorTemperature;
+  GenericRgbwLightColorTemperature lightColorTemperature;
 
   /// Color alpha in double
   GenericRgbwLightColorAlpha lightColorAlpha;
@@ -135,7 +135,7 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
       compUuid: compUuid.getOrCrash(),
       lightSwitchState: lightSwitchState!.getOrCrash(),
       deviceVendor: deviceVendor.getOrCrash(),
-      lightColorTemperature: lightBrightness.getOrCrash(),
+      lightColorTemperature: lightColorTemperature.getOrCrash(),
       lightBrightness: lightBrightness.getOrCrash(),
       lightColorAlpha: lightColorAlpha.getOrCrash(),
       lightColorHue: lightColorHue.getOrCrash(),
@@ -147,9 +147,9 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
 
   /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction(
-    DeviceEntityAbstract newEntity,
-  ) async {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction({
+    required DeviceEntityAbstract newEntity,
+  }) async {
     logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
@@ -188,11 +188,20 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
     );
   }
 
-  //TODO: all current implementation of this method acualy change color
-  // color temperature is for white colors and only contains color
-  // temperature and does not have Hue value
   /// Please override the following methods
   Future<Either<CoreFailure, Unit>> changeColorTemperature({
+    required String lightColorTemperatureNewValue,
+  }) async {
+    logger.w('Please override this method in the non generic implementation');
+    return left(
+      const CoreFailure.actionExcecuter(
+        failedValue: 'Action does not exist',
+      ),
+    );
+  }
+
+  /// Please override the following methods
+  Future<Either<CoreFailure, Unit>> changeColorHsv({
     required String lightColorAlphaNewValue,
     required String lightColorHueNewValue,
     required String lightColorSaturationNewValue,

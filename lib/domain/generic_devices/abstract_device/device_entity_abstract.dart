@@ -64,9 +64,9 @@ abstract class DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> executeDeviceAction(
-    DeviceEntityAbstract newEntity,
-  );
+  Future<Either<CoreFailure, Unit>> executeDeviceAction({
+    required DeviceEntityAbstract newEntity,
+  });
 }
 
 class DeviceEntityNotAbstract extends DeviceEntityAbstract {
@@ -100,9 +100,9 @@ class DeviceEntityNotAbstract extends DeviceEntityAbstract {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction(
-    DeviceEntityAbstract newEntity,
-  ) {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction({
+    required DeviceEntityAbstract newEntity,
+  }) {
     // TODO: implement executeDeviceAction
     throw UnimplementedError();
   }

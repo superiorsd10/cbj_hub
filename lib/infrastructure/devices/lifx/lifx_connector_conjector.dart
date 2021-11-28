@@ -81,7 +81,7 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
     final DeviceEntityAbstract? device = companyDevices[lifxDE.getDeviceId()];
 
     if (device is LifxWhiteEntity) {
-      device.executeDeviceAction(lifxDE);
+      device.executeDeviceAction(newEntity: lifxDE);
     } else {
       logger.w('Lifx device type does not exist');
     }
