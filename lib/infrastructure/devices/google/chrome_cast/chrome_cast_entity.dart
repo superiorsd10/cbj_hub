@@ -58,9 +58,9 @@ class ChromeCastEntity extends GenericSmartTvDE {
 
   /// Please override the following methods
   @override
-  Future<Either<CoreFailure, Unit>> executeDeviceAction(
-    DeviceEntityAbstract newEntity,
-  ) async {
+  Future<Either<CoreFailure, Unit>> executeDeviceAction({
+    required DeviceEntityAbstract newEntity,
+  }) async {
     if (newEntity is! GenericRgbwLightDE) {
       return left(
         const CoreFailure.actionExcecuter(

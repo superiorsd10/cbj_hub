@@ -152,7 +152,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
         companyDevices[tasmotaDE.getDeviceId()];
 
     if (device is TasmotaLedEntity) {
-      device.executeDeviceAction(tasmotaDE);
+      device.executeDeviceAction(newEntity: tasmotaDE);
     } else {
       logger.w('Tasmota device type does not exist');
     }

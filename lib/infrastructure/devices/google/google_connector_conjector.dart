@@ -39,7 +39,7 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
     final DeviceEntityAbstract? device = companyDevices[googleDE.getDeviceId()];
 
     if (device is ChromeCastEntity) {
-      device.executeDeviceAction(googleDE);
+      device.executeDeviceAction(newEntity: googleDE);
     } else {
       logger.i('Google device type does not exist');
     }

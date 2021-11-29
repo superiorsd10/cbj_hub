@@ -43,7 +43,7 @@ class PhilipsHueConnectorConjector
         companyDevices[philipsHueDE.getDeviceId()];
 
     if (device is PhilipsHueE26Entity) {
-      device.executeDeviceAction(philipsHueDE);
+      device.executeDeviceAction(newEntity: philipsHueDE);
     } else {
       logger.w('PhilipsHue device type does not exist');
     }

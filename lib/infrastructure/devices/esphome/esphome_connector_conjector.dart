@@ -36,7 +36,7 @@ class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
         companyDevices[espHomeDE.getDeviceId()];
 
     if (device is ESPHomeLightEntity) {
-      device.executeDeviceAction(espHomeDE);
+      device.executeDeviceAction(newEntity: espHomeDE);
     } else {
       logger.w('ESPHome device type does not exist');
     }

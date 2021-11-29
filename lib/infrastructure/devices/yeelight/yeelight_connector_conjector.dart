@@ -78,7 +78,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
         companyDevices[yeelightDE.getDeviceId()];
 
     if (device is Yeelight1SeEntity) {
-      device.executeDeviceAction(yeelightDE);
+      device.executeDeviceAction(newEntity: yeelightDE);
     } else {
       logger.w('Yeelight device type does not exist');
     }
