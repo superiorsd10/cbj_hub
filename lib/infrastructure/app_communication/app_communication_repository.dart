@@ -15,7 +15,6 @@ import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
-import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
@@ -90,7 +89,9 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         final LoginEntityAbstract loginEntityFromApp =
             VendorHelper.convertJsonStringToDomain(event.allRemoteCommands);
 
-        sendLoginToVendor(loginEntityFromApp);
+        getIt<ILocalDbRepository>()
+            .saveAndActivateVendorLoginCredentialsDomainToDb(
+                loginEntityFromApp);
       } else if (event.sendingType == SendingType.firstConnection) {
         AppCommunicationRepository.sendAllDevicesFromHubRequestsStream();
       } else if (event.sendingType == SendingType.remotePipesInformation) {
@@ -178,12 +179,6 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       return;
     }
     ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
-  }
-
-  static Future<void> sendLoginToVendor(
-    LoginEntityAbstract loginEntityFromApp,
-  ) async {
-    CompanysConnectorConjector.setVendorLoginCredentials(loginEntityFromApp);
   }
 
   /// Trigger to send all devices from hub to app using the
