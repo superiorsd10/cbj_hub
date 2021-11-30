@@ -74,7 +74,12 @@ class Connector {
               (devicePropertyAndValues[property] as MqttPublishMessage)
                   .payload
                   .message;
-          final String propertyValueString = String.fromCharCodes(valueMessage);
+          String propertyValueString = String.fromCharCodes(valueMessage);
+          // TODO: find better way to fix corrupted text in different
+          //  languages that are not english
+          if (property == 'defaultName') {
+            propertyValueString = deviceAsJson['defaultName'] as String;
+          }
           if (propertyValueString.contains('value')) {
             final Map<String, dynamic> propertyValueJson =
                 jsonDecode(propertyValueString) as Map<String, dynamic>;
