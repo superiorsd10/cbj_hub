@@ -126,7 +126,7 @@ class MqttServerRepository extends IMqttServerRepository {
   Future<void> publishMessage(String topic, String message) async {
     await connect();
     final builder = MqttClientPayloadBuilder();
-    builder.addString(message);
+    builder.addUTF8String(message);
     client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
   }
 
