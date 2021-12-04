@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
@@ -11,7 +13,11 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     allDevices = getIt<ILocalDbRepository>().getSmartDevicesFromDb();
   }
 
-  static Map<String, DeviceEntityAbstract> allDevices = {};
+  static HashMap<String, DeviceEntityAbstract> allDevices =
+      HashMap<String, DeviceEntityAbstract>();
+
+  static HashMap<String, DeviceEntityAbstract> allRooms =
+      HashMap<String, DeviceEntityAbstract>();
 
   @override
   String addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {

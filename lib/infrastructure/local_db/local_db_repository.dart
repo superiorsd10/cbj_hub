@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
@@ -70,7 +72,7 @@ class HiveRepository extends ILocalDbRepository {
   }
 
   @override
-  Map<String, DeviceEntityAbstract> getSmartDevicesFromDb() {
+  HashMap<String, DeviceEntityAbstract> getSmartDevicesFromDb() {
     final String guyRoomId = CoreUniqueId().getOrCrash()!;
 
     final ESPHomeLightEntity espHomeLightDE = ESPHomeLightEntity(
@@ -158,12 +160,13 @@ class HiveRepository extends ILocalDbRepository {
       lightColorValue: GenericRgbwLightColorValue('1.0'),
     );
 
-    return {
-      // yeelightDE.uniqueId.getOrCrash()!: yeelightDE,
-      // tasmotaLedDE.uniqueId.getOrCrash()!: tasmotaLedDE,
-      // espHomeLightDE.uniqueId.getOrCrash()!: espHomeLightDE,
-      // chromeCastEntity.uniqueId.getOrCrash()!: chromeCastEntity,
-    };
+    return HashMap<String, DeviceEntityAbstract>();
+    // {
+    // yeelightDE.uniqueId.getOrCrash()!: yeelightDE,
+    // tasmotaLedDE.uniqueId.getOrCrash()!: tasmotaLedDE,
+    // espHomeLightDE.uniqueId.getOrCrash()!: espHomeLightDE,
+    // chromeCastEntity.uniqueId.getOrCrash()!: chromeCastEntity,
+    // };
   }
 
   @override

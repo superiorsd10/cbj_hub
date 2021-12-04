@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
@@ -15,7 +17,7 @@ abstract class ILocalDbRepository {
 
   Future<void> saveSmartDevices(List<DeviceEntityAbstract> deviceList);
 
-  Map<String, DeviceEntityAbstract> getSmartDevicesFromDb();
+  HashMap<String, DeviceEntityAbstract> getSmartDevicesFromDb();
 
   /// Save login of different form factors to the local db
   Future<Either<LocalDbFailures, Unit>>
