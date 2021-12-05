@@ -37,12 +37,12 @@ abstract class ValueObjectRooms<T> {
   int get hashCode => value.hashCode;
 }
 
-class RoomUniqueId extends ValueObjectRooms<String?> {
+class RoomUniqueId extends ValueObjectRooms<String> {
   factory RoomUniqueId() {
     return RoomUniqueId._(right(const Uuid().v1()));
   }
 
-  factory RoomUniqueId.fromUniqueString(String? uniqueId) {
+  factory RoomUniqueId.fromUniqueString(String uniqueId) {
     assert(uniqueId != null);
     return RoomUniqueId._(right(uniqueId));
   }
@@ -54,19 +54,17 @@ class RoomUniqueId extends ValueObjectRooms<String?> {
   const RoomUniqueId._(this.value);
 
   @override
-  final Either<RoomFailure<String?>, String?> value;
+  final Either<RoomFailure<String>, String> value;
 }
 
-
-class RoomDefaultName extends ValueObjectRooms<String?> {
-  factory RoomDefaultName(String? input) {
+class RoomDefaultName extends ValueObjectRooms<String> {
+  factory RoomDefaultName(String input) {
     assert(input != null);
     return RoomDefaultName._(
-      validateRoomNotEmpty(input!)
+      validateRoomNotEmpty(input)
           .flatMap((a) => validateRoomMaxNameLength(input, maxLength)),
     );
   }
-
 
   factory RoomDefaultName.discoveredRoomName() {
     return RoomDefaultName._(right('Discovered'));
@@ -75,67 +73,54 @@ class RoomDefaultName extends ValueObjectRooms<String?> {
   const RoomDefaultName._(this.value);
 
   @override
-  final Either<RoomFailure<String?>, String?> value;
+  final Either<RoomFailure<String>, String> value;
 
   static const maxLength = 1000;
 }
 
-class RoomTypes extends ValueObjectRooms<List<String>?> {
-  factory RoomTypes(List<String>? input) {
-    return RoomTypes._(
-        validateRoomTypesExist(input!)
-    );
+class RoomTypes extends ValueObjectRooms<List<String>> {
+  factory RoomTypes(List<String> input) {
+    return RoomTypes._(validateRoomTypesExist(input));
   }
 
   const RoomTypes._(this.value);
 
   @override
-  final Either<RoomFailure<List<String>?>, List<String>?> value;
+  final Either<RoomFailure<List<String>>, List<String>> value;
 }
 
-
-
-class RoomDevicesId extends ValueObjectRooms<List<String>?> {
-  factory RoomDevicesId(List<String>? input) {
+class RoomDevicesId extends ValueObjectRooms<List<String>> {
+  factory RoomDevicesId(List<String> input) {
     assert(input != null);
-    return RoomDevicesId._(
-      validateRoomTypsValid(input!)
-    );
+    return RoomDevicesId._(validateRoomTypsValid(input));
   }
 
   const RoomDevicesId._(this.value);
 
   @override
-  final Either<RoomFailure<List<String>>, List<String>?> value;
+  final Either<RoomFailure<List<String>>, List<String>> value;
 }
 
-
-class RoomMostUsedBy extends ValueObjectRooms<List<String>?> {
-  factory RoomMostUsedBy(List<String>? input) {
+class RoomMostUsedBy extends ValueObjectRooms<List<String>> {
+  factory RoomMostUsedBy(List<String> input) {
     assert(input != null);
-    return RoomMostUsedBy._(
-        validateUserIdsValid(input!)
-    );
+    return RoomMostUsedBy._(validateUserIdsValid(input));
   }
 
   const RoomMostUsedBy._(this.value);
 
   @override
-  final Either<RoomFailure<List<String>>, List<String>?> value;
+  final Either<RoomFailure<List<String>>, List<String>> value;
 }
 
-
-class RoomPermissions extends ValueObjectRooms<List<String>?> {
-  factory RoomPermissions(List<String>? input) {
+class RoomPermissions extends ValueObjectRooms<List<String>> {
+  factory RoomPermissions(List<String> input) {
     assert(input != null);
-    return RoomPermissions._(
-        validateUserIdsValid(input!)
-    );
+    return RoomPermissions._(validateUserIdsValid(input));
   }
 
   const RoomPermissions._(this.value);
 
   @override
-  final Either<RoomFailure<List<String>>, List<String>?> value;
+  final Either<RoomFailure<List<String>>, List<String>> value;
 }
-

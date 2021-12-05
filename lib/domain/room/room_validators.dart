@@ -1,7 +1,6 @@
 import 'package:cbj_hub/domain/room/room_failures.dart';
 import 'package:dartz/dartz.dart';
 
-
 Either<RoomFailure<String>, String> validateRoomNotEmpty(String input) {
   if (input.isNotEmpty) {
     return right(input);
@@ -15,9 +14,9 @@ Either<RoomFailure<String>, String> validateRoomNotEmpty(String input) {
 }
 
 Either<RoomFailure<String>, String> validateRoomMaxNameLength(
-    String input,
-    int maxLength,
-    ) {
+  String input,
+  int maxLength,
+) {
   if (input.length <= maxLength) {
     return right(input);
   } else {
@@ -30,14 +29,20 @@ Either<RoomFailure<String>, String> validateRoomMaxNameLength(
   }
 }
 
-Either<RoomFailure<List<String>>, List<String>?> validateRoomTypesExist(List<String>? input) {
-    return right(input);
+Either<RoomFailure<List<String>>, List<String>> validateRoomTypesExist(
+  List<String> input,
+) {
+  return right(input);
 }
 
-Either<RoomFailure<List<String>>, List<String>?> validateRoomTypsValid(List<String>? input) {
-    return right(input);
+Either<RoomFailure<List<String>>, List<String>> validateRoomTypsValid(
+  List<String> input,
+) {
+  return right(input);
 }
 
-Either<RoomFailure<List<String>>, List<String>?> validateUserIdsValid(List<String>? input) {
-    return right(input);
+Either<RoomFailure<List<String>>, List<String>> validateUserIdsValid(
+  List<String> input,
+) {
+  return right(input);
 }

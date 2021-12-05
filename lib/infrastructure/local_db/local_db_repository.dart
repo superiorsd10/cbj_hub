@@ -10,6 +10,7 @@ import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
+import 'package:cbj_hub/domain/room/value_objects_room.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/value_login_objects_core.dart';
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart';
@@ -393,7 +394,23 @@ class HiveRepository extends ILocalDbRepository {
 
   @override
   HashMap<String, RoomEntity> getRoomsFromDb() {
-    // TODO: implement getRoomsFromDb
-    throw UnimplementedError();
+    final HashMap<String, RoomEntity> rooms = HashMap<String, RoomEntity>();
+
+    // TODO: get all rooms from db, if there are non it will create and return
+    // a discovered room
+
+    if (rooms.isEmpty) {
+      final RoomEntity discoveredRoom = RoomEntity.empty().copyWith(
+        uniqueId: RoomUniqueId.discoveredRoomId(),
+        defaultName: RoomDefaultName.discoveredRoomName(),
+      );
+      rooms.addEntries([
+        MapEntry<String, RoomEntity>(
+          discoveredRoom.uniqueId.getOrCrash(),
+          discoveredRoom,
+        )
+      ]);
+    }
+    return rooms;
   }
 }

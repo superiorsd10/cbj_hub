@@ -20,6 +20,8 @@ abstract class ILocalDbRepository {
 
   HashMap<String, DeviceEntityAbstract> getSmartDevicesFromDb();
 
+  /// Will ger all rooms from db, if didn't find any will return discovered room
+  /// without any devices
   HashMap<String, RoomEntity> getRoomsFromDb();
 
   /// Save login of different form factors to the local db
