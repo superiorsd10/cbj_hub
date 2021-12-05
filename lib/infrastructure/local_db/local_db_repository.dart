@@ -9,6 +9,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
+import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/value_login_objects_core.dart';
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart';
@@ -388,5 +389,11 @@ class HiveRepository extends ILocalDbRepository {
       return left(const LocalDbFailures.unexpected());
     }
     return right(unit);
+  }
+
+  @override
+  HashMap<String, RoomEntity> getRoomsFromDb() {
+    // TODO: implement getRoomsFromDb
+    throw UnimplementedError();
   }
 }

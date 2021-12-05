@@ -45,7 +45,7 @@ class GenericEmptyDE extends DeviceEntityAbstract {
   factory GenericEmptyDE.empty() => GenericEmptyDE(
         uniqueId: CoreUniqueId(),
         defaultName: DeviceDefaultName('Empty device'),
-        roomId: CoreUniqueId.newDevicesRoom(),
+        roomId: CoreUniqueId.newDevicesRoomId(),
         roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('Hub'),

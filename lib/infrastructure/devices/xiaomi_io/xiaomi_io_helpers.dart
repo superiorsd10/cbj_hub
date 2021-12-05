@@ -15,7 +15,7 @@ class XiaomiIoHelpers {
       defaultName: DeviceDefaultName(
         xiaomiIoDevice.name != '' ? xiaomiIoDevice.name : 'XiaomiIo test 2',
       ),
-      roomId: CoreUniqueId.newDevicesRoom(),
+      roomId: CoreUniqueId.newDevicesRoomId(),
       roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('xiaomi_io'),

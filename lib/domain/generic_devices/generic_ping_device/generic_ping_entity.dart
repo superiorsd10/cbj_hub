@@ -45,7 +45,7 @@ class GenericPingDE extends DeviceEntityAbstract {
   factory GenericPingDE.empty() => GenericPingDE(
         uniqueId: CoreUniqueId(),
         defaultName: DeviceDefaultName('Ping device'),
-        roomId: CoreUniqueId.newDevicesRoom(),
+        roomId: CoreUniqueId.newDevicesRoomId(),
         roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.pingNow.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('Hub'),

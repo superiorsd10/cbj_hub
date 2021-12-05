@@ -13,7 +13,7 @@ class GoogleHelpers {
     final ChromeCastEntity yeelightDE = ChromeCastEntity(
       uniqueId: CoreUniqueId(),
       defaultName: DeviceDefaultName('Google test 2'),
-      roomId: CoreUniqueId.newDevicesRoom(),
+      roomId: CoreUniqueId.newDevicesRoomId(),
       roomName: DeviceRoomName(' '),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('yeelight'),

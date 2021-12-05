@@ -1,9 +1,9 @@
-import 'package:cbj_hub/domain/rooms/rooms_failures.dart';
+import 'package:cbj_hub/domain/room/room_failures.dart';
 
-class RoomsUnexpectedValueError extends Error {
-  RoomsUnexpectedValueError(this.roomsValueFailure);
+class RoomUnexpectedValueError extends Error {
+  RoomUnexpectedValueError(this.roomsValueFailure);
 
-  final RoomsFailure roomsValueFailure;
+  final RoomFailure roomsValueFailure;
 
   @override
   String toString() {
