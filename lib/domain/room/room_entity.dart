@@ -1,5 +1,6 @@
 import 'package:cbj_hub/domain/room/room_failures.dart';
 import 'package:cbj_hub/domain/room/value_objects_room.dart';
+import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
 import 'package:dartz/dartz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,10 +13,8 @@ abstract class RoomEntity implements _$RoomEntity {
     required RoomDefaultName defaultName,
     required RoomTypes roomTypes,
     required RoomDevicesId roomDevicesId,
-
     /// Who is using this room
     required RoomMostUsedBy roomMostUsedBy,
-
     /// Room permissions by users id
     required RoomPermissions roomPermissions,
   }) = _RoomEntity;
@@ -39,5 +38,16 @@ abstract class RoomEntity implements _$RoomEntity {
 
   Option<RoomFailure<dynamic>> get failureOption {
     return defaultName.value.fold((f) => some(f), (_) => none());
+  }
+
+  RoomEntityDtos toInfrastructure() {
+    return RoomEntityDtos(
+      uniqueId: uniqueId.getOrCrash(),
+      defaultName: defaultName.getOrCrash(),
+      roomTypes: roomTypes.getOrCrash(),
+      roomDevicesId: roomDevicesId.getOrCrash(),
+      roomMostUsedBy: roomMostUsedBy.getOrCrash(),
+      roomPermissions: roomPermissions.getOrCrash(),
+    );
   }
 }
