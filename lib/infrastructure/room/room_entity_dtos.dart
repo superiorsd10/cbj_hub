@@ -12,8 +12,10 @@ abstract class RoomEntityDtos implements _$RoomEntityDtos {
     required String defaultName,
     required List<String> roomTypes,
     required List<String> roomDevicesId,
+
     /// Who is using this room
     required List<String> roomMostUsedBy,
+
     /// Room permissions by users id
     required List<String> roomPermissions,
 
@@ -22,16 +24,12 @@ abstract class RoomEntityDtos implements _$RoomEntityDtos {
 
   RoomEntityDtos._();
 
-  @override
-  final String deviceDtoClassInstance = (RoomEntityDtos).toString();
-
   factory RoomEntityDtos.fromDomain(RoomEntity roomEntityDE) {
     return RoomEntityDtos(
       uniqueId: roomEntityDE.uniqueId.getOrCrash(),
       defaultName: roomEntityDE.defaultName.getOrCrash(),
       roomTypes: roomEntityDE.roomTypes.getOrCrash(),
       roomDevicesId: roomEntityDE.roomDevicesId.getOrCrash(),
-
       roomMostUsedBy: roomEntityDE.roomMostUsedBy.getOrCrash(),
       roomPermissions: roomEntityDE.roomPermissions.getOrCrash(),
     );
@@ -42,8 +40,7 @@ abstract class RoomEntityDtos implements _$RoomEntityDtos {
 
   RoomEntity toDomain() {
     return RoomEntity(
-      uniqueId:
-       RoomUniqueId.fromUniqueString(uniqueId),
+      uniqueId: RoomUniqueId.fromUniqueString(uniqueId),
       defaultName: RoomDefaultName(defaultName),
       roomTypes: RoomTypes(roomTypes),
       roomDevicesId: RoomDevicesId(roomDevicesId),
@@ -51,4 +48,6 @@ abstract class RoomEntityDtos implements _$RoomEntityDtos {
       roomPermissions: RoomPermissions(roomPermissions),
     );
   }
+
+  final String deviceDtoClassInstance = (RoomEntityDtos).toString();
 }

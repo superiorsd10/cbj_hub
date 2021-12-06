@@ -192,7 +192,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     final Map<String, RoomEntity> allRooms =
         await getIt<ISavedDevicesRepo>().getAllRooms();
 
-    if (allRooms.isEmpty) {
+    if (allRooms.isNotEmpty) {
       allRooms.map((String id, RoomEntity d) {
         HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
         return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));

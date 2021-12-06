@@ -15,9 +15,6 @@ abstract class RemotePipesDtos implements _$RemotePipesDtos {
 
   RemotePipesDtos._();
 
-  @override
-  final String deviceDtoClassInstance = (RemotePipesDtos).toString();
-
   factory RemotePipesDtos.fromDomain(RemotePipesEntity remotePipesDE) {
     return RemotePipesDtos(
       domainName: remotePipesDE.domainName!.getOrCrash(),
@@ -33,6 +30,8 @@ abstract class RemotePipesDtos implements _$RemotePipesDtos {
       domainName: RemotePipesDomain(domainName),
     );
   }
+
+  final String deviceDtoClassInstance = (RemotePipesDtos).toString();
 }
 
 // class ServerTimestampConverter implements JsonConverter<FieldValue, Object> {
