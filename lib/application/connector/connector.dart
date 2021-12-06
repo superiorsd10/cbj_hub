@@ -4,18 +4,29 @@ import 'dart:convert';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
+import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/injection.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:rxdart/rxdart.dart';
 
 class Connector {
   static Future<void> startConnector() async {
-    ConnectorStreamToMqtt.toMqttStream.listen((deviceEntityAbstract) async {
-      await getIt<IMqttServerRepository>()
-          .publishDeviceEntity(deviceEntityAbstract.value);
+    ConnectorStreamToMqtt.toMqttStream.listen((entityForMqtt) async {
+      if(entityForMqtt.value is DeviceEntityAbstract) {
+        await getIt<IMqttServerRepository>()
+            .publishDeviceEntity(entityForMqtt.value as DeviceEntityAbstract);
+      }
+      else if (entityForMqtt.value is RoomEntity){
+
+        logger.w('Please create MQTT support for Room Entity');
+      }
+      else {
+        logger.w('Entity type to send to MQTT is not supported');
+      }
     });
 
     final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
@@ -44,7 +55,7 @@ class Connector {
     );
 
     ConnectorDevicesStreamFromMqtt.fromMqttStream.listen((deviceFromMqtt) {
-      savedDevicesRepo.addOrUpdateDevice(deviceFromMqtt);
+      savedDevicesRepo.addOrUpdateFromMqtt(deviceFromMqtt);
     });
   }
 
@@ -99,16 +110,16 @@ class Connector {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class ConnectorStreamToMqtt {
-  static StreamController<MapEntry<String, DeviceEntityAbstract>>
+  static StreamController<MapEntry<String, dynamic>>
       toMqttController = StreamController();
 
-  static Stream<MapEntry<String, DeviceEntityAbstract>> get toMqttStream =>
+  static Stream<MapEntry<String, dynamic>> get toMqttStream =>
       toMqttController.stream.asBroadcastStream();
 }
 
 /// Connect all streams from the mqtt devices changes into one stream that will
 /// be sent to whoever need to be notify of changes
 class ConnectorDevicesStreamFromMqtt {
-  static BehaviorSubject<DeviceEntityAbstract> fromMqttStream =
-      BehaviorSubject<DeviceEntityAbstract>();
+  static BehaviorSubject<dynamic> fromMqttStream =
+      BehaviorSubject<dynamic>();
 }

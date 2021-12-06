@@ -12,6 +12,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
+import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
@@ -91,7 +92,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
         getIt<ILocalDbRepository>()
             .saveAndActivateVendorLoginCredentialsDomainToDb(
-                loginEntityFromApp);
+          loginEntityFromApp,
+        );
       } else if (event.sendingType == SendingType.firstConnection) {
         AppCommunicationRepository.sendAllDevicesFromHubRequestsStream();
       } else if (event.sendingType == SendingType.remotePipesInformation) {
@@ -186,7 +188,16 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   static Future<void> sendAllDevicesFromHubRequestsStream() async {
     final Map<String, DeviceEntityAbstract> allDevices =
         await getIt<ISavedDevicesRepo>().getAllDevices();
-    if (allDevices.isNotEmpty) {
+
+    final Map<String, RoomEntity> allRooms =
+        await getIt<ISavedDevicesRepo>().getAllRooms();
+
+    if (allRooms.isEmpty) {
+      allRooms.map((String id, RoomEntity d) {
+        HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
+        return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
+      });
+
       allDevices.map((String id, DeviceEntityAbstract d) {
         HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
         return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
@@ -203,8 +214,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class HubRequestsToApp {
-  static BehaviorSubject<DeviceEntityDtoAbstract> streamRequestsToApp =
-      BehaviorSubject<DeviceEntityDtoAbstract>();
+  static BehaviorSubject<dynamic> streamRequestsToApp =
+      BehaviorSubject<dynamic>();
 }
 
 /// Requests and updates from app to the hub

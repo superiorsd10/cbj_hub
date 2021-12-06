@@ -17,41 +17,49 @@ import 'package:cbj_hub/utils.dart';
 
 class CompanysConnectorConjector {
   static void updateAllDevicesReposWithDeviceChanges(
-    Stream<DeviceEntityAbstract> allDevices,
+    Stream<dynamic> allDevices,
   ) {
-    allDevices.listen((deviceEntityAbstract) {
-      final String deviceVendor =
-          deviceEntityAbstract.deviceVendor.getOrCrash();
-      if (deviceVendor == VendorsAndServices.yeelight.toString()) {
-        YeelightConnectorConjector()
-            .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
-        TasmotaConnectorConjector()
-            .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
-        ESPHomeConnectorConjector()
-            .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor ==
-          VendorsAndServices.switcherSmartHome.toString()) {
-        SwitcherConnectorConjector()
-            .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor == VendorsAndServices.google.toString()) {
-        GoogleConnectorConjector()
-            .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor == VendorsAndServices.miHome.toString()) {
-        XiaomiIoConnectorConjector()
-            .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor == VendorsAndServices.tuyaSmart.toString()) {
-        TuyaSmartConnectorConjector()
-            .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else if (deviceVendor == VendorsAndServices.lifx.toString()) {
-        LifxConnectorConjector()
-            .manageHubRequestsForDevice(deviceEntityAbstract);
-      } else {
-        logger
-            .i('Cannot send device changes to its repo, company not supported');
-      }
-    });
+      allDevices.listen((deviceEntityAbstract) {
+        if(deviceEntityAbstract is DeviceEntityAbstract) {
+
+          final String deviceVendor =
+        deviceEntityAbstract.deviceVendor.getOrCrash();
+        if (deviceVendor == VendorsAndServices.yeelight.toString()) {
+          YeelightConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
+          TasmotaConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
+          ESPHomeConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor ==
+            VendorsAndServices.switcherSmartHome.toString()) {
+          SwitcherConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor == VendorsAndServices.google.toString()) {
+          GoogleConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor == VendorsAndServices.miHome.toString()) {
+          XiaomiIoConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor == VendorsAndServices.tuyaSmart.toString()) {
+          TuyaSmartConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor == VendorsAndServices.lifx.toString()) {
+          LifxConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else {
+          logger
+              .i(
+              'Cannot send device changes to its repo, company not supported',);
+        }
+        }
+        else {
+          logger.w('Connector conjector got other type');
+        }
+      });
+
   }
 
   static void addAllDevicesToItsRepos(
