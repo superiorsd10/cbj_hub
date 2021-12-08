@@ -8,7 +8,6 @@ import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic
 import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv_value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
-import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/room/value_objects_room.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
@@ -29,13 +28,13 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/hub_entity_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/remote_pipes_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/tuya_vendor_credentials_hive_model.dart';
-import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
+/// Only ISavedDevicesRepo need to call functions here
 @LazySingleton(as: ILocalDbRepository)
 class HiveRepository extends ILocalDbRepository {
   HiveRepository() {
@@ -172,32 +171,22 @@ class HiveRepository extends ILocalDbRepository {
   }
 
   @override
-  Future<void> saveSmartDevices(List<DeviceEntityAbstract> deviceList) async {
+  Future<Either<LocalDbFailures, Unit>> saveSmartDevices(
+    List<DeviceEntityAbstract> deviceList,
+  ) async {
     // TODO: implement saveSmartDevices
+    throw UnimplementedError();
   }
 
   @override
-  Future<Either<LocalDbFailures, Unit>>
-      saveAndActivateVendorLoginCredentialsDomainToDb(
-    LoginEntityAbstract loginEntity,
-  ) async {
-    CompanysConnectorConjector.setVendorLoginCredentials(loginEntity);
+  Future<Either<LocalDbFailures, Unit>> saveRoomsToDb({
+    required List<RoomEntity> roomsList,
+  }) async {
+    for (final RoomEntity roomEntity in roomsList) {
+      // TODO: Save room entity to local DB
+    }
 
-    return saveVendorLoginCredentials(loginEntityAbstract: loginEntity);
-  }
-
-  @override
-  Future<Either<LocalDbFailures, Unit>> saveAndActivateRemotePipesDomainToDb(
-    RemotePipesEntity remotePipes,
-  ) async {
-    final RemotePipesDtos remotePipesDtos = remotePipes.toInfrastructure();
-
-    final String rpDomainName = remotePipesDtos.domainName;
-
-    getIt<IAppCommunicationRepository>()
-        .startRemotePipesConnection(rpDomainName);
-
-    return saveRemotePipes(remotePipesDomainName: rpDomainName);
+    return right(unit);
   }
 
   @override
