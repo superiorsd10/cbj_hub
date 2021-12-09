@@ -92,6 +92,8 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
   }) async {
     final String roomId = roomEntity.uniqueId.getOrCrash();
 
+    await removeSameDevicesFromOtherRooms(roomEntity);
+
     if (allRooms[roomId] == null) {
       allRooms.addEntries([MapEntry(roomId, roomEntity)]);
     } else {
@@ -99,6 +101,39 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     }
     return getIt<ILocalDbRepository>()
         .saveRoomsToDb(roomsList: List<RoomEntity>.from(allRooms.values));
+  }
+
+  /// Remove all devices ID in our room from all other rooms to prevent
+  /// duplicate
+  Future<void> removeSameDevicesFromOtherRooms(RoomEntity roomEntity) async {
+    final List<String> devicesIdInTheRoom =
+        List.from(roomEntity.roomDevicesId.getOrCrash());
+    if (devicesIdInTheRoom.isEmpty) {
+      return;
+    }
+
+    for (final RoomEntity roomEntityTemp in allRooms.values) {
+      if (roomEntityTemp.roomDevicesId.failureOrUnit != right(unit)) {
+        continue;
+      }
+      final List<String> roomIdesTempList =
+          List.from(roomEntityTemp.roomDevicesId.getOrCrash());
+
+      for (final String roomIdTemp in roomIdesTempList) {
+        final int indexOfDeviceId = devicesIdInTheRoom.indexOf(roomIdTemp);
+
+        /// If device id exist in other room than delete it from that room
+        if (indexOfDeviceId != -1) {
+          roomEntityTemp.deleteIdIfExist(roomIdTemp);
+
+          devicesIdInTheRoom.removeAt(indexOfDeviceId);
+          if (devicesIdInTheRoom.isEmpty) {
+            return;
+          }
+          continue;
+        }
+      }
+    }
   }
 
   @override

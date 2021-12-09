@@ -13,8 +13,10 @@ abstract class RoomEntity implements _$RoomEntity {
     required RoomDefaultName defaultName,
     required RoomTypes roomTypes,
     required RoomDevicesId roomDevicesId,
+
     /// Who is using this room
     required RoomMostUsedBy roomMostUsedBy,
+
     /// Room permissions by users id
     required RoomPermissions roomPermissions,
   }) = _RoomEntity;
@@ -34,6 +36,10 @@ abstract class RoomEntity implements _$RoomEntity {
   void addDeviceId(String newDeviceId) {
     /// Will not work if list got created with const
     roomDevicesId.getOrCrash().add(newDeviceId);
+  }
+
+  void deleteIdIfExist(String id) {
+    roomDevicesId.getOrCrash().removeWhere((element) => element == id);
   }
 
   Option<RoomFailure<dynamic>> get failureOption {
