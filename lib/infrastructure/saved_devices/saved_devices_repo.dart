@@ -20,14 +20,45 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: ISavedDevicesRepo)
 class SavedDevicesRepo extends ISavedDevicesRepo {
   SavedDevicesRepo() {
-    allDevices = getIt<ILocalDbRepository>().getSmartDevicesFromDb();
-    allRooms = getIt<ILocalDbRepository>().getRoomsFromDb();
+    setUpAllFromDb();
   }
 
   static HashMap<String, DeviceEntityAbstract> allDevices =
       HashMap<String, DeviceEntityAbstract>();
 
   static HashMap<String, RoomEntity> allRooms = HashMap<String, RoomEntity>();
+
+  Future<void> setUpAllFromDb() async {
+    /// Delay inorder for the Hive boxes to initialize
+    await Future.delayed(const Duration(milliseconds: 20));
+    getIt<ILocalDbRepository>().getRoomsFromDb().then((value) {
+      value.fold((l) => null, (r) {
+        final Iterable<MapEntry<String, RoomEntity>> devicesAsIterableMap =
+            r.map((e) {
+          return MapEntry<String, RoomEntity>(
+            e.uniqueId.getOrCrash(),
+            e,
+          );
+        });
+        allRooms.clear();
+        allRooms.addEntries(devicesAsIterableMap);
+      });
+    });
+
+    getIt<ILocalDbRepository>().getSmartDevicesFromDb().then((value) {
+      value.fold((l) => null, (r) {
+        final Iterable<MapEntry<String, DeviceEntityAbstract>>
+            devicesAsIterableMap = r.map((e) {
+          return MapEntry<String, DeviceEntityAbstract>(
+            e.uniqueId.getOrCrash()!,
+            e,
+          );
+        });
+        allDevices.clear();
+        allDevices.addEntries(devicesAsIterableMap);
+      });
+    });
+  }
 
   @override
   String addOrUpdateFromMqtt(dynamic updateFromMqtt) {

@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
@@ -27,26 +25,38 @@ abstract class ILocalDbRepository {
   /// Will load all the local database content into the program
   Future<void> loadFromDb();
 
-  Future<Either<LocalDbFailures, Unit>> saveSmartDevices(
-    List<DeviceEntityAbstract> deviceList,
-  );
+  Future<Either<LocalDbFailures, String>> getRemotePipesDnsName();
 
-  HashMap<String, DeviceEntityAbstract> getSmartDevicesFromDb();
+  Future<Either<LocalDbFailures, List<DeviceEntityAbstract>>>
+      getSmartDevicesFromDb();
 
   /// Will ger all rooms from db, if didn't find any will return discovered room
   /// without any devices
-  HashMap<String, RoomEntity> getRoomsFromDb();
+  Future<Either<LocalDbFailures, List<RoomEntity>>> getRoomsFromDb();
+
+  Future<Either<LocalDbFailures, String>> getHubEntityNetworkBssid();
+
+  Future<Either<LocalDbFailures, String>> getHubEntityNetworkName();
+
+  Future<Either<LocalDbFailures, String>> getHubEntityLastKnownIp();
+
+  Future<Either<LocalDbFailures, Unit>> saveRemotePipes({
+    required String remotePipesDomainName,
+  });
+
+  Future<Either<LocalDbFailures, GenericTuyaLoginDE>>
+      getTuyaVendorLoginCredentials();
 
   Future<Either<LocalDbFailures, Unit>> saveRoomsToDb({
     required List<RoomEntity> roomsList,
   });
 
+  Future<Either<LocalDbFailures, Unit>> saveSmartDevices(
+    List<DeviceEntityAbstract> deviceList,
+  );
+
   Future<Either<LocalDbFailures, Unit>> saveVendorLoginCredentials({
     required LoginEntityAbstract loginEntityAbstract,
-  });
-
-  Future<Either<LocalDbFailures, Unit>> saveRemotePipes({
-    required String remotePipesDomainName,
   });
 
   Future<Either<LocalDbFailures, Unit>> saveHubEntity({
@@ -54,15 +64,4 @@ abstract class ILocalDbRepository {
     required String networkName,
     required String lastKnownIp,
   });
-
-  Future<Either<LocalDbFailures, GenericTuyaLoginDE>>
-      getTuyaVendorLoginCredentials();
-
-  Future<Either<LocalDbFailures, String>> getRemotePipesDnsName();
-
-  Future<Either<LocalDbFailures, String>> getHubEntityNetworkBssid();
-
-  Future<Either<LocalDbFailures, String>> getHubEntityNetworkName();
-
-  Future<Either<LocalDbFailures, String>> getHubEntityLastKnownIp();
 }
