@@ -9,8 +9,19 @@ import 'package:dartz/dartz.dart';
 
 /// Only ISavedDevicesRepo need to call functions here
 abstract class ILocalDbRepository {
+  /// Name of the box that stores Remote Pipes credentials
   String remotePipesBoxName = 'remotePipesBox';
+
+  /// Name of the box that stores all the rooms
+  String roomsBoxName = 'roomsBox';
+
+  /// Name of the box that stores all the devices in form of string json
+  String devicesBoxName = 'devicesBox';
+
+  /// Name of the box that stores Tuya login credentials
   String tuyaVendorCredentialsBoxName = 'tuyaVendorCredentialsBoxName';
+
+  /// Name of the box that stores Hub general info
   String hubEntityBoxName = 'hubEntityBox';
 
   /// Will load all the local database content into the program

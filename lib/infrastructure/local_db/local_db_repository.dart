@@ -16,6 +16,7 @@ import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_value_objects.dart';
 import 'package:cbj_hub/infrastructure/core/singleton/my_singleton.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_light/esphome_light_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/google/chrome_cast/chrome_cast_entity.dart';
@@ -25,10 +26,12 @@ import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_e
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/infrastructure/local_db/hive_objects/devices_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/hub_entity_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/remote_pipes_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/rooms_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/tuya_vendor_credentials_hive_model.dart';
+import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
@@ -72,6 +75,28 @@ class HiveRepository extends ILocalDbRepository {
 
       logger.i('Tuya login credentials user name "$r" found');
     });
+  }
+
+  @override
+  HashMap<String, RoomEntity> getRoomsFromDb() {
+    final HashMap<String, RoomEntity> rooms = HashMap<String, RoomEntity>();
+
+    // TODO: get all rooms from db, if there are non it will create and return
+    // a discovered room
+
+    if (rooms.isEmpty) {
+      final RoomEntity discoveredRoom = RoomEntity.empty().copyWith(
+        uniqueId: RoomUniqueId.discoveredRoomId(),
+        defaultName: RoomDefaultName.discoveredRoomName(),
+      );
+      rooms.addEntries([
+        MapEntry<String, RoomEntity>(
+          discoveredRoom.uniqueId.getOrCrash(),
+          discoveredRoom,
+        )
+      ]);
+    }
+    return rooms;
   }
 
   @override
@@ -173,25 +198,6 @@ class HiveRepository extends ILocalDbRepository {
   }
 
   @override
-  Future<Either<LocalDbFailures, Unit>> saveSmartDevices(
-    List<DeviceEntityAbstract> deviceList,
-  ) async {
-    // TODO: implement saveSmartDevices
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<LocalDbFailures, Unit>> saveRoomsToDb({
-    required List<RoomEntity> roomsList,
-  }) async {
-    for (final RoomEntity roomEntity in roomsList) {
-      // TODO: Save room entity to local DB
-    }
-
-    return right(unit);
-  }
-
-  @override
   Future<Either<LocalDbFailures, String>> getHubEntityLastKnownIp() async {
     // TODO: implement getHubEntityLastKnownIp
     throw UnimplementedError();
@@ -289,6 +295,76 @@ class HiveRepository extends ILocalDbRepository {
   }
 
   @override
+  Future<Either<LocalDbFailures, Unit>> saveSmartDevices(
+    List<DeviceEntityAbstract> deviceList,
+  ) async {
+    try {
+      final Box<DevicesHiveModel> devicesBox =
+          await Hive.openBox<DevicesHiveModel>(devicesBoxName);
+
+      final List<DevicesHiveModel> roomsHiveList = [];
+
+      final List<String> devicesListStringJson = List<String>.from(
+        deviceList.map((e) => DeviceHelper.convertDomainToJsonString(e)),
+      );
+
+      for (final String devicesEntityDtosJsonString in devicesListStringJson) {
+        final DevicesHiveModel roomsHiveModel = DevicesHiveModel()
+          ..deviceStringJson = devicesEntityDtosJsonString;
+        roomsHiveList.add(roomsHiveModel);
+      }
+
+      await devicesBox.clear();
+      await devicesBox.addAll(roomsHiveList);
+
+      await devicesBox.close();
+      logger.i('Devices got saved to local storage');
+    } catch (e) {
+      logger.e('Error saving Devices to local storage');
+      return left(const LocalDbFailures.unexpected());
+    }
+
+    return right(unit);
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveRoomsToDb({
+    required List<RoomEntity> roomsList,
+  }) async {
+    try {
+      final Box<RoomsHiveModel> roomsBox =
+          await Hive.openBox<RoomsHiveModel>(roomsBoxName);
+
+      final List<RoomsHiveModel> remotePipesHiveList = [];
+
+      final List<RoomEntityDtos> roomsListDto =
+          List<RoomEntityDtos>.from(roomsList.map((e) => e.toInfrastructure()));
+
+      for (final RoomEntityDtos roomEntityDtos in roomsListDto) {
+        final RoomsHiveModel roomsHiveModel = RoomsHiveModel()
+          ..roomUniqueId = roomEntityDtos.uniqueId
+          ..roomDefaultName = roomEntityDtos.defaultName
+          ..roomDevicesId = roomEntityDtos.roomDevicesId
+          ..roomMostUsedBy = roomEntityDtos.roomMostUsedBy
+          ..roomPermissions = roomEntityDtos.roomPermissions
+          ..roomTypes = roomEntityDtos.roomTypes;
+        remotePipesHiveList.add(roomsHiveModel);
+      }
+
+      await roomsBox.clear();
+      await roomsBox.addAll(remotePipesHiveList);
+
+      await roomsBox.close();
+      logger.i('Rooms got saved to local storage');
+    } catch (e) {
+      logger.e('Error saving Rooms to local storage');
+      return left(const LocalDbFailures.unexpected());
+    }
+
+    return right(unit);
+  }
+
+  @override
   Future<Either<LocalDbFailures, Unit>> saveHubEntity({
     required String hubNetworkBssid,
     required String networkName,
@@ -378,27 +454,5 @@ class HiveRepository extends ILocalDbRepository {
       return left(const LocalDbFailures.unexpected());
     }
     return right(unit);
-  }
-
-  @override
-  HashMap<String, RoomEntity> getRoomsFromDb() {
-    final HashMap<String, RoomEntity> rooms = HashMap<String, RoomEntity>();
-
-    // TODO: get all rooms from db, if there are non it will create and return
-    // a discovered room
-
-    if (rooms.isEmpty) {
-      final RoomEntity discoveredRoom = RoomEntity.empty().copyWith(
-        uniqueId: RoomUniqueId.discoveredRoomId(),
-        defaultName: RoomDefaultName.discoveredRoomName(),
-      );
-      rooms.addEntries([
-        MapEntry<String, RoomEntity>(
-          discoveredRoom.uniqueId.getOrCrash(),
-          discoveredRoom,
-        )
-      ]);
-    }
-    return rooms;
   }
 }
