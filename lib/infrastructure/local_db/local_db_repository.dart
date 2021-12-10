@@ -27,6 +27,7 @@ import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_device_value_ob
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/hub_entity_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/remote_pipes_hive_model.dart';
+import 'package:cbj_hub/infrastructure/local_db/hive_objects/rooms_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/tuya_vendor_credentials_hive_model.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
@@ -51,6 +52,7 @@ class HiveRepository extends ILocalDbRepository {
 
     Hive.init(localDbPath);
     Hive.registerAdapter(RemotePipesHiveModelAdapter());
+    Hive.registerAdapter(RoomsHiveModelAdapter());
     Hive.registerAdapter(HubEntityHiveModelAdapter());
     Hive.registerAdapter(TuyaVendorCredentialsHiveModelAdapter());
     loadFromDb();
@@ -222,18 +224,15 @@ class HiveRepository extends ILocalDbRepository {
               .cast<TuyaVendorCredentialsHiveModel>();
 
       if (tuyaVendorCredentialsModelFromDb.isNotEmpty) {
-        final String? senderUniqueId =
-            tuyaVendorCredentialsModelFromDb[0].senderUniqueId;
-        final String tuyaUserName =
-            tuyaVendorCredentialsModelFromDb[0].tuyaUserName;
-        final String tuyaUserPassword =
-            tuyaVendorCredentialsModelFromDb[0].tuyaUserPassword;
-        final String tuyaCountryCode =
-            tuyaVendorCredentialsModelFromDb[0].tuyaCountryCode;
-        final String tuyaBizType =
-            tuyaVendorCredentialsModelFromDb[0].tuyaBizType;
-        final String tuyaRegion =
-            tuyaVendorCredentialsModelFromDb[0].tuyaRegion;
+        final TuyaVendorCredentialsHiveModel firstTuyaVendorFromDB =
+            tuyaVendorCredentialsModelFromDb[0];
+
+        final String? senderUniqueId = firstTuyaVendorFromDB.senderUniqueId;
+        final String tuyaUserName = firstTuyaVendorFromDB.tuyaUserName;
+        final String tuyaUserPassword = firstTuyaVendorFromDB.tuyaUserPassword;
+        final String tuyaCountryCode = firstTuyaVendorFromDB.tuyaCountryCode;
+        final String tuyaBizType = firstTuyaVendorFromDB.tuyaBizType;
+        final String tuyaRegion = firstTuyaVendorFromDB.tuyaRegion;
 
         await tuyaVendorCredentialsBox.close();
 
