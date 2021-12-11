@@ -19,11 +19,10 @@ class CompanysConnectorConjector {
   static void updateAllDevicesReposWithDeviceChanges(
     Stream<dynamic> allDevices,
   ) {
-      allDevices.listen((deviceEntityAbstract) {
-        if(deviceEntityAbstract is DeviceEntityAbstract) {
-
-          final String deviceVendor =
-        deviceEntityAbstract.deviceVendor.getOrCrash();
+    allDevices.listen((deviceEntityAbstract) {
+      if (deviceEntityAbstract is DeviceEntityAbstract) {
+        final String deviceVendor =
+            deviceEntityAbstract.deviceVendor.getOrCrash();
         if (deviceVendor == VendorsAndServices.yeelight.toString()) {
           YeelightConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
@@ -50,16 +49,14 @@ class CompanysConnectorConjector {
           LifxConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else {
-          logger
-              .i(
-              'Cannot send device changes to its repo, company not supported',);
+          logger.i(
+            'Cannot send device changes to its repo, company not supported',
+          );
         }
-        }
-        else {
-          logger.w('Connector conjector got other type');
-        }
-      });
-
+      } else {
+        logger.w('Connector conjector got other type');
+      }
+    });
   }
 
   static void addAllDevicesToItsRepos(

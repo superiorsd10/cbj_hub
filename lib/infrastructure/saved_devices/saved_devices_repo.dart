@@ -76,55 +76,57 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
   @override
   String addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {
+    final DeviceEntityAbstract? deviceExistByIdOfVendor =
+        findDeviceIfAlreadyBeenAdded(deviceEntity);
+
     /// Check if device already exist
-    if (doesDeviceAlreadyBeenAdded(deviceEntity)) {
+    if (deviceExistByIdOfVendor != null) {
+      deviceEntity.uniqueId = deviceExistByIdOfVendor.uniqueId;
+      allDevices[deviceExistByIdOfVendor.uniqueId.getOrCrash()] = deviceEntity;
       return 'Device already exist';
     }
 
     final String entityId = deviceEntity.getDeviceId();
-    if (allDevices[entityId] != null) {
-      allDevices[entityId] = deviceEntity;
-    } else {
-      /// If it is new device
-      allDevices[entityId] = deviceEntity;
 
-      final String discoveredRoomId =
-          RoomUniqueId.discoveredRoomId().getOrCrash();
+    /// If it is new device
+    allDevices[entityId] = deviceEntity;
 
-      if (allRooms[discoveredRoomId] == null) {
-        allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
-      }
+    final String discoveredRoomId =
+        RoomUniqueId.discoveredRoomId().getOrCrash();
 
-      allRooms[discoveredRoomId]!
-          .addDeviceId(deviceEntity.uniqueId.getOrCrash());
-
-      ConnectorStreamToMqtt.toMqttController.sink.add(
-        MapEntry<String, DeviceEntityAbstract>(
-          entityId,
-          allDevices[entityId]!,
-        ),
-      );
-      ConnectorStreamToMqtt.toMqttController.sink.add(
-        MapEntry<String, RoomEntity>(
-          discoveredRoomId,
-          allRooms[discoveredRoomId]!,
-        ),
-      );
+    if (allRooms[discoveredRoomId] == null) {
+      allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
     }
 
-    return 'add or updated success';
+    allRooms[discoveredRoomId]!.addDeviceId(deviceEntity.uniqueId.getOrCrash());
+
+    ConnectorStreamToMqtt.toMqttController.sink.add(
+      MapEntry<String, DeviceEntityAbstract>(
+        entityId,
+        allDevices[entityId]!,
+      ),
+    );
+    ConnectorStreamToMqtt.toMqttController.sink.add(
+      MapEntry<String, RoomEntity>(
+        discoveredRoomId,
+        allRooms[discoveredRoomId]!,
+      ),
+    );
+
+    return 'Adding new device';
   }
 
   /// Check if allDevices does not contain the same device already
   /// Will compare the unique id's that each company sent us
-  bool doesDeviceAlreadyBeenAdded(DeviceEntityAbstract deviceEntity) {
+  DeviceEntityAbstract? findDeviceIfAlreadyBeenAdded(
+      DeviceEntityAbstract deviceEntity) {
     for (final DeviceEntityAbstract deviceTemp in allDevices.values) {
       if (deviceEntity.vendorUniqueId.getOrCrash() ==
           deviceTemp.vendorUniqueId.getOrCrash()) {
-        return true;
+        return deviceTemp;
       }
     }
-    return false;
+    return null;
   }
 
   @override
