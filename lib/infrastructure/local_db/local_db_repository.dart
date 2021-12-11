@@ -41,6 +41,7 @@ class HiveRepository extends ILocalDbRepository {
     Hive.init(localDbPath);
     Hive.registerAdapter(RemotePipesHiveModelAdapter());
     Hive.registerAdapter(RoomsHiveModelAdapter());
+    Hive.registerAdapter(DevicesHiveModelAdapter());
     Hive.registerAdapter(HubEntityHiveModelAdapter());
     Hive.registerAdapter(TuyaVendorCredentialsHiveModelAdapter());
     loadFromDb();
@@ -89,7 +90,7 @@ class HiveRepository extends ILocalDbRepository {
         rooms.add(roomEntity);
       }
     } catch (e) {
-      logger.e('Local DB hive error: $e');
+      logger.e('Local DB hive error while getting rooms: $e');
     }
 
     // Gets all rooms from db, if there are non it will create and return
@@ -126,7 +127,7 @@ class HiveRepository extends ILocalDbRepository {
       }
       return right(devices);
     } catch (e) {
-      logger.e('Local DB hive error: $e');
+      logger.e('Local DB hive error while getting devices: $e');
     }
     return left(const LocalDbFailures.unexpected());
   }
@@ -195,7 +196,7 @@ class HiveRepository extends ILocalDbRepository {
       await tuyaVendorCredentialsBox.close();
       logger.i("Didn't find any remote pipes in the local DB");
     } catch (e) {
-      logger.e('Local DB hive error: $e');
+      logger.e('Local DB hive error while getting Tuya vendor: $e');
     }
     return left(const LocalDbFailures.unexpected());
   }
@@ -223,19 +224,16 @@ class HiveRepository extends ILocalDbRepository {
       await remotePipesBox.close();
       logger.i("Didn't find any remote pipes in the local DB");
     } catch (e) {
-      logger.e('Local DB hive error: $e');
+      logger.e('Local DB hive error while getting Remote Pipes: $e');
     }
     return left(const LocalDbFailures.unexpected());
   }
 
   @override
-  Future<Either<LocalDbFailures, Unit>> saveSmartDevices(
-    List<DeviceEntityAbstract> deviceList,
-  ) async {
+  Future<Either<LocalDbFailures, Unit>> saveSmartDevices({
+    required List<DeviceEntityAbstract> deviceList,
+  }) async {
     try {
-      final Box<DevicesHiveModel> devicesBox =
-          await Hive.openBox<DevicesHiveModel>(devicesBoxName);
-
       final List<DevicesHiveModel> roomsHiveList = [];
 
       final List<String> devicesListStringJson = List<String>.from(
@@ -248,13 +246,16 @@ class HiveRepository extends ILocalDbRepository {
         roomsHiveList.add(roomsHiveModel);
       }
 
+      final Box<DevicesHiveModel> devicesBox =
+          await Hive.openBox<DevicesHiveModel>(devicesBoxName);
+
       await devicesBox.clear();
       await devicesBox.addAll(roomsHiveList);
 
       await devicesBox.close();
       logger.i('Devices got saved to local storage');
     } catch (e) {
-      logger.e('Error saving Devices to local storage');
+      logger.e('Error saving Devices to local storage/n$e');
       return left(const LocalDbFailures.unexpected());
     }
 

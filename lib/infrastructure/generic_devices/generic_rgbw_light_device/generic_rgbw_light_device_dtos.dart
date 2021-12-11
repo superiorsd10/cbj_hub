@@ -14,10 +14,9 @@ abstract class GenericRgbwLightDeviceDtos
   factory GenericRgbwLightDeviceDtos({
     // @JsonKey(ignore: true)
     String? deviceDtoClass,
-    String? id,
+    required String id,
+    required String vendorUniqueId,
     required String? defaultName,
-    required String? roomId,
-    required String? roomName,
     required String? deviceStateGRPC,
     String? stateMassage,
     required String? senderDeviceOs,
@@ -45,9 +44,8 @@ abstract class GenericRgbwLightDeviceDtos
     return GenericRgbwLightDeviceDtos(
       deviceDtoClass: (GenericRgbwLightDeviceDtos).toString(),
       id: genericRgbwLightDE.uniqueId.getOrCrash(),
+      vendorUniqueId: genericRgbwLightDE.vendorUniqueId.getOrCrash(),
       defaultName: genericRgbwLightDE.defaultName.getOrCrash(),
-      roomId: genericRgbwLightDE.roomId.getOrCrash(),
-      roomName: genericRgbwLightDE.roomName.getOrCrash(),
       deviceStateGRPC: genericRgbwLightDE.deviceStateGRPC.getOrCrash(),
       stateMassage: genericRgbwLightDE.stateMassage.getOrCrash(),
       senderDeviceOs: genericRgbwLightDE.senderDeviceOs.getOrCrash(),
@@ -79,9 +77,8 @@ abstract class GenericRgbwLightDeviceDtos
   DeviceEntityAbstract toDomain() {
     return GenericRgbwLightDE(
       uniqueId: CoreUniqueId.fromUniqueString(id),
+      vendorUniqueId: VendorUniqueId.fromUniqueString(vendorUniqueId),
       defaultName: DeviceDefaultName(defaultName),
-      roomId: CoreUniqueId.fromUniqueString(roomId),
-      roomName: DeviceRoomName(roomName),
       deviceStateGRPC: DeviceState(deviceStateGRPC),
       stateMassage: DeviceStateMassage(stateMassage),
       senderDeviceOs: DeviceSenderDeviceOs(senderDeviceOs),

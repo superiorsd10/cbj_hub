@@ -30,7 +30,11 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize
-    await Future.delayed(const Duration(milliseconds: 20));
+    /// In case you got the following error:
+    /// "HiveError: You need to initialize Hive or provide a path to store
+    /// the box."
+    /// Please increase the duration
+    await Future.delayed(const Duration(milliseconds: 80));
     getIt<ILocalDbRepository>().getRoomsFromDb().then((value) {
       value.fold((l) => null, (r) {
         final Iterable<MapEntry<String, RoomEntity>> devicesAsIterableMap =
@@ -50,7 +54,7 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
         final Iterable<MapEntry<String, DeviceEntityAbstract>>
             devicesAsIterableMap = r.map((e) {
           return MapEntry<String, DeviceEntityAbstract>(
-            e.uniqueId.getOrCrash()!,
+            e.uniqueId.getOrCrash(),
             e,
           );
         });
@@ -72,6 +76,11 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
   @override
   String addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {
+    /// Check if device already exist
+    if (doesDeviceAlreadyBeenAdded(deviceEntity)) {
+      return 'Device already exist';
+    }
+
     final String entityId = deviceEntity.getDeviceId();
     if (allDevices[entityId] != null) {
       allDevices[entityId] = deviceEntity;
@@ -81,8 +90,13 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
       final String discoveredRoomId =
           RoomUniqueId.discoveredRoomId().getOrCrash();
+
+      if (allRooms[discoveredRoomId] == null) {
+        allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
+      }
+
       allRooms[discoveredRoomId]!
-          .addDeviceId(deviceEntity.uniqueId.getOrCrash()!);
+          .addDeviceId(deviceEntity.uniqueId.getOrCrash());
 
       ConnectorStreamToMqtt.toMqttController.sink.add(
         MapEntry<String, DeviceEntityAbstract>(
@@ -99,6 +113,18 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     }
 
     return 'add or updated success';
+  }
+
+  /// Check if allDevices does not contain the same device already
+  /// Will compare the unique id's that each company sent us
+  bool doesDeviceAlreadyBeenAdded(DeviceEntityAbstract deviceEntity) {
+    for (final DeviceEntityAbstract deviceTemp in allDevices.values) {
+      if (deviceTemp.vendorUniqueId.getOrCrash() ==
+          deviceTemp.vendorUniqueId.getOrCrash()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -130,6 +156,9 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     } else {
       allRooms[roomId] = roomEntity;
     }
+    await getIt<ILocalDbRepository>().saveSmartDevices(
+        deviceList: List<DeviceEntityAbstract>.from(allDevices.values));
+
     return getIt<ILocalDbRepository>()
         .saveRoomsToDb(roomsList: List<RoomEntity>.from(allRooms.values));
   }

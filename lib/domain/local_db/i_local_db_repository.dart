@@ -51,9 +51,9 @@ abstract class ILocalDbRepository {
     required List<RoomEntity> roomsList,
   });
 
-  Future<Either<LocalDbFailures, Unit>> saveSmartDevices(
-    List<DeviceEntityAbstract> deviceList,
-  );
+  Future<Either<LocalDbFailures, Unit>> saveSmartDevices({
+    required List<DeviceEntityAbstract> deviceList,
+  });
 
   Future<Either<LocalDbFailures, Unit>> saveVendorLoginCredentials({
     required LoginEntityAbstract loginEntityAbstract,

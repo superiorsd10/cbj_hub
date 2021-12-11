@@ -13,11 +13,10 @@ class LifxHelpers {
   ) {
     final LifxWhiteEntity lifxDE = LifxWhiteEntity(
       uniqueId: CoreUniqueId(),
+      vendorUniqueId: VendorUniqueId(),
       defaultName: DeviceDefaultName(
         lifxDevice.label != '' ? lifxDevice.label : 'Lifx test 2',
       ),
-      roomId: CoreUniqueId.newDevicesRoomId(),
-      roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('Lifx'),
       senderDeviceModel: DeviceSenderDeviceModel('Cloud'),

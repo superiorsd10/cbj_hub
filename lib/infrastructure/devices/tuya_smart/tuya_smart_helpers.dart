@@ -20,13 +20,12 @@ class TuyaSmartHelpers {
     if (tuyaSmartDevice is TuyaLight) {
       tuyaSmartDE = TuyaSmartJbtA70RgbcwWfEntity(
         uniqueId: CoreUniqueId(),
+        vendorUniqueId: VendorUniqueId(),
         defaultName: DeviceDefaultName(
           tuyaSmartDevice.name != ''
               ? tuyaSmartDevice.name
               : 'TuyaSmart test 2',
         ),
-        roomId: CoreUniqueId.newDevicesRoomId(),
-        roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('tuya_smart'),
         senderDeviceModel: DeviceSenderDeviceModel('1SE'),
@@ -50,13 +49,12 @@ class TuyaSmartHelpers {
     } else if (tuyaSmartDevice is TuyaSwitch) {
       tuyaSmartDE = TuyaSmartSwitchEntity(
         uniqueId: CoreUniqueId(),
+        vendorUniqueId: VendorUniqueId(),
         defaultName: DeviceDefaultName(
           tuyaSmartDevice.name != ''
               ? tuyaSmartDevice.name
               : 'TuyaSmart test 2',
         ),
-        roomId: CoreUniqueId.newDevicesRoomId(),
-        roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('tuya_smart'),
         senderDeviceModel: DeviceSenderDeviceModel('Cloud'),

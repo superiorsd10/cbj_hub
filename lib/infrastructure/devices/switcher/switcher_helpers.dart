@@ -28,9 +28,8 @@ class SwitcherHelpers {
 
       final SwitcherRunnerEntity switcherRunnerDe = SwitcherRunnerEntity(
         uniqueId: CoreUniqueId(),
+        vendorUniqueId: VendorUniqueId(),
         defaultName: DeviceDefaultName(switcherDevice.switcherName),
-        roomId: CoreUniqueId.newDevicesRoomId(),
-        roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('switcher'),
         senderDeviceModel:
@@ -59,9 +58,8 @@ class SwitcherHelpers {
       }
       final SwitcherV2Entity switcherV2De = SwitcherV2Entity(
         uniqueId: CoreUniqueId(),
+        vendorUniqueId: VendorUniqueId(),
         defaultName: DeviceDefaultName(switcherDevice.switcherName),
-        roomId: CoreUniqueId.newDevicesRoomId(),
-        roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('switcher'),
         senderDeviceModel:

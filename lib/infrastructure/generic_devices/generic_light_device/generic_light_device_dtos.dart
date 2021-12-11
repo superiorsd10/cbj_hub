@@ -14,10 +14,9 @@ abstract class GenericLightDeviceDtos
   factory GenericLightDeviceDtos({
     // @JsonKey(ignore: true)
     String? deviceDtoClass,
-    String? id,
+    required String id,
+    required String vendorUniqueId,
     required String? defaultName,
-    required String? roomId,
-    required String? roomName,
     required String? deviceStateGRPC,
     String? stateMassage,
     required String? senderDeviceOs,
@@ -38,9 +37,8 @@ abstract class GenericLightDeviceDtos
     return GenericLightDeviceDtos(
       deviceDtoClass: (GenericLightDeviceDtos).toString(),
       id: genericLightDE.uniqueId.getOrCrash(),
+      vendorUniqueId: genericLightDE.vendorUniqueId.getOrCrash(),
       defaultName: genericLightDE.defaultName.getOrCrash(),
-      roomId: genericLightDE.roomId.getOrCrash(),
-      roomName: genericLightDE.roomName.getOrCrash(),
       deviceStateGRPC: genericLightDE.deviceStateGRPC.getOrCrash(),
       stateMassage: genericLightDE.stateMassage.getOrCrash(),
       senderDeviceOs: genericLightDE.senderDeviceOs.getOrCrash(),
@@ -64,9 +62,8 @@ abstract class GenericLightDeviceDtos
   DeviceEntityAbstract toDomain() {
     return GenericLightDE(
       uniqueId: CoreUniqueId.fromUniqueString(id),
+      vendorUniqueId: VendorUniqueId.fromUniqueString(vendorUniqueId),
       defaultName: DeviceDefaultName(defaultName),
-      roomId: CoreUniqueId.fromUniqueString(roomId),
-      roomName: DeviceRoomName(roomName),
       deviceStateGRPC: DeviceState(deviceStateGRPC),
       stateMassage: DeviceStateMassage(stateMassage),
       senderDeviceOs: DeviceSenderDeviceOs(senderDeviceOs),

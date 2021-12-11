@@ -14,9 +14,8 @@ import 'package:dartz/dartz.dart';
 class TasmotaLedEntity extends GenericLightDE {
   TasmotaLedEntity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -29,10 +28,9 @@ class TasmotaLedEntity extends GenericLightDE {
     required this.tasmotaDeviceTopicName,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           lightSwitchState: lightSwitchState,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,

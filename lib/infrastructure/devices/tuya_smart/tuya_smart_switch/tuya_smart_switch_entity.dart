@@ -16,9 +16,8 @@ import 'package:yeedart/yeedart.dart';
 class TuyaSmartSwitchEntity extends GenericSwitchDE {
   TuyaSmartSwitchEntity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -30,10 +29,9 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     required this.tuyaSmartDeviceId,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           switchState: switchState,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,

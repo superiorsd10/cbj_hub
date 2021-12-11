@@ -15,9 +15,8 @@ import 'package:dartz/dartz.dart';
 class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
   TuyaSmartJbtA70RgbcwWfEntity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -35,10 +34,9 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
     required this.tuyaSmartDeviceId,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           lightSwitchState: lightSwitchState,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,

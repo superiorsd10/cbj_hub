@@ -2,7 +2,6 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abs
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_value_objects.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -15,10 +14,9 @@ abstract class GenericSwitchDeviceDtos
   factory GenericSwitchDeviceDtos({
     // @JsonKey(ignore: true)
     String? deviceDtoClass,
-    String? id,
+    required String id,
+    required String vendorUniqueId,
     required String? defaultName,
-    required String? roomId,
-    required String? roomName,
     required String? deviceStateGRPC,
     String? stateMassage,
     required String? senderDeviceOs,
@@ -39,9 +37,8 @@ abstract class GenericSwitchDeviceDtos
     return GenericSwitchDeviceDtos(
       deviceDtoClass: (GenericSwitchDeviceDtos).toString(),
       id: genericSwitchDe.uniqueId.getOrCrash(),
+      vendorUniqueId: genericSwitchDe.vendorUniqueId.getOrCrash(),
       defaultName: genericSwitchDe.defaultName.getOrCrash(),
-      roomId: genericSwitchDe.roomId.getOrCrash(),
-      roomName: genericSwitchDe.roomName.getOrCrash(),
       deviceStateGRPC: genericSwitchDe.deviceStateGRPC.getOrCrash(),
       stateMassage: genericSwitchDe.stateMassage.getOrCrash(),
       senderDeviceOs: genericSwitchDe.senderDeviceOs.getOrCrash(),
@@ -65,9 +62,8 @@ abstract class GenericSwitchDeviceDtos
   DeviceEntityAbstract toDomain() {
     return GenericSwitchDE(
       uniqueId: CoreUniqueId.fromUniqueString(id),
+      vendorUniqueId: VendorUniqueId(),
       defaultName: DeviceDefaultName(defaultName),
-      roomId: CoreUniqueId.fromUniqueString(roomId),
-      roomName: DeviceRoomName(roomName),
       deviceStateGRPC: DeviceState(deviceStateGRPC),
       stateMassage: DeviceStateMassage(stateMassage),
       senderDeviceOs: DeviceSenderDeviceOs(senderDeviceOs),
