@@ -23,7 +23,7 @@ class TasmotaLedEntity extends GenericLightDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericSwitchState lightSwitchState,
+    required GenericLightSwitchState lightSwitchState,
     required this.tasmotaDeviceId,
     required this.tasmotaDeviceTopicName,
   }) : super(
@@ -83,7 +83,7 @@ class TasmotaLedEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    lightSwitchState = GenericSwitchState(DeviceActions.on.toString());
+    lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
@@ -98,7 +98,7 @@ class TasmotaLedEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    lightSwitchState = GenericSwitchState(DeviceActions.off.toString());
+    lightSwitchState = GenericLightSwitchState(DeviceActions.off.toString());
 
     try {
       getIt<IMqttServerRepository>().publishMessage(

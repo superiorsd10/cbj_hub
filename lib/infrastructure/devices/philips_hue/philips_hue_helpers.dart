@@ -12,7 +12,8 @@ class PhilipsHueHelpers {
   ) {
     final PhilipsHueE26Entity philipsHueDE = PhilipsHueE26Entity(
       uniqueId: CoreUniqueId(),
-      vendorUniqueId: VendorUniqueId(),
+      vendorUniqueId:
+          VendorUniqueId.fromUniqueString(philipsHueDevice.id.toString()),
       defaultName: DeviceDefaultName(
         philipsHueDevice.name != ''
             ? philipsHueDevice.name

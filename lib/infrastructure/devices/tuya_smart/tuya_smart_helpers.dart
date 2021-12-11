@@ -20,7 +20,7 @@ class TuyaSmartHelpers {
     if (tuyaSmartDevice is TuyaLight) {
       tuyaSmartDE = TuyaSmartJbtA70RgbcwWfEntity(
         uniqueId: CoreUniqueId(),
-        vendorUniqueId: VendorUniqueId(),
+        vendorUniqueId: VendorUniqueId.fromUniqueString(tuyaSmartDevice.id),
         defaultName: DeviceDefaultName(
           tuyaSmartDevice.name != ''
               ? tuyaSmartDevice.name
@@ -49,7 +49,7 @@ class TuyaSmartHelpers {
     } else if (tuyaSmartDevice is TuyaSwitch) {
       tuyaSmartDE = TuyaSmartSwitchEntity(
         uniqueId: CoreUniqueId(),
-        vendorUniqueId: VendorUniqueId(),
+        vendorUniqueId: VendorUniqueId.fromUniqueString(tuyaSmartDevice.id),
         defaultName: DeviceDefaultName(
           tuyaSmartDevice.name != ''
               ? tuyaSmartDevice.name
@@ -63,7 +63,7 @@ class TuyaSmartHelpers {
         stateMassage: DeviceStateMassage('Hello World'),
         powerConsumption: DevicePowerConsumption('0'),
         tuyaSmartDeviceId: TuyaSmartDeviceId(tuyaSmartDevice.id),
-        switchState: GenericSwitchState(tuyaSmartDevice.state.toString()),
+        switchState: GenericLightSwitchState(tuyaSmartDevice.state.toString()),
       );
     } else {
       logger.e('Tuya type does not exist');

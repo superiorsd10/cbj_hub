@@ -89,6 +89,15 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
   /// Brightness 0-100%
   GenericRgbwLightBrightness lightBrightness;
 
+  int sendNewTemperatureColorEachMiliseconds = 200;
+  bool doesWaitingToSendTemperatureColorRequest = false;
+
+  int sendNewHsvColorEachMiliseconds = 200;
+  bool doesWaitingToSendHsvColorRequest = false;
+
+  int sendNewBrightnessEachMiliseconds = 200;
+  bool doesWaitingToSendBrightnessRequest = false;
+
   //
   // /// Will return failure if any of the fields failed or return unit if fields
   // /// have legit values

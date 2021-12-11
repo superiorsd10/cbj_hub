@@ -98,15 +98,3 @@ abstract class GenericRgbwLightDeviceDtos
     );
   }
 }
-
-// class ServerTimestampConverter implements JsonConverter<FieldValue, Object> {
-//   const ServerTimestampConverter();
-//
-//   @override
-//   FieldValue fromJson(Object json) {
-//     return FieldValue.serverTimestamp();
-//   }
-//
-//   @override
-//   Object toJson(FieldValue fieldValue) => fieldValue;
-// }

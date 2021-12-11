@@ -71,19 +71,7 @@ abstract class GenericSwitchDeviceDtos
       senderId: DeviceSenderId.fromUniqueString(senderId),
       deviceVendor: DeviceVendor(deviceVendor),
       compUuid: DeviceCompUuid(compUuid),
-      switchState: GenericSwitchState(switchState),
+      switchState: GenericLightSwitchState(switchState),
     );
   }
 }
-
-// class ServerTimestampConverter implements JsonConverter<FieldValue, Object> {
-//   const ServerTimestampConverter();
-//
-//   @override
-//   FieldValue fromJson(Object json) {
-//     return FieldValue.serverTimestamp();
-//   }
-//
-//   @override
-//   Object toJson(FieldValue fieldValue) => fieldValue;
-// }

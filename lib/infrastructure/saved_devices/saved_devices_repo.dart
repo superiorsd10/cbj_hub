@@ -34,7 +34,7 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     /// "HiveError: You need to initialize Hive or provide a path to store
     /// the box."
     /// Please increase the duration
-    await Future.delayed(const Duration(milliseconds: 80));
+    await Future.delayed(const Duration(milliseconds: 100));
     getIt<ILocalDbRepository>().getRoomsFromDb().then((value) {
       value.fold((l) => null, (r) {
         final Iterable<MapEntry<String, RoomEntity>> devicesAsIterableMap =
@@ -119,7 +119,7 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
   /// Will compare the unique id's that each company sent us
   bool doesDeviceAlreadyBeenAdded(DeviceEntityAbstract deviceEntity) {
     for (final DeviceEntityAbstract deviceTemp in allDevices.values) {
-      if (deviceTemp.vendorUniqueId.getOrCrash() ==
+      if (deviceEntity.vendorUniqueId.getOrCrash() ==
           deviceTemp.vendorUniqueId.getOrCrash()) {
         return true;
       }

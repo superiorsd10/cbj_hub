@@ -56,6 +56,38 @@ abstract class DeviceEntityAbstract {
 
   String getDeviceId();
 
+  /// Copy with device state to waiting or ack
+  DeviceEntityAbstract copyWithDeviceState(DeviceStateGRPC deviceStateGRPC) {
+    return this;
+  }
+
+  /// Copy with device action
+  DeviceEntityAbstract copyWithDeviceAction(DeviceActions deviceActions) {
+    return this;
+  }
+
+  /// Copy with stateMassage
+  DeviceEntityAbstract copyWithStateMassage(String stateMassage) {
+    return this;
+  }
+
+  /// Copy with senderDeviceOs
+  DeviceEntityAbstract copyWithSenderDeviceOs(String senderDeviceOs) {
+    return this;
+  }
+
+  /// Copy with deviceSenderDeviceModel
+  DeviceEntityAbstract copyWithDeviceSenderDeviceModel(
+    String deviceSenderDeviceModel,
+  ) {
+    return this;
+  }
+
+  /// Copy with currentUserId
+  DeviceEntityAbstract copyWithSenderId(String userId) {
+    return this;
+  }
+
   DeviceEntityDtoAbstract toInfrastructure() {
     return DeviceEntityDtoAbstract();
   }

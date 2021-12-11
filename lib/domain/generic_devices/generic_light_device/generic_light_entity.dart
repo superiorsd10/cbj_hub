@@ -52,11 +52,11 @@ class GenericLightDE extends DeviceEntityAbstract {
         deviceVendor: DeviceVendor(''),
         compUuid: DeviceCompUuid(''),
         powerConsumption: DevicePowerConsumption(''),
-        lightSwitchState: GenericSwitchState(DeviceActions.off.toString()),
+        lightSwitchState: GenericLightSwitchState(DeviceActions.off.toString()),
       );
 
   /// State of the light on/off
-  GenericSwitchState? lightSwitchState;
+  GenericLightSwitchState? lightSwitchState;
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
