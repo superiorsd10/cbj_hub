@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
@@ -99,19 +98,19 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     }
 
     allRooms[discoveredRoomId]!.addDeviceId(deviceEntity.uniqueId.getOrCrash());
-
-    ConnectorStreamToMqtt.toMqttController.sink.add(
-      MapEntry<String, DeviceEntityAbstract>(
-        entityId,
-        allDevices[entityId]!,
-      ),
-    );
-    ConnectorStreamToMqtt.toMqttController.sink.add(
-      MapEntry<String, RoomEntity>(
-        discoveredRoomId,
-        allRooms[discoveredRoomId]!,
-      ),
-    );
+    //
+    // ConnectorStreamToMqtt.toMqttController.sink.add(
+    //   MapEntry<String, DeviceEntityAbstract>(
+    //     entityId,
+    //     allDevices[entityId]!,
+    //   ),
+    // );
+    // ConnectorStreamToMqtt.toMqttController.sink.add(
+    //   MapEntry<String, RoomEntity>(
+    //     discoveredRoomId,
+    //     allRooms[discoveredRoomId]!,
+    //   ),
+    // );
 
     return 'Adding new device';
   }
