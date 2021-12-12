@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_ping_device/generic_ping_entity.dart';
@@ -7,6 +8,7 @@ import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart'
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/generic_ping_device/generic_ping_device_dtos.dart';
+import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
@@ -33,16 +35,27 @@ class RemotePipesClient {
     try {
       response = stub!.hubTransferDevices(
         /// Transfer all requests from hub to the remote pipes->app
-        HubRequestsToApp.streamRequestsToApp
-            .map((DeviceEntityDtoAbstract deviceEntityDto) {
-          if (deviceEntityDto is! GenericPingDeviceDtos) {
-            grpcDartKeepAliveWorkaround(HubRequestsToApp.streamRequestsToApp);
+        HubRequestsToApp.streamRequestsToApp.map((dynamic entityDtoToSend) {
+          if (entityDtoToSend is DeviceEntityDtoAbstract) {
+            if (entityDtoToSend is! GenericPingDeviceDtos) {
+              grpcDartKeepAliveWorkaround(HubRequestsToApp.streamRequestsToApp);
+            }
+            return RequestsAndStatusFromHub(
+              sendingType: SendingType.deviceType,
+              allRemoteCommands:
+                  DeviceHelper.convertDtoToJsonString(entityDtoToSend),
+            );
+          } else if (entityDtoToSend is RoomEntityDtos) {
+            return RequestsAndStatusFromHub(
+              sendingType: SendingType.roomType,
+              allRemoteCommands: jsonEncode(entityDtoToSend.toJson()),
+            );
+          } else {
+            logger.w('Not sure what type to send');
+            return RequestsAndStatusFromHub(
+              sendingType: SendingType.undefinedType,
+            );
           }
-          return RequestsAndStatusFromHub(
-            sendingType: SendingType.deviceType,
-            allRemoteCommands:
-                DeviceHelper.convertDtoToJsonString(deviceEntityDto),
-          );
         }).handleError((error) => logger.e('Stream have error $error')),
       );
 
@@ -57,7 +70,7 @@ class RemotePipesClient {
   /// Workaround until gRPC dart implement keep alive
   /// https://github.com/grpc/grpc-dart/issues/157
   static Future<void> grpcDartKeepAliveWorkaround(
-    BehaviorSubject<DeviceEntityDtoAbstract> sendRequest,
+    BehaviorSubject<dynamic> sendRequest,
   ) async {
     grpcKeepAlive?.cancel();
     final GenericPingDE genericEmptyDE = GenericPingDE.empty();

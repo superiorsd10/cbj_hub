@@ -460,7 +460,10 @@ class SwitcherApiObject {
   static String extractPowerConsumption(List<String> hexSeparatedLetters) {
     final List<String> hexPowerConsumption =
         hexSeparatedLetters.sublist(270, 278);
-    return hexPowerConsumption.join();
+    // TODO: fix this method does not return number, hexPowerConsumption.join()
+    //  return the value 64000000
+    // return hexPowerConsumption.join();
+    return '0';
   }
 
   /// Extract the time remains for the current execution.

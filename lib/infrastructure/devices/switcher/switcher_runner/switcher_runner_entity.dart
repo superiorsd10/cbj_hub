@@ -15,9 +15,8 @@ import 'package:dartz/dartz.dart';
 class SwitcherRunnerEntity extends GenericBlindsDE {
   SwitcherRunnerEntity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -32,9 +31,8 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
     this.switcherPort,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,

@@ -13,9 +13,8 @@ import 'package:dartz/dartz.dart';
 class ESPHomeLightEntity extends GenericLightDE {
   ESPHomeLightEntity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -23,16 +22,15 @@ class ESPHomeLightEntity extends GenericLightDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericSwitchState lightSwitchState,
+    required GenericLightSwitchState lightSwitchState,
     required this.espHomeSwitchKey,
     required this.deviceMdnsName,
     this.lastKnownIp,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           lightSwitchState: lightSwitchState,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,
@@ -88,7 +86,7 @@ class ESPHomeLightEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    lightSwitchState = GenericSwitchState(DeviceActions.on.toString());
+    lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
 
     try {
       logger.v('Turn on ESPHome device');
@@ -121,7 +119,7 @@ class ESPHomeLightEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    lightSwitchState = GenericSwitchState(DeviceActions.off.toString());
+    lightSwitchState = GenericLightSwitchState(DeviceActions.off.toString());
 
     try {
       try {
