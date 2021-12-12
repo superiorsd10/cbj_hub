@@ -16,15 +16,12 @@ import 'package:rxdart/rxdart.dart';
 class Connector {
   static Future<void> startConnector() async {
     ConnectorStreamToMqtt.toMqttStream.listen((entityForMqtt) async {
-      if(entityForMqtt.value is DeviceEntityAbstract) {
+      if (entityForMqtt.value is DeviceEntityAbstract) {
         await getIt<IMqttServerRepository>()
             .publishDeviceEntity(entityForMqtt.value as DeviceEntityAbstract);
-      }
-      else if (entityForMqtt.value is RoomEntity){
-
+      } else if (entityForMqtt.value is RoomEntity) {
         logger.w('Please create MQTT support for Room Entity');
-      }
-      else {
+      } else {
         logger.w('Entity type to send to MQTT is not supported');
       }
     });
@@ -110,8 +107,8 @@ class Connector {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class ConnectorStreamToMqtt {
-  static StreamController<MapEntry<String, dynamic>>
-      toMqttController = StreamController();
+  static StreamController<MapEntry<String, dynamic>> toMqttController =
+      StreamController();
 
   static Stream<MapEntry<String, dynamic>> get toMqttStream =>
       toMqttController.stream.asBroadcastStream();
@@ -120,6 +117,5 @@ class ConnectorStreamToMqtt {
 /// Connect all streams from the mqtt devices changes into one stream that will
 /// be sent to whoever need to be notify of changes
 class ConnectorDevicesStreamFromMqtt {
-  static BehaviorSubject<dynamic> fromMqttStream =
-      BehaviorSubject<dynamic>();
+  static BehaviorSubject<dynamic> fromMqttStream = BehaviorSubject<dynamic>();
 }
