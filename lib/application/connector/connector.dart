@@ -20,6 +20,7 @@ class Connector {
         await getIt<IMqttServerRepository>()
             .publishDeviceEntity(entityForMqtt.value as DeviceEntityAbstract);
       } else if (entityForMqtt.value is RoomEntity) {
+        // TODO: Create MQTT support for rooms
         logger.w('Please create MQTT support for Room Entity');
       } else {
         logger.w('Entity type to send to MQTT is not supported');
