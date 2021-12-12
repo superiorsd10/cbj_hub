@@ -19,6 +19,14 @@ abstract class ILocalDbRepository {
   /// Name of the box that stores Tuya login credentials
   String tuyaVendorCredentialsBoxName = 'tuyaVendorCredentialsBoxName';
 
+  /// Name of the box that stores Smart Life login credentials
+  String smartLifeVendorCredentialsBoxName =
+      'smartLifeVendorCredentialsBoxName';
+
+  /// Name of the box that stores Jinvoo Smart login credentials
+  String jinvooSmartVendorCredentialsBoxName =
+      'jinvooSmartVendorCredentialsBoxName';
+
   /// Name of the box that stores Hub general info
   String hubEntityBoxName = 'hubEntityBox';
 
@@ -45,7 +53,7 @@ abstract class ILocalDbRepository {
   });
 
   Future<Either<LocalDbFailures, GenericTuyaLoginDE>>
-      getTuyaVendorLoginCredentials();
+      getTuyaVendorLoginCredentials({required String vendorBoxName});
 
   Future<Either<LocalDbFailures, Unit>> saveRoomsToDb({
     required List<RoomEntity> roomsList,
