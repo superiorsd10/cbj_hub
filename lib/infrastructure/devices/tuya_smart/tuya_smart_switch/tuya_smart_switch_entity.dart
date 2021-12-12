@@ -6,8 +6,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
@@ -27,6 +27,7 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     required DevicePowerConsumption powerConsumption,
     required GenericLightSwitchState switchState,
     required this.tuyaSmartDeviceId,
+    required this.cloudTuya,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
@@ -48,7 +49,9 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
   /// TuyaSmart package object require to close previews request before new one
   Device? tuyaSmartPackageObject;
 
-  /// Please override the following methods
+  /// Will be the cloud api reference, can be Tuya or Jinvoo Smart or Smart Life
+  CloudTuya cloudTuya;
+
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
     required DeviceEntityAbstract newEntity,
@@ -92,7 +95,7 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     switchState = GenericLightSwitchState(DeviceActions.on.toString());
     try {
-      TuyaSmartConnectorConjector.cloudTuya.turnOn(
+      cloudTuya.turnOn(
         tuyaSmartDeviceId!.getOrCrash(),
       );
       return right(unit);
@@ -106,7 +109,7 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     switchState = GenericLightSwitchState(DeviceActions.off.toString());
 
     try {
-      TuyaSmartConnectorConjector.cloudTuya.turnOff(
+      cloudTuya.turnOff(
         tuyaSmartDeviceId!.getOrCrash(),
       );
       return right(unit);

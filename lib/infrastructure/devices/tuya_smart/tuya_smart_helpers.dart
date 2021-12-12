@@ -4,6 +4,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_ligh
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_jbt_a70_rgbcw_wf/tuya_smart_jbt_a70_rgbcw_wf_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_light.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_switch.dart';
@@ -12,9 +13,10 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:cbj_hub/utils.dart';
 
 class TuyaSmartHelpers {
-  static DeviceEntityAbstract addDiscoverdDevice(
-    TuyaDeviceAbstract tuyaSmartDevice,
-  ) {
+  static DeviceEntityAbstract addDiscoverdDevice({
+    required TuyaDeviceAbstract tuyaSmartDevice,
+    required CloudTuya cloudTuyaOrSmartLifeOrJinvooSmart,
+  }) {
     DeviceEntityAbstract tuyaSmartDE;
 
     if (tuyaSmartDevice is TuyaLight) {
@@ -45,6 +47,7 @@ class TuyaSmartHelpers {
         lightColorHue: GenericRgbwLightColorHue('0.0'),
         lightColorSaturation: GenericRgbwLightColorSaturation('1.0'),
         lightColorValue: GenericRgbwLightColorValue('1.0'),
+        cloudTuya: cloudTuyaOrSmartLifeOrJinvooSmart,
       );
     } else if (tuyaSmartDevice is TuyaSwitch) {
       tuyaSmartDE = TuyaSmartSwitchEntity(
@@ -64,6 +67,7 @@ class TuyaSmartHelpers {
         powerConsumption: DevicePowerConsumption('0'),
         tuyaSmartDeviceId: TuyaSmartDeviceId(tuyaSmartDevice.id),
         switchState: GenericLightSwitchState(tuyaSmartDevice.state.toString()),
+        cloudTuya: cloudTuyaOrSmartLifeOrJinvooSmart,
       );
     } else {
       logger.e('Tuya type does not exist');
