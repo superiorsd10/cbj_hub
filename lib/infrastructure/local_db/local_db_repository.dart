@@ -11,6 +11,7 @@ import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_value_objec
 import 'package:cbj_hub/infrastructure/core/singleton/my_singleton.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/devices_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/hub_entity_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/remote_pipes_hive_model.dart';
@@ -179,6 +180,9 @@ class HiveRepository extends ILocalDbRepository {
 
         final GenericTuyaLoginDE genericTuyaLoginDE = GenericTuyaLoginDE(
           senderUniqueId: CoreLoginSenderId.fromUniqueString(senderUniqueId),
+          loginVendor: CoreLoginVendor(
+            VendorsAndServices.vendorsAndServicesNotSupported.name,
+          ),
           tuyaUserName: GenericTuyaLoginUserName(tuyaUserName),
           tuyaUserPassword: GenericTuyaLoginUserPassword(tuyaUserPassword),
           tuyaCountryCode: GenericTuyaLoginCountryCode(tuyaCountryCode),

@@ -9,6 +9,7 @@ import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_jbt_a70_rgb
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_switch/tuya_smart_switch_entity.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
@@ -16,32 +17,61 @@ import 'package:injectable/injectable.dart';
 
 @singleton
 class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
-  Future<String> accountLogin(GenericTuyaLoginDE genericTuyaLoginDE) async {
-    cloudTuya = CloudTuya(
+  Future<String> accountLogin({
+    required GenericTuyaLoginDE genericTuyaLoginDE,
+  }) async {
+    final CloudTuya cloudTuyaTemp = cloudTuya = CloudTuya(
       userName: genericTuyaLoginDE.tuyaUserName.getOrCrash(),
       userPassword: genericTuyaLoginDE.tuyaUserPassword.getOrCrash(),
       countryCode: genericTuyaLoginDE.tuyaCountryCode.getOrCrash(),
       bizType: genericTuyaLoginDE.tuyaBizType.getOrCrash(),
       region: genericTuyaLoginDE.tuyaRegion.getOrCrash(),
     );
-    final bool loginSuccess = await cloudTuya.login();
-    if (!loginSuccess) {
-      return 'Error';
+    if (genericTuyaLoginDE.loginVendor.getOrCrash() ==
+        VendorsAndServices.tuyaSmart.name) {
+      cloudTuya = cloudTuyaTemp;
+      final bool loginSuccess = await cloudTuya.login();
+      if (!loginSuccess) {
+        return 'Error';
+      }
+      _discoverNewDevices(cloudTuyaOrSmartLifeOrJinvooSmart: cloudTuya);
+    } else if (genericTuyaLoginDE.loginVendor.getOrCrash() ==
+        VendorsAndServices.smartLife.name) {
+      cloudSmartLife = cloudTuyaTemp;
+      final bool loginSuccess = await cloudSmartLife.login();
+      if (!loginSuccess) {
+        return 'Error';
+      }
+      _discoverNewDevices(cloudTuyaOrSmartLifeOrJinvooSmart: cloudSmartLife);
+      return 'Success';
+    } else if (genericTuyaLoginDE.loginVendor.getOrCrash() ==
+        VendorsAndServices.jinvooSmart.name) {
+      cloudJinvooSmart = cloudTuyaTemp;
+      final bool loginSuccess = await cloudJinvooSmart.login();
+      if (!loginSuccess) {
+        return 'Error';
+      }
+      _discoverNewDevices(cloudTuyaOrSmartLifeOrJinvooSmart: cloudJinvooSmart);
+      return 'Success';
     }
-    _discoverNewDevices();
+    // TODO: Add other types
     return 'Success';
   }
 
   static late CloudTuya cloudTuya;
+  static late CloudTuya cloudJinvooSmart;
+  static late CloudTuya cloudSmartLife;
 
   @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
-  Future<void> _discoverNewDevices() async {
+  Future<void> _discoverNewDevices({
+    required CloudTuya cloudTuyaOrSmartLifeOrJinvooSmart,
+  }) async {
     while (true) {
       try {
         final List<TuyaDeviceAbstract> deviceList =
-            await cloudTuya.findDevices();
+            await cloudTuyaOrSmartLifeOrJinvooSmart.findDevices();
 
         for (final TuyaDeviceAbstract tuyaDevice in deviceList) {
           bool deviceExist = false;
@@ -67,7 +97,11 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
           }
           if (!deviceExist) {
             final DeviceEntityAbstract addDevice =
-                TuyaSmartHelpers.addDiscoverdDevice(tuyaDevice);
+                TuyaSmartHelpers.addDiscoverdDevice(
+              tuyaSmartDevice: tuyaDevice,
+              cloudTuyaOrSmartLifeOrJinvooSmart:
+                  cloudTuyaOrSmartLifeOrJinvooSmart,
+            );
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
             final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
                 MapEntry(addDevice.uniqueId.getOrCrash(), addDevice);

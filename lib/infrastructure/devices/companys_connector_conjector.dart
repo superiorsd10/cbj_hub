@@ -113,7 +113,8 @@ class CompanysConnectorConjector {
     if (loginEntity is GenericLifxLoginDE) {
       getIt<LifxConnectorConjector>().accountLogin(loginEntity);
     } else if (loginEntity is GenericTuyaLoginDE) {
-      getIt<TuyaSmartConnectorConjector>().accountLogin(loginEntity);
+      getIt<TuyaSmartConnectorConjector>()
+          .accountLogin(genericTuyaLoginDE: loginEntity);
     } else {
       logger.w('Vendor login type ${loginEntity.runtimeType} is not supported');
     }
