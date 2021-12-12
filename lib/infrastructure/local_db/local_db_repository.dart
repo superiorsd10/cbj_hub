@@ -1,37 +1,30 @@
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
-import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv_value_objects.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
-import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
+import 'package:cbj_hub/domain/room/room_entity.dart';
+import 'package:cbj_hub/domain/room/value_objects_room.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/value_login_objects_core.dart';
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart';
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_value_objects.dart';
 import 'package:cbj_hub/infrastructure/core/singleton/my_singleton.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/esphome_device_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/esphome_light/esphome_light_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/google/chrome_cast/chrome_cast_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/google/google_device_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_device_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/infrastructure/local_db/hive_objects/devices_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/hub_entity_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/remote_pipes_hive_model.dart';
+import 'package:cbj_hub/infrastructure/local_db/hive_objects/rooms_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/tuya_vendor_credentials_hive_model.dart';
-import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
+import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
+/// Only ISavedDevicesRepo need to call functions here
 @LazySingleton(as: ILocalDbRepository)
 class HiveRepository extends ILocalDbRepository {
   HiveRepository() {
@@ -48,6 +41,8 @@ class HiveRepository extends ILocalDbRepository {
 
     Hive.init(localDbPath);
     Hive.registerAdapter(RemotePipesHiveModelAdapter());
+    Hive.registerAdapter(RoomsHiveModelAdapter());
+    Hive.registerAdapter(DevicesHiveModelAdapter());
     Hive.registerAdapter(HubEntityHiveModelAdapter());
     Hive.registerAdapter(TuyaVendorCredentialsHiveModelAdapter());
     loadFromDb();
@@ -65,134 +60,77 @@ class HiveRepository extends ILocalDbRepository {
     (await getTuyaVendorLoginCredentials()).fold((l) {}, (r) {
       CompanysConnectorConjector.setVendorLoginCredentials(r);
 
-      logger.i('Tuya login credentials user name "$r" found');
+      logger.i(
+        'Tuya login credentials user name ${r.tuyaUserName.getOrCrash()} found',
+      );
     });
   }
 
   @override
-  Map<String, DeviceEntityAbstract> getSmartDevicesFromDb() {
-    final String guyRoomId = CoreUniqueId().getOrCrash()!;
+  Future<Either<LocalDbFailures, List<RoomEntity>>> getRoomsFromDb() async {
+    final List<RoomEntity> rooms = <RoomEntity>[];
 
-    final ESPHomeLightEntity espHomeLightDE = ESPHomeLightEntity(
-      uniqueId: CoreUniqueId(),
-      defaultName: DeviceDefaultName('ESPHome test 1'),
-      roomId: CoreUniqueId(),
-      roomName: DeviceRoomName('Ami'),
-      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
-      senderDeviceOs: DeviceSenderDeviceOs('ESPHome'),
-      senderDeviceModel: DeviceSenderDeviceModel('LED'),
-      senderId: DeviceSenderId(),
-      compUuid: DeviceCompUuid('gasd34asd233asfdg'),
-      stateMassage: DeviceStateMassage('Hello World'),
-      powerConsumption: DevicePowerConsumption('0'),
-      lightSwitchState:
-          GenericSwitchState(DeviceActions.actionNotSupported.toString()),
-      espHomeSwitchKey: ESPHomeSwitchKey('1711856045'),
-      deviceMdnsName: DeviceMdnsName('livingroom'),
-      lastKnownIp: DeviceLastKnownIp('192.168.31.62'),
-    );
+    try {
+      final Box<RoomsHiveModel> roomsBox =
+          await Hive.openBox<RoomsHiveModel>(roomsBoxName);
 
-    final ChromeCastEntity chromeCastEntity = ChromeCastEntity(
-      uniqueId: CoreUniqueId(),
-      defaultName: DeviceDefaultName('Android TV'),
-      roomId: CoreUniqueId(),
-      roomName: DeviceRoomName('Living Room'),
-      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
-      senderDeviceOs: DeviceSenderDeviceOs('AndroidTV'),
-      senderDeviceModel: DeviceSenderDeviceModel('Mi Box'),
-      senderId: DeviceSenderId(),
-      compUuid: DeviceCompUuid('gasd34asd233asag3fdg'),
-      stateMassage: DeviceStateMassage('Hello World'),
-      powerConsumption: DevicePowerConsumption('0'),
-      smartTvSwitchState: GenericSmartTvSwitchState(
-        DeviceActions.actionNotSupported.toString(),
-      ),
-      deviceMdnsName: DeviceMdnsName('livingroomTV'),
-      lastKnownIp: DeviceLastKnownIp('192.168.31.26'),
-      googlePort: GooglePort('8009'),
-      googleDeviceId: GoogleDeviceId('GoogleDeviceIdTest'),
-    );
+      final List<RoomsHiveModel> roomsHiveModelFromDb =
+          roomsBox.values.toList().cast<RoomsHiveModel>();
 
-    final TasmotaLedEntity tasmotaLedDE = TasmotaLedEntity(
-      uniqueId: CoreUniqueId(),
-      defaultName: DeviceDefaultName('Tasmota test 1'),
-      roomId: CoreUniqueId(),
-      roomName: DeviceRoomName('Ami'),
-      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
-      senderDeviceOs: DeviceSenderDeviceOs('Tasmota'),
-      senderDeviceModel: DeviceSenderDeviceModel('LED'),
-      senderId: DeviceSenderId(),
-      compUuid: DeviceCompUuid('34asd233asfdggggg'),
-      stateMassage: DeviceStateMassage('Hello World'),
-      powerConsumption: DevicePowerConsumption('0'),
-      lightSwitchState:
-          GenericSwitchState(DeviceActions.actionNotSupported.toString()),
-      tasmotaDeviceTopicName: TasmotaDeviceTopicName('tasmota_D663A6'),
-      tasmotaDeviceId: TasmotaDeviceId('asdas23ds'),
-    );
+      await roomsBox.close();
 
-    final Yeelight1SeEntity yeelightDE = Yeelight1SeEntity(
-      uniqueId: CoreUniqueId(),
-      defaultName: DeviceDefaultName('Yeelight test 1'),
-      roomId: CoreUniqueId(),
-      roomName: DeviceRoomName('Guy'),
-      deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
-      senderDeviceOs: DeviceSenderDeviceOs('yeelight'),
-      senderDeviceModel: DeviceSenderDeviceModel('1SE'),
-      senderId: DeviceSenderId(),
-      compUuid: DeviceCompUuid('34asd23gggg'),
-      deviceMdnsName: DeviceMdnsName('yeelink-light-colora_miap9C52'),
-      lastKnownIp: DeviceLastKnownIp('192.168.31.129'),
-      stateMassage: DeviceStateMassage('Hello World'),
-      powerConsumption: DevicePowerConsumption('0'),
-      yeelightDeviceId: YeelightDeviceId('249185746'),
-      yeelightPort: YeelightPort('55443'),
-      lightSwitchState: GenericRgbwLightSwitchState(
-        DeviceActions.actionNotSupported.toString(),
-      ),
-      lightColorTemperature: GenericRgbwLightColorTemperature(''),
-      lightBrightness: GenericRgbwLightBrightness('90'),
-      lightColorAlpha: GenericRgbwLightColorAlpha('1.0'),
-      lightColorHue: GenericRgbwLightColorHue('0.0'),
-      lightColorSaturation: GenericRgbwLightColorSaturation('1.0'),
-      lightColorValue: GenericRgbwLightColorValue('1.0'),
-    );
+      for (final RoomsHiveModel roomHive in roomsHiveModelFromDb) {
+        final RoomEntity roomEntity = RoomEntity(
+          uniqueId: RoomUniqueId.fromUniqueString(roomHive.roomUniqueId),
+          defaultName: RoomDefaultName(roomHive.roomDefaultName),
+          roomTypes: RoomTypes(roomHive.roomTypes),
+          roomDevicesId: RoomDevicesId(roomHive.roomDevicesId),
+          roomMostUsedBy: RoomMostUsedBy(roomHive.roomMostUsedBy),
+          roomPermissions: RoomPermissions(roomHive.roomPermissions),
+        );
+        rooms.add(roomEntity);
+      }
+    } catch (e) {
+      logger.e('Local DB hive error while getting rooms: $e');
+    }
 
-    return {
-      // yeelightDE.uniqueId.getOrCrash()!: yeelightDE,
-      // tasmotaLedDE.uniqueId.getOrCrash()!: tasmotaLedDE,
-      // espHomeLightDE.uniqueId.getOrCrash()!: espHomeLightDE,
-      // chromeCastEntity.uniqueId.getOrCrash()!: chromeCastEntity,
-    };
+    // Gets all rooms from db, if there are non it will create and return
+    // only a discovered room
+    if (rooms.isEmpty) {
+      final RoomEntity discoveredRoom = RoomEntity.empty().copyWith(
+        uniqueId: RoomUniqueId.discoveredRoomId(),
+        defaultName: RoomDefaultName.discoveredRoomName(),
+      );
+      rooms.add(discoveredRoom);
+    }
+    return right(rooms);
   }
 
   @override
-  Future<void> saveSmartDevices(List<DeviceEntityAbstract> deviceList) async {
-    // TODO: implement saveSmartDevices
-  }
+  Future<Either<LocalDbFailures, List<DeviceEntityAbstract>>>
+      getSmartDevicesFromDb() async {
+    final List<DeviceEntityAbstract> devices = <DeviceEntityAbstract>[];
 
-  @override
-  Future<Either<LocalDbFailures, Unit>>
-      saveAndActivateVendorLoginCredentialsDomainToDb(
-    LoginEntityAbstract loginEntity,
-  ) async {
-    CompanysConnectorConjector.setVendorLoginCredentials(loginEntity);
+    try {
+      final Box<DevicesHiveModel> devicesBox =
+          await Hive.openBox<DevicesHiveModel>(devicesBoxName);
 
-    return saveVendorLoginCredentials(loginEntityAbstract: loginEntity);
-  }
+      final List<DevicesHiveModel> devicesHiveModelFromDb =
+          devicesBox.values.toList().cast<DevicesHiveModel>();
 
-  @override
-  Future<Either<LocalDbFailures, Unit>> saveAndActivateRemotePipesDomainToDb(
-    RemotePipesEntity remotePipes,
-  ) async {
-    final RemotePipesDtos remotePipesDtos = remotePipes.toInfrastructure();
+      await devicesBox.close();
 
-    final String rpDomainName = remotePipesDtos.domainName;
+      for (final DevicesHiveModel deviceHive in devicesHiveModelFromDb) {
+        final DeviceEntityAbstract deviceEntity =
+            DeviceHelper.convertJsonStringToDomain(deviceHive.deviceStringJson);
 
-    getIt<IAppCommunicationRepository>()
-        .startRemotePipesConnection(rpDomainName);
-
-    return saveRemotePipes(remotePipesDomainName: rpDomainName);
+        devices.add(deviceEntity);
+      }
+      return right(devices);
+    } catch (e) {
+      logger.e('Local DB hive error while getting devices: $e');
+    }
+    return left(const LocalDbFailures.unexpected());
   }
 
   @override
@@ -228,23 +166,23 @@ class HiveRepository extends ILocalDbRepository {
               .cast<TuyaVendorCredentialsHiveModel>();
 
       if (tuyaVendorCredentialsModelFromDb.isNotEmpty) {
-        final String? senderUniqueId =
-            tuyaVendorCredentialsModelFromDb[0].senderUniqueId;
-        final String tuyaUserName =
-            tuyaVendorCredentialsModelFromDb[0].tuyaUserName;
-        final String tuyaUserPassword =
-            tuyaVendorCredentialsModelFromDb[0].tuyaUserPassword;
-        final String tuyaCountryCode =
-            tuyaVendorCredentialsModelFromDb[0].tuyaCountryCode;
-        final String tuyaBizType =
-            tuyaVendorCredentialsModelFromDb[0].tuyaBizType;
-        final String tuyaRegion =
-            tuyaVendorCredentialsModelFromDb[0].tuyaRegion;
+        final TuyaVendorCredentialsHiveModel firstTuyaVendorFromDB =
+            tuyaVendorCredentialsModelFromDb[0];
+
+        final String? senderUniqueId = firstTuyaVendorFromDB.senderUniqueId;
+        final String tuyaUserName = firstTuyaVendorFromDB.tuyaUserName;
+        final String tuyaUserPassword = firstTuyaVendorFromDB.tuyaUserPassword;
+        final String tuyaCountryCode = firstTuyaVendorFromDB.tuyaCountryCode;
+        final String tuyaBizType = firstTuyaVendorFromDB.tuyaBizType;
+        final String tuyaRegion = firstTuyaVendorFromDB.tuyaRegion;
 
         await tuyaVendorCredentialsBox.close();
 
         final GenericTuyaLoginDE genericTuyaLoginDE = GenericTuyaLoginDE(
           senderUniqueId: CoreLoginSenderId.fromUniqueString(senderUniqueId),
+          loginVendor: CoreLoginVendor(
+            VendorsAndServices.vendorsAndServicesNotSupported.name,
+          ),
           tuyaUserName: GenericTuyaLoginUserName(tuyaUserName),
           tuyaUserPassword: GenericTuyaLoginUserPassword(tuyaUserPassword),
           tuyaCountryCode: GenericTuyaLoginCountryCode(tuyaCountryCode),
@@ -262,7 +200,7 @@ class HiveRepository extends ILocalDbRepository {
       await tuyaVendorCredentialsBox.close();
       logger.i("Didn't find any remote pipes in the local DB");
     } catch (e) {
-      logger.e('Local DB hive error: $e');
+      logger.e('Local DB hive error while getting Tuya vendor: $e');
     }
     return left(const LocalDbFailures.unexpected());
   }
@@ -290,9 +228,79 @@ class HiveRepository extends ILocalDbRepository {
       await remotePipesBox.close();
       logger.i("Didn't find any remote pipes in the local DB");
     } catch (e) {
-      logger.e('Local DB hive error: $e');
+      logger.e('Local DB hive error while getting Remote Pipes: $e');
     }
     return left(const LocalDbFailures.unexpected());
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveSmartDevices({
+    required List<DeviceEntityAbstract> deviceList,
+  }) async {
+    try {
+      final List<DevicesHiveModel> roomsHiveList = [];
+
+      final List<String> devicesListStringJson = List<String>.from(
+        deviceList.map((e) => DeviceHelper.convertDomainToJsonString(e)),
+      );
+
+      for (final String devicesEntityDtosJsonString in devicesListStringJson) {
+        final DevicesHiveModel roomsHiveModel = DevicesHiveModel()
+          ..deviceStringJson = devicesEntityDtosJsonString;
+        roomsHiveList.add(roomsHiveModel);
+      }
+
+      final Box<DevicesHiveModel> devicesBox =
+          await Hive.openBox<DevicesHiveModel>(devicesBoxName);
+
+      await devicesBox.clear();
+      await devicesBox.addAll(roomsHiveList);
+
+      await devicesBox.close();
+      logger.i('Devices got saved to local storage');
+    } catch (e) {
+      logger.e('Error saving Devices to local storage/n$e');
+      return left(const LocalDbFailures.unexpected());
+    }
+
+    return right(unit);
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveRoomsToDb({
+    required List<RoomEntity> roomsList,
+  }) async {
+    try {
+      final Box<RoomsHiveModel> roomsBox =
+          await Hive.openBox<RoomsHiveModel>(roomsBoxName);
+
+      final List<RoomsHiveModel> remotePipesHiveList = [];
+
+      final List<RoomEntityDtos> roomsListDto =
+          List<RoomEntityDtos>.from(roomsList.map((e) => e.toInfrastructure()));
+
+      for (final RoomEntityDtos roomEntityDtos in roomsListDto) {
+        final RoomsHiveModel roomsHiveModel = RoomsHiveModel()
+          ..roomUniqueId = roomEntityDtos.uniqueId
+          ..roomDefaultName = roomEntityDtos.defaultName
+          ..roomDevicesId = roomEntityDtos.roomDevicesId
+          ..roomMostUsedBy = roomEntityDtos.roomMostUsedBy
+          ..roomPermissions = roomEntityDtos.roomPermissions
+          ..roomTypes = roomEntityDtos.roomTypes;
+        remotePipesHiveList.add(roomsHiveModel);
+      }
+
+      await roomsBox.clear();
+      await roomsBox.addAll(remotePipesHiveList);
+
+      await roomsBox.close();
+      logger.i('Rooms got saved to local storage');
+    } catch (e) {
+      logger.e('Error saving Rooms to local storage');
+      return left(const LocalDbFailures.unexpected());
+    }
+
+    return right(unit);
   }
 
   @override

@@ -13,11 +13,10 @@ class LifxHelpers {
   ) {
     final LifxWhiteEntity lifxDE = LifxWhiteEntity(
       uniqueId: CoreUniqueId(),
+      vendorUniqueId: VendorUniqueId.fromUniqueString(lifxDevice.id),
       defaultName: DeviceDefaultName(
         lifxDevice.label != '' ? lifxDevice.label : 'Lifx test 2',
       ),
-      roomId: CoreUniqueId.newDevicesRoom(),
-      roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('Lifx'),
       senderDeviceModel: DeviceSenderDeviceModel('Cloud'),
@@ -26,8 +25,9 @@ class LifxHelpers {
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
       lifxDeviceId: LifxDeviceId(lifxDevice.id),
-      lightSwitchState:
-          GenericSwitchState((lifxDevice.power == LifxPower.on).toString()),
+      lightSwitchState: GenericLightSwitchState(
+        (lifxDevice.power == LifxPower.on).toString(),
+      ),
     );
 
     return lifxDE;

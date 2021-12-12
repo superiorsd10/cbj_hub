@@ -15,9 +15,8 @@ import 'package:yeedart/yeedart.dart';
 class PhilipsHueE26Entity extends GenericRgbwLightDE {
   PhilipsHueE26Entity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -38,10 +37,9 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
     required GenericRgbwLightBrightness lightBrightness,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           lightSwitchState: lightSwitchState,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,

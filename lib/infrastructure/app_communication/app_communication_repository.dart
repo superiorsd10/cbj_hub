@@ -10,8 +10,8 @@ import 'package:cbj_hub/domain/generic_devices/generic_empty_device/generic_empt
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
-import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
+import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
@@ -21,6 +21,7 @@ import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_en
 import 'package:cbj_hub/infrastructure/generic_vendors_login/vendor_helper.dart';
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_client.dart';
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
+import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
@@ -85,13 +86,24 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
             DeviceHelper.convertJsonStringToDomain(event.allRemoteCommands);
 
         sendToMqtt(deviceEntityFromApp);
+      } else if (event.sendingType == SendingType.roomType) {
+        final RoomEntity roomEntityFromApp = RoomEntityDtos.fromJson(
+          jsonDecode(event.allRemoteCommands) as Map<String, dynamic>,
+        ).toDomain();
+
+        getIt<ISavedDevicesRepo>().saveAndActiveRoomToDb(
+          roomEntity: roomEntityFromApp,
+        );
+
+        sendToMqtt(roomEntityFromApp);
       } else if (event.sendingType == SendingType.vendorLoginType) {
         final LoginEntityAbstract loginEntityFromApp =
             VendorHelper.convertJsonStringToDomain(event.allRemoteCommands);
 
-        getIt<ILocalDbRepository>()
+        getIt<ISavedDevicesRepo>()
             .saveAndActivateVendorLoginCredentialsDomainToDb(
-                loginEntityFromApp);
+          loginEntity: loginEntityFromApp,
+        );
       } else if (event.sendingType == SendingType.firstConnection) {
         AppCommunicationRepository.sendAllDevicesFromHubRequestsStream();
       } else if (event.sendingType == SendingType.remotePipesInformation) {
@@ -101,8 +113,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         final RemotePipesEntity remotePipes =
             RemotePipesDtos.fromJson(jsonDecoded).toDomain();
 
-        getIt<ILocalDbRepository>()
-            .saveAndActivateRemotePipesDomainToDb(remotePipes);
+        getIt<ISavedDevicesRepo>()
+            .saveAndActivateRemotePipesDomainToDb(remotePipes: remotePipes);
       } else {
         logger.w('Request from app does not support this sending device type');
       }
@@ -116,69 +128,84 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   }
 
   static Future<void> sendToMqtt(
-    DeviceEntityAbstract deviceEntityFromApp,
+    dynamic entityFromTheApp,
   ) async {
-    final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
-    final Map<String, DeviceEntityAbstract> allDevices =
-        await savedDevicesRepo.getAllDevices();
-    final DeviceEntityAbstract? savedDeviceEntity =
-        allDevices[deviceEntityFromApp.getDeviceId()];
+    if (entityFromTheApp is DeviceEntityAbstract) {
+      final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
+      final Map<String, DeviceEntityAbstract> allDevices =
+          await savedDevicesRepo.getAllDevices();
+      final DeviceEntityAbstract? savedDeviceEntity =
+          allDevices[entityFromTheApp.getDeviceId()];
 
-    if (savedDeviceEntity == null) {
-      logger.w('Device id does not match existing device');
-      return;
-    }
+      if (savedDeviceEntity == null) {
+        logger.w('Device id does not match existing device');
+        return;
+      }
 
-    MapEntry<String, DeviceEntityAbstract> deviceFromApp;
+      MapEntry<String, DeviceEntityAbstract> deviceFromApp;
 
-    if (savedDeviceEntity is GenericLightDE &&
-        deviceEntityFromApp is GenericLightDE) {
-      savedDeviceEntity.lightSwitchState = deviceEntityFromApp.lightSwitchState;
+      if (savedDeviceEntity is GenericLightDE &&
+          entityFromTheApp is GenericLightDE) {
+        savedDeviceEntity.lightSwitchState = entityFromTheApp.lightSwitchState;
 
-      deviceFromApp =
-          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
-    } else if (savedDeviceEntity is GenericRgbwLightDE &&
-        deviceEntityFromApp is GenericRgbwLightDE) {
-      savedDeviceEntity.lightSwitchState = deviceEntityFromApp.lightSwitchState;
-      savedDeviceEntity.lightColorSaturation =
-          deviceEntityFromApp.lightColorSaturation;
-      savedDeviceEntity.lightColorTemperature =
-          deviceEntityFromApp.lightColorTemperature;
-      savedDeviceEntity.lightColorHue = deviceEntityFromApp.lightColorHue;
-      savedDeviceEntity.lightColorAlpha = deviceEntityFromApp.lightColorAlpha;
-      savedDeviceEntity.lightColorValue = deviceEntityFromApp.lightColorValue;
-      savedDeviceEntity.lightBrightness = deviceEntityFromApp.lightBrightness;
+        deviceFromApp = MapEntry(
+            savedDeviceEntity.uniqueId.getOrCrash(), savedDeviceEntity);
+      } else if (savedDeviceEntity is GenericRgbwLightDE &&
+          entityFromTheApp is GenericRgbwLightDE) {
+        savedDeviceEntity.lightSwitchState = entityFromTheApp.lightSwitchState;
+        savedDeviceEntity.lightColorSaturation =
+            entityFromTheApp.lightColorSaturation;
+        savedDeviceEntity.lightColorTemperature =
+            entityFromTheApp.lightColorTemperature;
+        savedDeviceEntity.lightColorHue = entityFromTheApp.lightColorHue;
+        savedDeviceEntity.lightColorAlpha = entityFromTheApp.lightColorAlpha;
+        savedDeviceEntity.lightColorValue = entityFromTheApp.lightColorValue;
+        savedDeviceEntity.lightBrightness = entityFromTheApp.lightBrightness;
 
-      deviceFromApp =
-          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
-    } else if (savedDeviceEntity is GenericSwitchDE &&
-        deviceEntityFromApp is GenericSwitchDE) {
-      savedDeviceEntity.switchState = deviceEntityFromApp.switchState;
+        deviceFromApp = MapEntry(
+          savedDeviceEntity.uniqueId.getOrCrash(),
+          savedDeviceEntity,
+        );
+      } else if (savedDeviceEntity is GenericSwitchDE &&
+          entityFromTheApp is GenericSwitchDE) {
+        savedDeviceEntity.switchState = entityFromTheApp.switchState;
 
-      deviceFromApp =
-          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
-    } else if (savedDeviceEntity is GenericBoilerDE &&
-        deviceEntityFromApp is GenericBoilerDE) {
-      savedDeviceEntity.boilerSwitchState =
-          deviceEntityFromApp.boilerSwitchState;
+        deviceFromApp = MapEntry(
+          savedDeviceEntity.uniqueId.getOrCrash(),
+          savedDeviceEntity,
+        );
+      } else if (savedDeviceEntity is GenericBoilerDE &&
+          entityFromTheApp is GenericBoilerDE) {
+        savedDeviceEntity.boilerSwitchState =
+            entityFromTheApp.boilerSwitchState;
 
-      deviceFromApp =
-          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
-    } else if (savedDeviceEntity is GenericBlindsDE &&
-        deviceEntityFromApp is GenericBlindsDE) {
-      savedDeviceEntity.blindsSwitchState =
-          deviceEntityFromApp.blindsSwitchState;
+        deviceFromApp = MapEntry(
+          savedDeviceEntity.uniqueId.getOrCrash(),
+          savedDeviceEntity,
+        );
+      } else if (savedDeviceEntity is GenericBlindsDE &&
+          entityFromTheApp is GenericBlindsDE) {
+        savedDeviceEntity.blindsSwitchState =
+            entityFromTheApp.blindsSwitchState;
 
-      deviceFromApp =
-          MapEntry(savedDeviceEntity.uniqueId.getOrCrash()!, savedDeviceEntity);
+        deviceFromApp = MapEntry(
+          savedDeviceEntity.uniqueId.getOrCrash(),
+          savedDeviceEntity,
+        );
+      } else {
+        logger.w(
+          'Cant find device from app type '
+          '${entityFromTheApp.deviceTypes.getOrCrash()}',
+        );
+        return;
+      }
+      ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
     } else {
       logger.w(
-        'Cant find device from app type '
-        '${deviceEntityFromApp.deviceTypes.getOrCrash()}',
+        'Entity from app type ${entityFromTheApp.runtimeType} not '
+        'support sending to MQTT',
       );
-      return;
     }
-    ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
   }
 
   /// Trigger to send all devices from hub to app using the
@@ -186,7 +213,16 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   static Future<void> sendAllDevicesFromHubRequestsStream() async {
     final Map<String, DeviceEntityAbstract> allDevices =
         await getIt<ISavedDevicesRepo>().getAllDevices();
-    if (allDevices.isNotEmpty) {
+
+    final Map<String, RoomEntity> allRooms =
+        await getIt<ISavedDevicesRepo>().getAllRooms();
+
+    if (allRooms.isNotEmpty) {
+      allRooms.map((String id, RoomEntity d) {
+        HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
+        return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
+      });
+
       allDevices.map((String id, DeviceEntityAbstract d) {
         HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
         return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
@@ -203,8 +239,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 /// Connect all streams from the internet devices into one stream that will be
 /// send to mqtt broker to update devices states
 class HubRequestsToApp {
-  static BehaviorSubject<DeviceEntityDtoAbstract> streamRequestsToApp =
-      BehaviorSubject<DeviceEntityDtoAbstract>();
+  static BehaviorSubject<dynamic> streamRequestsToApp =
+      BehaviorSubject<dynamic>();
 }
 
 /// Requests and updates from app to the hub

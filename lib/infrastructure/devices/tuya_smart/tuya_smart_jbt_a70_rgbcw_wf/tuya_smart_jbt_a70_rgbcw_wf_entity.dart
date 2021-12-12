@@ -6,8 +6,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
@@ -15,9 +15,8 @@ import 'package:dartz/dartz.dart';
 class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
   TuyaSmartJbtA70RgbcwWfEntity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -33,12 +32,12 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
     required GenericRgbwLightColorSaturation lightColorSaturation,
     required GenericRgbwLightColorValue lightColorValue,
     required this.tuyaSmartDeviceId,
+    required this.cloudTuya,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           lightSwitchState: lightSwitchState,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,
@@ -57,6 +56,9 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
 
   /// TuyaSmart device unique id that came withe the device
   TuyaSmartDeviceId? tuyaSmartDeviceId;
+
+  /// Will be the cloud api reference, can be Tuya or Jinvoo Smart or Smart Life
+  CloudTuya cloudTuya;
 
   /// Please override the following methods
   @override
@@ -144,7 +146,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     lightSwitchState = GenericRgbwLightSwitchState(DeviceActions.on.toString());
     try {
-      TuyaSmartConnectorConjector.cloudTuya.turnOn(
+      cloudTuya.turnOn(
         tuyaSmartDeviceId!.getOrCrash(),
       );
       return right(unit);
@@ -159,7 +161,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
         GenericRgbwLightSwitchState(DeviceActions.off.toString());
 
     try {
-      TuyaSmartConnectorConjector.cloudTuya.turnOff(
+      cloudTuya.turnOff(
         tuyaSmartDeviceId!.getOrCrash(),
       );
       return right(unit);
@@ -173,7 +175,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
     lightBrightness = GenericRgbwLightBrightness(brightness);
 
     try {
-      TuyaSmartConnectorConjector.cloudTuya.setBrightness(
+      cloudTuya.setBrightness(
         tuyaSmartDeviceId!.getOrCrash(),
         lightBrightness.getOrCrash(),
       );
@@ -191,7 +193,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
         GenericRgbwLightColorTemperature(lightColorTemperatureNewValue);
 
     try {
-      TuyaSmartConnectorConjector.cloudTuya.setColorTemperature(
+      cloudTuya.setColorTemperature(
         deviceId: tuyaSmartDeviceId!.getOrCrash(),
         newTemperature: lightColorTemperatureNewValue,
       );
@@ -215,7 +217,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
     lightColorValue = GenericRgbwLightColorValue(lightColorValueNewValue);
 
     try {
-      TuyaSmartConnectorConjector.cloudTuya.setColorHsv(
+      cloudTuya.setColorHsv(
         deviceId: tuyaSmartDeviceId!.getOrCrash(),
         hue: lightColorHue.getOrCrash(),
         saturation: lightColorSaturation.getOrCrash(),

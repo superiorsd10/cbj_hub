@@ -6,8 +6,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
@@ -16,9 +16,8 @@ import 'package:yeedart/yeedart.dart';
 class TuyaSmartSwitchEntity extends GenericSwitchDE {
   TuyaSmartSwitchEntity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -26,14 +25,14 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericSwitchState switchState,
+    required GenericLightSwitchState switchState,
     required this.tuyaSmartDeviceId,
+    required this.cloudTuya,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           switchState: switchState,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,
@@ -50,7 +49,9 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
   /// TuyaSmart package object require to close previews request before new one
   Device? tuyaSmartPackageObject;
 
-  /// Please override the following methods
+  /// Will be the cloud api reference, can be Tuya or Jinvoo Smart or Smart Life
+  CloudTuya cloudTuya;
+
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
     required DeviceEntityAbstract newEntity,
@@ -92,9 +93,9 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    switchState = GenericSwitchState(DeviceActions.on.toString());
+    switchState = GenericLightSwitchState(DeviceActions.on.toString());
     try {
-      TuyaSmartConnectorConjector.cloudTuya.turnOn(
+      cloudTuya.turnOn(
         tuyaSmartDeviceId!.getOrCrash(),
       );
       return right(unit);
@@ -105,10 +106,10 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    switchState = GenericSwitchState(DeviceActions.off.toString());
+    switchState = GenericLightSwitchState(DeviceActions.off.toString());
 
     try {
-      TuyaSmartConnectorConjector.cloudTuya.turnOff(
+      cloudTuya.turnOff(
         tuyaSmartDeviceId!.getOrCrash(),
       );
       return right(unit);

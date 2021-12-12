@@ -14,10 +14,9 @@ class GenericEmptyDE extends DeviceEntityAbstract {
   /// All public field of GenericEmpty entity
   GenericEmptyDE({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceVendor deviceVendor,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -28,13 +27,12 @@ class GenericEmptyDE extends DeviceEntityAbstract {
     required this.emptySwitchState,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           deviceTypes: DeviceType(DeviceTypes.typeNotSupported.toString()),
           deviceVendor: deviceVendor,
           deviceStateGRPC: deviceStateGRPC,
           compUuid: compUuid,
-          roomName: roomName,
           senderDeviceModel: senderDeviceModel,
           senderDeviceOs: senderDeviceOs,
           senderId: senderId,
@@ -44,9 +42,8 @@ class GenericEmptyDE extends DeviceEntityAbstract {
   /// Empty instance of GenericEmptyEntity
   factory GenericEmptyDE.empty() => GenericEmptyDE(
         uniqueId: CoreUniqueId(),
+        vendorUniqueId: VendorUniqueId(),
         defaultName: DeviceDefaultName('Empty device'),
-        roomId: CoreUniqueId.newDevicesRoom(),
-        roomName: DeviceRoomName('Discovered'),
         deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
         senderDeviceOs: DeviceSenderDeviceOs('Hub'),
         senderDeviceModel: DeviceSenderDeviceModel('Hub'),
@@ -86,7 +83,7 @@ class GenericEmptyDE extends DeviceEntityAbstract {
 
   @override
   String getDeviceId() {
-    return uniqueId.getOrCrash()!;
+    return uniqueId.getOrCrash();
   }
 
   @override
@@ -94,9 +91,9 @@ class GenericEmptyDE extends DeviceEntityAbstract {
     return GenericEmptyDeviceDtos(
       deviceDtoClass: (GenericEmptyDeviceDtos).toString(),
       id: uniqueId.getOrCrash(),
+
+      vendorUniqueId: vendorUniqueId.getOrCrash(),
       defaultName: defaultName.getOrCrash(),
-      roomId: roomId.getOrCrash(),
-      roomName: roomName.getOrCrash(),
       deviceStateGRPC: deviceStateGRPC.getOrCrash(),
       stateMassage: stateMassage.getOrCrash(),
       senderDeviceOs: senderDeviceOs.getOrCrash(),

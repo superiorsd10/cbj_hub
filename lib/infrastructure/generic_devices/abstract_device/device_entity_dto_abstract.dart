@@ -11,7 +11,9 @@ import 'package:cbj_hub/utils.dart';
 class DeviceEntityDtoAbstract {
   DeviceEntityDtoAbstract();
 
-  factory DeviceEntityDtoAbstract.fromDomain() {
+  factory DeviceEntityDtoAbstract.fromDomain({
+    required DeviceEntityAbstract deviceEntityDtoAbstract,
+  }) {
     logger.v('DeviceEntityDtoAbstract.fromDomain');
     return DeviceEntityDtoAbstract();
   }
