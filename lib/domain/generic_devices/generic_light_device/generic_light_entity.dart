@@ -14,10 +14,9 @@ class GenericLightDE extends DeviceEntityAbstract {
   /// All public field of GenericLight entity
   GenericLightDE({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceVendor deviceVendor,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -28,13 +27,12 @@ class GenericLightDE extends DeviceEntityAbstract {
     required this.lightSwitchState,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           deviceTypes: DeviceType(DeviceTypes.light.toString()),
           deviceVendor: deviceVendor,
           deviceStateGRPC: deviceStateGRPC,
           compUuid: compUuid,
-          roomName: roomName,
           senderDeviceModel: senderDeviceModel,
           senderDeviceOs: senderDeviceOs,
           senderId: senderId,
@@ -44,9 +42,8 @@ class GenericLightDE extends DeviceEntityAbstract {
   /// Empty instance of GenericLightEntity
   factory GenericLightDE.empty() => GenericLightDE(
         uniqueId: CoreUniqueId(),
+        vendorUniqueId: VendorUniqueId(),
         defaultName: DeviceDefaultName(''),
-        roomId: CoreUniqueId(),
-        roomName: DeviceRoomName(''),
         deviceStateGRPC: DeviceState(''),
         senderDeviceOs: DeviceSenderDeviceOs(''),
         senderDeviceModel: DeviceSenderDeviceModel(''),
@@ -55,11 +52,11 @@ class GenericLightDE extends DeviceEntityAbstract {
         deviceVendor: DeviceVendor(''),
         compUuid: DeviceCompUuid(''),
         powerConsumption: DevicePowerConsumption(''),
-        lightSwitchState: GenericSwitchState(DeviceActions.off.toString()),
+        lightSwitchState: GenericLightSwitchState(DeviceActions.off.toString()),
       );
 
   /// State of the light on/off
-  GenericSwitchState? lightSwitchState;
+  GenericLightSwitchState? lightSwitchState;
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
@@ -84,7 +81,7 @@ class GenericLightDE extends DeviceEntityAbstract {
 
   @override
   String getDeviceId() {
-    return uniqueId.getOrCrash()!;
+    return uniqueId.getOrCrash();
   }
 
   @override
@@ -92,9 +89,8 @@ class GenericLightDE extends DeviceEntityAbstract {
     return GenericLightDeviceDtos(
       deviceDtoClass: (GenericLightDeviceDtos).toString(),
       id: uniqueId.getOrCrash(),
+      vendorUniqueId: vendorUniqueId.getOrCrash(),
       defaultName: defaultName.getOrCrash(),
-      roomId: roomId.getOrCrash(),
-      roomName: roomName.getOrCrash(),
       deviceStateGRPC: deviceStateGRPC.getOrCrash(),
       stateMassage: stateMassage.getOrCrash(),
       senderDeviceOs: senderDeviceOs.getOrCrash(),

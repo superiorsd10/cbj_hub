@@ -12,11 +12,11 @@ class YeelightHelpers {
   ) {
     final Yeelight1SeEntity yeelightDE = Yeelight1SeEntity(
       uniqueId: CoreUniqueId(),
+      vendorUniqueId:
+          VendorUniqueId.fromUniqueString(yeelightDevice.id.toString()),
       defaultName: DeviceDefaultName(
         yeelightDevice.name != '' ? yeelightDevice.name : 'Yeelight test 2',
       ),
-      roomId: CoreUniqueId.newDevicesRoom(),
-      roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('yeelight'),
       senderDeviceModel: DeviceSenderDeviceModel('1SE'),

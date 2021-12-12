@@ -57,7 +57,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
       }
       logger.v('Adding tasmota device');
       final MapEntry<String, DeviceEntityAbstract> deviceAsEntry = MapEntry(
-        tasmotaDeviceToAdd.uniqueId.getOrCrash()!,
+        tasmotaDeviceToAdd.uniqueId.getOrCrash(),
         tasmotaDeviceToAdd,
       );
       companyDevices.addEntries([deviceAsEntry]);
@@ -103,9 +103,8 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
 
     return TasmotaLedEntity(
       uniqueId: CoreUniqueId(),
+      vendorUniqueId: VendorUniqueId(),
       defaultName: DeviceDefaultName(name),
-      roomId: CoreUniqueId.newDevicesRoom(),
-      roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('Tasmota'),
       senderDeviceModel: DeviceSenderDeviceModel('LED'),
@@ -113,7 +112,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
       compUuid: DeviceCompUuid(mac),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      lightSwitchState: GenericSwitchState(deviceActions.toString()),
+      lightSwitchState: GenericLightSwitchState(deviceActions.toString()),
       tasmotaDeviceTopicName: TasmotaDeviceTopicName(deviceTopic),
       tasmotaDeviceId: TasmotaDeviceId(deviceId),
     );

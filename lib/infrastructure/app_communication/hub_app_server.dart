@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
@@ -6,6 +7,7 @@ import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart'
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/proto_gen_date.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
+import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/service_api.dart';
@@ -27,15 +29,25 @@ class HubAppServer extends CbjHubServiceBase {
       getIt<IAppCommunicationRepository>().getFromApp(request);
 
       yield* HubRequestsToApp.streamRequestsToApp
-          .map(
-            (DeviceEntityDtoAbstract deviceEntityDto) =>
-                RequestsAndStatusFromHub(
-              sendingType: SendingType.deviceType,
-              allRemoteCommands:
-                  DeviceHelper.convertDtoToJsonString(deviceEntityDto),
-            ),
-          )
-          .handleError((error) => logger.e('Stream have error $error'));
+          .map((dynamic deviceEntityDto) {
+        if (deviceEntityDto is DeviceEntityDtoAbstract) {
+          return RequestsAndStatusFromHub(
+            sendingType: SendingType.deviceType,
+            allRemoteCommands:
+                DeviceHelper.convertDtoToJsonString(deviceEntityDto),
+          );
+        } else if (deviceEntityDto is RoomEntityDtos) {
+          return RequestsAndStatusFromHub(
+            sendingType: SendingType.roomType,
+            allRemoteCommands: jsonEncode(deviceEntityDto.toJson()),
+          );
+        } else {
+          return RequestsAndStatusFromHub(
+            sendingType: SendingType.undefinedType,
+            allRemoteCommands: '',
+          );
+        }
+      }).handleError((error) => logger.e('Stream have error $error'));
     } catch (e) {
       logger.e('Hub server error $e');
     }

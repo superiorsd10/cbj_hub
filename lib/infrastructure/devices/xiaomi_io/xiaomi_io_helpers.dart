@@ -12,11 +12,11 @@ class XiaomiIoHelpers {
   ) {
     final XiaomiIoGpx4021GlEntity xiaomiIoDE = XiaomiIoGpx4021GlEntity(
       uniqueId: CoreUniqueId(),
+      vendorUniqueId:
+          VendorUniqueId.fromUniqueString(xiaomiIoDevice.id.toString()),
       defaultName: DeviceDefaultName(
         xiaomiIoDevice.name != '' ? xiaomiIoDevice.name : 'XiaomiIo test 2',
       ),
-      roomId: CoreUniqueId.newDevicesRoom(),
-      roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('xiaomi_io'),
       senderDeviceModel: DeviceSenderDeviceModel('1SE'),

@@ -12,13 +12,13 @@ class PhilipsHueHelpers {
   ) {
     final PhilipsHueE26Entity philipsHueDE = PhilipsHueE26Entity(
       uniqueId: CoreUniqueId(),
+      vendorUniqueId:
+          VendorUniqueId.fromUniqueString(philipsHueDevice.id.toString()),
       defaultName: DeviceDefaultName(
         philipsHueDevice.name != ''
             ? philipsHueDevice.name
             : 'PhilipsHue test 2',
       ),
-      roomId: CoreUniqueId.newDevicesRoom(),
-      roomName: DeviceRoomName('Discovered'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('philips_hue'),
       senderDeviceModel: DeviceSenderDeviceModel('1SE'),

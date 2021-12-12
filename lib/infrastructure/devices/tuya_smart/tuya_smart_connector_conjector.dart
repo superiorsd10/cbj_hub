@@ -70,7 +70,7 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
                 TuyaSmartHelpers.addDiscoverdDevice(tuyaDevice);
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
             final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
-                MapEntry(addDevice.uniqueId.getOrCrash()!, addDevice);
+                MapEntry(addDevice.uniqueId.getOrCrash(), addDevice);
             companyDevices.addEntries([deviceAsEntry]);
 
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);

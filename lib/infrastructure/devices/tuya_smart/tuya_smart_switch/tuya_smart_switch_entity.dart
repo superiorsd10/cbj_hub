@@ -16,9 +16,8 @@ import 'package:yeedart/yeedart.dart';
 class TuyaSmartSwitchEntity extends GenericSwitchDE {
   TuyaSmartSwitchEntity({
     required CoreUniqueId uniqueId,
-    required CoreUniqueId roomId,
+    required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
-    required DeviceRoomName roomName,
     required DeviceState deviceStateGRPC,
     required DeviceStateMassage stateMassage,
     required DeviceSenderDeviceOs senderDeviceOs,
@@ -26,14 +25,13 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericSwitchState switchState,
+    required GenericLightSwitchState switchState,
     required this.tuyaSmartDeviceId,
   }) : super(
           uniqueId: uniqueId,
+          vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          roomId: roomId,
           switchState: switchState,
-          roomName: roomName,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,
@@ -92,7 +90,7 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    switchState = GenericSwitchState(DeviceActions.on.toString());
+    switchState = GenericLightSwitchState(DeviceActions.on.toString());
     try {
       TuyaSmartConnectorConjector.cloudTuya.turnOn(
         tuyaSmartDeviceId!.getOrCrash(),
@@ -105,7 +103,7 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    switchState = GenericSwitchState(DeviceActions.off.toString());
+    switchState = GenericLightSwitchState(DeviceActions.off.toString());
 
     try {
       TuyaSmartConnectorConjector.cloudTuya.turnOff(
