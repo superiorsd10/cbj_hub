@@ -14,6 +14,10 @@ abstract class ISavedDevicesRepo {
   /// Add new room to saved rooms list
   String addOrUpdateRoom(RoomEntity roomEntity);
 
+  /// Check if the device exist in one of the rooms, if not will add it to
+  /// Discovered room
+  void addDeviceToRoomDiscoveredIfNotExist(DeviceEntityAbstract deviceEntity);
+
   Future<Either<LocalDbFailures, Unit>> saveAndActiveRoomToDb({
     required RoomEntity roomEntity,
   });
