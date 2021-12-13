@@ -78,14 +78,12 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
           for (final DeviceEntityAbstract savedDevice
               in companyDevices.values) {
             if (savedDevice is TuyaSmartJbtA70RgbcwWfEntity) {
-              if (tuyaDevice.id ==
-                  savedDevice.tuyaSmartDeviceId!.getOrCrash()) {
+              if (tuyaDevice.id == savedDevice.vendorUniqueId!.getOrCrash()) {
                 deviceExist = true;
                 break;
               }
             } else if (savedDevice is TuyaSmartSwitchEntity) {
-              if (tuyaDevice.id ==
-                  savedDevice.tuyaSmartDeviceId!.getOrCrash()) {
+              if (tuyaDevice.id == savedDevice.vendorUniqueId!.getOrCrash()) {
                 deviceExist = true;
                 break;
               }

@@ -35,7 +35,7 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
           for (DeviceEntityAbstract savedDevice in companyDevices.values) {
             savedDevice = savedDevice as LifxWhiteEntity;
 
-            if (lifxDevice.id == savedDevice.lifxDeviceId!.getOrCrash()) {
+            if (lifxDevice.id == savedDevice.vendorUniqueId!.getOrCrash()) {
               deviceExist = true;
               break;
             }

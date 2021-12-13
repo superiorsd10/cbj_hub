@@ -26,7 +26,6 @@ class SwitcherV2Entity extends GenericBoilerDE {
     required DevicePowerConsumption powerConsumption,
     required GenericBoilerSwitchState boilerSwitchState,
     required this.switcherMacAddress,
-    required this.switcherDeviceId,
     required this.lastKnownIp,
     required this.switcherPort,
   }) : super(
@@ -46,7 +45,7 @@ class SwitcherV2Entity extends GenericBoilerDE {
         ) {
     switcherObject = SwitcherApiObject(
       deviceType: SwitcherDevicesTypes.switcherV2Esp,
-      deviceId: switcherDeviceId.getOrCrash(),
+      deviceId: vendorUniqueId.getOrCrash(),
       switcherIp: lastKnownIp.getOrCrash(),
       switcherName: defaultName.getOrCrash()!,
       macAddress: switcherMacAddress.getOrCrash(),
@@ -54,8 +53,6 @@ class SwitcherV2Entity extends GenericBoilerDE {
     );
   }
 
-  /// Switcher device unique id that came withe the device
-  SwitcherDeviceId switcherDeviceId;
   SwitcherMacAddress switcherMacAddress;
 
   /// Switcher communication port

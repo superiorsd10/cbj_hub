@@ -25,7 +25,6 @@ class LifxWhiteEntity extends GenericLightDE {
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
     required GenericLightSwitchState lightSwitchState,
-    required this.lifxDeviceId,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
@@ -41,8 +40,7 @@ class LifxWhiteEntity extends GenericLightDE {
           powerConsumption: powerConsumption,
         );
 
-  /// Lifx device unique id that came withe the device
-  LifxDeviceId? lifxDeviceId;
+  LifxPort? lifxPort;
 
   /// Please override the following methods
   @override
@@ -88,7 +86,7 @@ class LifxWhiteEntity extends GenericLightDE {
     lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
     try {
       final setStateBodyResponse = await LifxConnectorConjector.lifxClient
-          ?.setState(lifxDeviceId!.getOrCrash(), power: 'on', fast: true);
+          ?.setState(vendorUniqueId!.getOrCrash(), power: 'on', fast: true);
       if (setStateBodyResponse == null) {
         throw 'setStateBodyResponse is null';
       }
@@ -108,7 +106,7 @@ class LifxWhiteEntity extends GenericLightDE {
 
     try {
       final setStateBodyResponse = await LifxConnectorConjector.lifxClient
-          ?.setState(lifxDeviceId!.getOrCrash(), power: 'off', fast: true);
+          ?.setState(vendorUniqueId!.getOrCrash(), power: 'off', fast: true);
       if (setStateBodyResponse == null) {
         throw 'setStateBodyResponse is null';
       }

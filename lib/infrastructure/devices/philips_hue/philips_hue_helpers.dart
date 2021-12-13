@@ -28,7 +28,6 @@ class PhilipsHueHelpers {
       lastKnownIp: DeviceLastKnownIp(philipsHueDevice.address.address),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      philipsHueDeviceId: PhilipsHueDeviceId(philipsHueDevice.id.toString()),
       philipsHuePort: PhilipsHuePort(philipsHueDevice.port.toString()),
       lightSwitchState:
           GenericRgbwLightSwitchState(philipsHueDevice.powered.toString()),

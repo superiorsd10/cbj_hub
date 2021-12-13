@@ -39,7 +39,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
       for (DeviceEntityAbstract savedDevice in companyDevices.values) {
         savedDevice = savedDevice as TasmotaLedEntity;
 
-        if (deviceId == savedDevice.tasmotaDeviceId.getOrCrash()) {
+        if (deviceId == savedDevice.vendorUniqueId.getOrCrash()) {
           deviceExist = true;
           break;
         }
@@ -114,7 +114,6 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
       powerConsumption: DevicePowerConsumption('0'),
       lightSwitchState: GenericLightSwitchState(deviceActions.toString()),
       tasmotaDeviceTopicName: TasmotaDeviceTopicName(deviceTopic),
-      tasmotaDeviceId: TasmotaDeviceId(deviceId),
     );
   }
 

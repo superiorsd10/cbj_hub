@@ -41,7 +41,6 @@ class SwitcherHelpers {
         stateMassage: DeviceStateMassage('Hello World'),
         powerConsumption:
             DevicePowerConsumption(switcherDevice.powerConsumption),
-        switcherDeviceId: SwitcherDeviceId(switcherDevice.deviceId),
         switcherPort: SwitcherPort(switcherDevice.port.toString()),
         switcherMacAddress: SwitcherMacAddress(switcherDevice.macAddress),
         blindsSwitchState: GenericBlindsSwitchState(
@@ -73,7 +72,6 @@ class SwitcherHelpers {
         powerConsumption:
             DevicePowerConsumption(switcherDevice.powerConsumption),
         boilerSwitchState: GenericBoilerSwitchState(deviceActions.toString()),
-        switcherDeviceId: SwitcherDeviceId(switcherDevice.deviceId),
         switcherPort: SwitcherPort(switcherDevice.port.toString()),
         switcherMacAddress: SwitcherMacAddress(switcherDevice.macAddress),
       );

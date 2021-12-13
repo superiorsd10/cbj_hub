@@ -5,7 +5,6 @@ import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_api/esphome_api.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/esphome_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
@@ -23,7 +22,6 @@ class ESPHomeLightEntity extends GenericLightDE {
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
     required GenericLightSwitchState lightSwitchState,
-    required this.espHomeSwitchKey,
     required this.deviceMdnsName,
     this.lastKnownIp,
   }) : super(
@@ -41,7 +39,6 @@ class ESPHomeLightEntity extends GenericLightDE {
           powerConsumption: powerConsumption,
         );
 
-  ESPHomeSwitchKey espHomeSwitchKey;
 
   DeviceLastKnownIp? lastKnownIp;
 
@@ -107,7 +104,7 @@ class ESPHomeLightEntity extends GenericLightDE {
       // await EspHomeApi.listEntitiesRequest();
       // await EspHomeApi.subscribeStatesRequest();
       await espHomeApi.switchCommandRequest(
-        int.parse(espHomeSwitchKey.getOrCrash()),
+        int.parse(vendorUniqueId.getOrCrash()),
         true,
       );
       await espHomeApi.disconnect();
@@ -142,7 +139,7 @@ class ESPHomeLightEntity extends GenericLightDE {
         // await EspHomeApi.listEntitiesRequest();
         // await EspHomeApi.subscribeStatesRequest();
         await espHomeApi.switchCommandRequest(
-          int.parse(espHomeSwitchKey.getOrCrash()),
+          int.parse(vendorUniqueId.getOrCrash()),
           false,
         );
         await espHomeApi.disconnect();

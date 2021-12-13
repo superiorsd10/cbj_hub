@@ -25,7 +25,6 @@ class ChromeCastEntity extends GenericSmartTvDE {
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
     required GenericSmartTvSwitchState smartTvSwitchState,
-    required this.googleDeviceId,
     required this.googlePort,
     this.deviceMdnsName,
     this.lastKnownIp,
@@ -43,9 +42,6 @@ class ChromeCastEntity extends GenericSmartTvDE {
           compUuid: compUuid,
           powerConsumption: powerConsumption,
         );
-
-  /// Google device unique id that came withe the device
-  GoogleDeviceId? googleDeviceId;
 
   /// Google communication port
   GooglePort? googlePort;

@@ -24,7 +24,6 @@ class GoogleHelpers {
       lastKnownIp: DeviceLastKnownIp(googleDevice.address.address),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      googleDeviceId: GoogleDeviceId(googleDevice.id.toString()),
       googlePort: GooglePort(googleDevice.port.toString()),
       smartTvSwitchState: GenericSmartTvSwitchState(
         DeviceActions.actionNotSupported.toString(),

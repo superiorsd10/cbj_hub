@@ -38,12 +38,12 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
     for (final DeviceEntityAbstract savedDevice in companyDevices.values) {
       if (savedDevice is SwitcherV2Entity) {
         if (switcherApiObject.deviceId ==
-            savedDevice.switcherDeviceId.getOrCrash()) {
+            savedDevice.vendorUniqueId.getOrCrash()) {
           return;
         }
       } else if (savedDevice is SwitcherRunnerEntity) {
         if (switcherApiObject.deviceId ==
-            savedDevice.switcherDeviceId.getOrCrash()) {
+            savedDevice.vendorUniqueId.getOrCrash()) {
           return;
         }
       } else {

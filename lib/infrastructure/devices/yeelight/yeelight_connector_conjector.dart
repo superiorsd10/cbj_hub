@@ -31,7 +31,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
             savedDevice = savedDevice as Yeelight1SeEntity;
 
             if (yeelightDevice.id.toString() ==
-                savedDevice.yeelightDeviceId!.getOrCrash()) {
+                savedDevice.vendorUniqueId.getOrCrash()) {
               deviceExist = true;
               break;
             }
@@ -45,12 +45,12 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
             companyDevices.addEntries([deviceAsEntry]);
 
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-            logger.i('New yeelight devices where added');
+            logger.i('New Yeelight devices where added');
           }
         }
         await Future.delayed(const Duration(minutes: 3));
       } catch (e) {
-        logger.e('Error discover in yeelight $e');
+        logger.e('Error discover in Yeelight $e');
         await Future.delayed(const Duration(minutes: 5));
       }
     }
