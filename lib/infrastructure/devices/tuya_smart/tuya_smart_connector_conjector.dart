@@ -29,7 +29,7 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
     );
     if (genericTuyaLoginDE.loginVendor.getOrCrash() ==
         VendorsAndServices.tuyaSmart.name) {
-      cloudTuya = cloudTuyaTemp;
+      cloudTuya = cloudTuyaTemp..bizType = 'tuya';
       final bool loginSuccess = await cloudTuya.login();
       if (!loginSuccess) {
         return 'Error';
@@ -37,7 +37,7 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
       _discoverNewDevices(cloudTuyaOrSmartLifeOrJinvooSmart: cloudTuya);
     } else if (genericTuyaLoginDE.loginVendor.getOrCrash() ==
         VendorsAndServices.smartLife.name) {
-      cloudSmartLife = cloudTuyaTemp;
+      cloudSmartLife = cloudTuyaTemp..bizType = 'smart_life';
       final bool loginSuccess = await cloudSmartLife.login();
       if (!loginSuccess) {
         return 'Error';
@@ -46,7 +46,7 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
       return 'Success';
     } else if (genericTuyaLoginDE.loginVendor.getOrCrash() ==
         VendorsAndServices.jinvooSmart.name) {
-      cloudJinvooSmart = cloudTuyaTemp;
+      cloudJinvooSmart = cloudTuyaTemp..bizType = 'jinvoo_smart';
       final bool loginSuccess = await cloudJinvooSmart.login();
       if (!loginSuccess) {
         return 'Error';
