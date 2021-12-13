@@ -86,7 +86,7 @@ class LifxWhiteEntity extends GenericLightDE {
     lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
     try {
       final setStateBodyResponse = await LifxConnectorConjector.lifxClient
-          ?.setState(vendorUniqueId!.getOrCrash(), power: 'on', fast: true);
+          ?.setState(vendorUniqueId.getOrCrash(), power: 'on', fast: true);
       if (setStateBodyResponse == null) {
         throw 'setStateBodyResponse is null';
       }
@@ -106,7 +106,7 @@ class LifxWhiteEntity extends GenericLightDE {
 
     try {
       final setStateBodyResponse = await LifxConnectorConjector.lifxClient
-          ?.setState(vendorUniqueId!.getOrCrash(), power: 'off', fast: true);
+          ?.setState(vendorUniqueId.getOrCrash(), power: 'off', fast: true);
       if (setStateBodyResponse == null) {
         throw 'setStateBodyResponse is null';
       }

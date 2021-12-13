@@ -105,8 +105,10 @@ class CompanysConnectorConjector {
     }
   }
 
-  static void addDiscoverdDeviceToHub(DeviceEntityAbstract deviceEntity) {
-    getIt<ISavedDevicesRepo>().addOrUpdateDevice(deviceEntity);
+  static DeviceEntityAbstract addDiscoverdDeviceToHub(
+    DeviceEntityAbstract deviceEntity,
+  ) {
+    return getIt<ISavedDevicesRepo>().addOrUpdateDevice(deviceEntity);
   }
 
   static void setVendorLoginCredentials(LoginEntityAbstract loginEntity) {

@@ -39,12 +39,15 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
           if (!deviceExist) {
             final DeviceEntityAbstract addDevice =
                 YeelightHelpers.addDiscoverdDevice(yeelightDevice);
-            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
+            final DeviceEntityAbstract deviceToAdd =
+                CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
             final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
-                MapEntry(addDevice.uniqueId.getOrCrash(), addDevice);
+                MapEntry(deviceToAdd.uniqueId.getOrCrash(), deviceToAdd);
+
             companyDevices.addEntries([deviceAsEntry]);
 
-            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
             logger.i('New Yeelight devices where added');
           }
         }

@@ -91,7 +91,7 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     switchState = GenericLightSwitchState(DeviceActions.on.toString());
     try {
       cloudTuya.turnOn(
-        vendorUniqueId!.getOrCrash(),
+        vendorUniqueId.getOrCrash(),
       );
       return right(unit);
     } catch (e) {
@@ -105,7 +105,7 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
 
     try {
       cloudTuya.turnOff(
-        vendorUniqueId!.getOrCrash(),
+        vendorUniqueId.getOrCrash(),
       );
       return right(unit);
     } catch (e) {

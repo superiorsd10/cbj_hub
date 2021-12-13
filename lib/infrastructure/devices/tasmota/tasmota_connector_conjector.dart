@@ -48,21 +48,22 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
         return;
       }
 
-      final DeviceEntityAbstract? tasmotaDeviceToAdd = await mqttToDevice(
+      final DeviceEntityAbstract? addDevice = await mqttToDevice(
         MapEntry(messageTopic, mqttPublishMessage[0].payload),
       );
 
-      if (tasmotaDeviceToAdd == null) {
+      if (addDevice == null) {
         return;
       }
-      logger.v('Adding tasmota device');
-      final MapEntry<String, DeviceEntityAbstract> deviceAsEntry = MapEntry(
-        tasmotaDeviceToAdd.uniqueId.getOrCrash(),
-        tasmotaDeviceToAdd,
-      );
-      companyDevices.addEntries([deviceAsEntry]);
 
-      CompanysConnectorConjector.addDiscoverdDeviceToHub(tasmotaDeviceToAdd);
+      final DeviceEntityAbstract deviceToAdd =
+          CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
+      final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
+          MapEntry(deviceToAdd.uniqueId.getOrCrash(), deviceToAdd);
+
+      companyDevices.addEntries([deviceAsEntry]);
+      logger.v('Adding Tasmota device');
     });
 
     /// Make all tasmota devices repost themselves under topic discovery

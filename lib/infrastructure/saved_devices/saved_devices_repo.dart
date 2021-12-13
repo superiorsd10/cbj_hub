@@ -64,17 +64,17 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
   }
 
   @override
-  String addOrUpdateFromMqtt(dynamic updateFromMqtt) {
+  DeviceEntityAbstract? addOrUpdateFromMqtt(dynamic updateFromMqtt) {
     if (updateFromMqtt is DeviceEntityAbstract) {
       return addOrUpdateDevice(updateFromMqtt);
     } else {
       logger.w('Add or update type from MQTT not supported');
     }
-    return 'Fail';
+    return null;
   }
 
   @override
-  String addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {
+  DeviceEntityAbstract addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {
     final DeviceEntityAbstract? deviceExistByIdOfVendor =
         findDeviceIfAlreadyBeenAdded(deviceEntity);
 
@@ -82,7 +82,7 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     if (deviceExistByIdOfVendor != null) {
       deviceEntity.uniqueId = deviceExistByIdOfVendor.uniqueId;
       allDevices[deviceExistByIdOfVendor.uniqueId.getOrCrash()] = deviceEntity;
-      return 'Device already exist';
+      return deviceEntity;
     }
 
     final String entityId = deviceEntity.getDeviceId();
@@ -98,6 +98,8 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     }
 
     allRooms[discoveredRoomId]!.addDeviceId(deviceEntity.uniqueId.getOrCrash());
+    return deviceEntity;
+
     //
     // ConnectorStreamToMqtt.toMqttController.sink.add(
     //   MapEntry<String, DeviceEntityAbstract>(
@@ -111,14 +113,13 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     //     allRooms[discoveredRoomId]!,
     //   ),
     // );
-
-    return 'Adding new device';
   }
 
   /// Check if allDevices does not contain the same device already
   /// Will compare the unique id's that each company sent us
   DeviceEntityAbstract? findDeviceIfAlreadyBeenAdded(
-      DeviceEntityAbstract deviceEntity) {
+    DeviceEntityAbstract deviceEntity,
+  ) {
     for (final DeviceEntityAbstract deviceTemp in allDevices.values) {
       if (deviceEntity.vendorUniqueId.getOrCrash() ==
           deviceTemp.vendorUniqueId.getOrCrash()) {
@@ -158,10 +159,12 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
       allRooms[roomId] = roomEntity;
     }
     await getIt<ILocalDbRepository>().saveSmartDevices(
-        deviceList: List<DeviceEntityAbstract>.from(allDevices.values));
+      deviceList: List<DeviceEntityAbstract>.from(allDevices.values),
+    );
 
-    return getIt<ILocalDbRepository>()
-        .saveRoomsToDb(roomsList: List<RoomEntity>.from(allRooms.values));
+    return getIt<ILocalDbRepository>().saveRoomsToDb(
+      roomsList: List<RoomEntity>.from(allRooms.values),
+    );
   }
 
   /// Remove all devices ID in our room from all other rooms to prevent

@@ -39,7 +39,6 @@ class ESPHomeLightEntity extends GenericLightDE {
           powerConsumption: powerConsumption,
         );
 
-
   DeviceLastKnownIp? lastKnownIp;
 
   DeviceMdnsName deviceMdnsName;

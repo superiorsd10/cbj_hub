@@ -77,13 +77,9 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
           bool deviceExist = false;
           for (final DeviceEntityAbstract savedDevice
               in companyDevices.values) {
-            if (savedDevice is TuyaSmartJbtA70RgbcwWfEntity) {
-              if (tuyaDevice.id == savedDevice.vendorUniqueId!.getOrCrash()) {
-                deviceExist = true;
-                break;
-              }
-            } else if (savedDevice is TuyaSmartSwitchEntity) {
-              if (tuyaDevice.id == savedDevice.vendorUniqueId!.getOrCrash()) {
+            if (savedDevice is TuyaSmartJbtA70RgbcwWfEntity ||
+                savedDevice is TuyaSmartSwitchEntity) {
+              if (tuyaDevice.id == savedDevice.vendorUniqueId.getOrCrash()) {
                 deviceExist = true;
                 break;
               }
@@ -100,12 +96,15 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
               cloudTuyaOrSmartLifeOrJinvooSmart:
                   cloudTuyaOrSmartLifeOrJinvooSmart,
             );
-            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
+            final DeviceEntityAbstract deviceToAdd =
+                CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
             final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
-                MapEntry(addDevice.uniqueId.getOrCrash(), addDevice);
+                MapEntry(deviceToAdd.uniqueId.getOrCrash(), deviceToAdd);
+
             companyDevices.addEntries([deviceAsEntry]);
 
-            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
             logger.i(
               'New Tuya devices where added named '
               '${addDevice.defaultName.getOrCrash()}',

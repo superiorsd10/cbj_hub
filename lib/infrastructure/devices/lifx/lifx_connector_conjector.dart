@@ -35,7 +35,7 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
           for (DeviceEntityAbstract savedDevice in companyDevices.values) {
             savedDevice = savedDevice as LifxWhiteEntity;
 
-            if (lifxDevice.id == savedDevice.vendorUniqueId!.getOrCrash()) {
+            if (lifxDevice.id == savedDevice.vendorUniqueId.getOrCrash()) {
               deviceExist = true;
               break;
             }
@@ -43,12 +43,15 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
           if (!deviceExist) {
             final DeviceEntityAbstract addDevice =
                 LifxHelpers.addDiscoverdDevice(lifxDevice);
-            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
+            final DeviceEntityAbstract deviceToAdd =
+                CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
             final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
-                MapEntry(addDevice.uniqueId.getOrCrash(), addDevice);
+                MapEntry(deviceToAdd.uniqueId.getOrCrash(), deviceToAdd);
+
             companyDevices.addEntries([deviceAsEntry]);
 
-            CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
             logger.i('New Lifx devices where added');
           }
         }

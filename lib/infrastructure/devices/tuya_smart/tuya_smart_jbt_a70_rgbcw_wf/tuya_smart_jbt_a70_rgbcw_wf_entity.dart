@@ -142,7 +142,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
     lightSwitchState = GenericRgbwLightSwitchState(DeviceActions.on.toString());
     try {
       cloudTuya.turnOn(
-        vendorUniqueId!.getOrCrash(),
+        vendorUniqueId.getOrCrash(),
       );
       return right(unit);
     } catch (e) {
@@ -157,7 +157,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
 
     try {
       cloudTuya.turnOff(
-        vendorUniqueId!.getOrCrash(),
+        vendorUniqueId.getOrCrash(),
       );
       return right(unit);
     } catch (e) {
@@ -171,7 +171,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
 
     try {
       cloudTuya.setBrightness(
-        vendorUniqueId!.getOrCrash(),
+        vendorUniqueId.getOrCrash(),
         lightBrightness.getOrCrash(),
       );
       return right(unit);
@@ -189,7 +189,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
 
     try {
       cloudTuya.setColorTemperature(
-        deviceId: vendorUniqueId!.getOrCrash(),
+        deviceId: vendorUniqueId.getOrCrash(),
         newTemperature: lightColorTemperatureNewValue,
       );
       return right(unit);
@@ -213,7 +213,7 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
 
     try {
       cloudTuya.setColorHsv(
-        deviceId: vendorUniqueId!.getOrCrash(),
+        deviceId: vendorUniqueId.getOrCrash(),
         hue: lightColorHue.getOrCrash(),
         saturation: lightColorSaturation.getOrCrash(),
         brightness: lightBrightness.getOrCrash(),

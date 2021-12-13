@@ -299,7 +299,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       final responses = await Yeelight.discover();
 
       final response = responses.firstWhereOrNull(
-        (element) => element.id.toString() == vendorUniqueId!.getOrCrash(),
+        (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
       );
       if (response == null) {
         logger.v('Device cant be discovered');
@@ -333,7 +333,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       final responses = await Yeelight.discover();
 
       final response = responses.firstWhereOrNull(
-        (element) => element.id.toString() == vendorUniqueId!.getOrCrash(),
+        (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
       );
       if (response == null) {
         logger.v('Device cant be discovered');
@@ -377,7 +377,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         final responses = await Yeelight.discover();
 
         final response = responses.firstWhereOrNull(
-          (element) => element.id.toString() == vendorUniqueId!.getOrCrash(),
+          (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
         if (response == null) {
           logger.v('Device cant be discovered');
@@ -428,7 +428,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         final responses = await Yeelight.discover();
 
         final response = responses.firstWhereOrNull(
-          (element) => element.id.toString() == vendorUniqueId!.getOrCrash(),
+          (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
         if (response == null) {
           logger.v('Device cant be discovered');
@@ -486,7 +486,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         final responses = await Yeelight.discover();
 
         final response = responses.firstWhereOrNull(
-          (element) => element.id.toString() == vendorUniqueId!.getOrCrash(),
+          (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
         if (response == null) {
           logger.v('Device cant be discovered');
