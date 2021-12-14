@@ -2,7 +2,6 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abs
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_jbt_a70_rgbcw_wf/tuya_smart_jbt_a70_rgbcw_wf_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
@@ -35,7 +34,6 @@ class TuyaSmartHelpers {
         compUuid: DeviceCompUuid('34asdfrsd23gggg'),
         stateMassage: DeviceStateMassage('Hello World'),
         powerConsumption: DevicePowerConsumption('0'),
-        tuyaSmartDeviceId: TuyaSmartDeviceId(tuyaSmartDevice.id),
         lightSwitchState:
             GenericRgbwLightSwitchState(tuyaSmartDevice.state.toString()),
         lightColorTemperature: GenericRgbwLightColorTemperature(
@@ -65,7 +63,6 @@ class TuyaSmartHelpers {
         compUuid: DeviceCompUuid('34asdfrsd23gggg'),
         stateMassage: DeviceStateMassage('Hello World'),
         powerConsumption: DevicePowerConsumption('0'),
-        tuyaSmartDeviceId: TuyaSmartDeviceId(tuyaSmartDevice.id),
         switchState: GenericLightSwitchState(tuyaSmartDevice.state.toString()),
         cloudTuya: cloudTuyaOrSmartLifeOrJinvooSmart,
       );

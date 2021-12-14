@@ -24,7 +24,6 @@ class TasmotaLedEntity extends GenericLightDE {
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
     required GenericLightSwitchState lightSwitchState,
-    required this.tasmotaDeviceId,
     required this.tasmotaDeviceTopicName,
   }) : super(
           uniqueId: uniqueId,
@@ -42,7 +41,6 @@ class TasmotaLedEntity extends GenericLightDE {
         );
 
   TasmotaDeviceTopicName tasmotaDeviceTopicName;
-  TasmotaDeviceId tasmotaDeviceId;
 
   /// Please override the following methods
   @override

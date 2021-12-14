@@ -6,13 +6,17 @@ import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart
 import 'package:dartz/dartz.dart';
 
 abstract class ISavedDevicesRepo {
-  String addOrUpdateFromMqtt(dynamic updateFromMqtt);
+  DeviceEntityAbstract? addOrUpdateFromMqtt(dynamic updateFromMqtt);
 
   /// Add new device to saved devices list
-  String addOrUpdateDevice(DeviceEntityAbstract deviceEntity);
+  DeviceEntityAbstract addOrUpdateDevice(DeviceEntityAbstract deviceEntity);
 
   /// Add new room to saved rooms list
-  String addOrUpdateRoom(RoomEntity roomEntity);
+  RoomEntity addOrUpdateRoom(RoomEntity roomEntity);
+
+  /// Check if the device exist in one of the rooms, if not will add it to
+  /// Discovered room
+  void addDeviceToRoomDiscoveredIfNotExist(DeviceEntityAbstract deviceEntity);
 
   Future<Either<LocalDbFailures, Unit>> saveAndActiveRoomToDb({
     required RoomEntity roomEntity,

@@ -5,7 +5,7 @@ homepage: https://cybearjinni.com
 publish_to: none
 
 environment:
-  sdk: ^2.14.3
+  sdk: ^2.15.0
 
 dependencies:
   # Contains utility classes in the style of dart:async to work with asynchronous computations.
@@ -13,11 +13,11 @@ dependencies:
   # Collection of cyclic redundancy check (CRC) routines as Dart converters.
   crclib: ^3.0.0
   # Functional programming thingies, let you use multiple return types
-  dartz: ^0.10.0
+  dartz: ^0.10.1
   # Allow returning more than one type of object
   equatable: ^2.0.3
   # Annotations for freezed
-  freezed_annotation: ^0.15.0
+  freezed_annotation: ^1.1.0
   # For the injection, allow accessing an object from anywhere in an App
   get_it: ^7.2.0
   # High performance, open-source universal RPC framework
@@ -27,9 +27,9 @@ dependencies:
   # Convenient code generator for get_it
   injectable: ^1.5.0
   # Defines the annotations used by json_serializable to create code for JSON serialization and deserialization.
-  json_annotation: ^4.3.0
+  json_annotation: ^4.4.0
   # Dart Build System builders for handling JSON.
-  json_serializable: ^6.0.1
+  json_serializable: ^6.1.1
   # Port of Kotlin's Kotlin Standard library for Dart/Flutter projects
   kt_dart: ^0.10.0
   # Implementation of the LIFX HTTP API
@@ -37,13 +37,13 @@ dependencies:
   # Small, easy to use and extensible logger which prints beautiful logs.
   logger: ^1.1.0
   # A server and browser based MQTT client for Dart.
-  mqtt_client: ^9.6.1
+  mqtt_client: ^9.6.3
   # Service discovery over multicast DNS (mDNS), Bonjour, and Avahi.
   multicast_dns: ^0.3.1
   # Provides runtime support for a Dart implementation of protobufs.
-  protobuf: ^2.0.0
+  protobuf: ^2.0.1
   # Extends the capabilities of Dart Streams and StreamControllers.
-  rxdart: ^0.27.2
+  rxdart: ^0.27.3
   # Simple, fast generation of RFC4122 UUIDs.
   uuid: ^3.0.5
   # Dart library for controlling Yeelight products over LAN.
@@ -55,14 +55,14 @@ dev_dependencies:
 
   # A generator for injectable library
   # Code generator for unions/pattern-matching/copy.
-  freezed: ^0.15.1+1
+  freezed: ^1.1.0
   # Automatically generates Hive TypeAdapters to store any class
   hive_generator: ^1.1.1
   # Injectable is a convenient code generator for get_it.
   injectable_generator: ^1.5.2
   # Collection of lint rules for Dart and Flutter projects
-  lint: ^1.7.2
+  lint: ^1.8.1
   # Library for mocks
   mockito: ^5.0.16
   # A full featured library for writing and running Dart tests across platforms.
-  test: ^1.19.3
+  test: ^1.19.5

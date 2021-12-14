@@ -22,10 +22,10 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     setUpAllFromDb();
   }
 
-  static HashMap<String, DeviceEntityAbstract> allDevices =
+  static HashMap<String, DeviceEntityAbstract> _allDevices =
       HashMap<String, DeviceEntityAbstract>();
 
-  static HashMap<String, RoomEntity> allRooms = HashMap<String, RoomEntity>();
+  static HashMap<String, RoomEntity> _allRooms = HashMap<String, RoomEntity>();
 
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize
@@ -36,68 +36,72 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     await Future.delayed(const Duration(milliseconds: 100));
     getIt<ILocalDbRepository>().getRoomsFromDb().then((value) {
       value.fold((l) => null, (r) {
-        final Iterable<MapEntry<String, RoomEntity>> devicesAsIterableMap =
-            r.map((e) {
-          return MapEntry<String, RoomEntity>(
-            e.uniqueId.getOrCrash(),
-            e,
-          );
+        r.forEach((element) {
+          addOrUpdateRoom(element);
         });
-        allRooms.clear();
-        allRooms.addEntries(devicesAsIterableMap);
       });
     });
 
     getIt<ILocalDbRepository>().getSmartDevicesFromDb().then((value) {
       value.fold((l) => null, (r) {
-        final Iterable<MapEntry<String, DeviceEntityAbstract>>
-            devicesAsIterableMap = r.map((e) {
-          return MapEntry<String, DeviceEntityAbstract>(
-            e.uniqueId.getOrCrash(),
-            e,
-          );
+        r.forEach((element) {
+          addOrUpdateDevice(element);
         });
-        allDevices.clear();
-        allDevices.addEntries(devicesAsIterableMap);
       });
     });
   }
 
   @override
-  String addOrUpdateFromMqtt(dynamic updateFromMqtt) {
+  Future<Map<String, DeviceEntityAbstract>> getAllDevices() async {
+    return _allDevices;
+  }
+
+  @override
+  Future<Map<String, RoomEntity>> getAllRooms() async {
+    return _allRooms;
+  }
+
+  RoomEntity? getRoomDeviceExistIn(DeviceEntityAbstract deviceEntityAbstract) {
+    final String uniqueId = deviceEntityAbstract.uniqueId.getOrCrash();
+    for (final RoomEntity roomEntity in _allRooms.values) {
+      if (roomEntity.roomDevicesId.getOrCrash().contains(uniqueId)) {
+        return roomEntity;
+      }
+    }
+    return null;
+  }
+
+  @override
+  DeviceEntityAbstract? addOrUpdateFromMqtt(dynamic updateFromMqtt) {
     if (updateFromMqtt is DeviceEntityAbstract) {
       return addOrUpdateDevice(updateFromMqtt);
     } else {
       logger.w('Add or update type from MQTT not supported');
     }
-    return 'Fail';
+    return null;
   }
 
   @override
-  String addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {
+  DeviceEntityAbstract addOrUpdateDevice(DeviceEntityAbstract deviceEntity) {
     final DeviceEntityAbstract? deviceExistByIdOfVendor =
         findDeviceIfAlreadyBeenAdded(deviceEntity);
 
     /// Check if device already exist
     if (deviceExistByIdOfVendor != null) {
       deviceEntity.uniqueId = deviceExistByIdOfVendor.uniqueId;
-      allDevices[deviceExistByIdOfVendor.uniqueId.getOrCrash()] = deviceEntity;
-      return 'Device already exist';
+      _allDevices[deviceExistByIdOfVendor.uniqueId.getOrCrash()] = deviceEntity;
+      return deviceEntity;
     }
 
     final String entityId = deviceEntity.getDeviceId();
 
     /// If it is new device
-    allDevices[entityId] = deviceEntity;
+    _allDevices[entityId] = deviceEntity;
 
-    final String discoveredRoomId =
-        RoomUniqueId.discoveredRoomId().getOrCrash();
+    addDeviceToRoomDiscoveredIfNotExist(deviceEntity);
 
-    if (allRooms[discoveredRoomId] == null) {
-      allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
-    }
+    return deviceEntity;
 
-    allRooms[discoveredRoomId]!.addDeviceId(deviceEntity.uniqueId.getOrCrash());
     //
     // ConnectorStreamToMqtt.toMqttController.sink.add(
     //   MapEntry<String, DeviceEntityAbstract>(
@@ -111,37 +115,31 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     //     allRooms[discoveredRoomId]!,
     //   ),
     // );
-
-    return 'Adding new device';
   }
 
-  /// Check if allDevices does not contain the same device already
-  /// Will compare the unique id's that each company sent us
-  DeviceEntityAbstract? findDeviceIfAlreadyBeenAdded(
-      DeviceEntityAbstract deviceEntity) {
-    for (final DeviceEntityAbstract deviceTemp in allDevices.values) {
-      if (deviceEntity.vendorUniqueId.getOrCrash() ==
-          deviceTemp.vendorUniqueId.getOrCrash()) {
-        return deviceTemp;
-      }
+  @override
+  RoomEntity addOrUpdateRoom(RoomEntity roomEntity) {
+    _allRooms.addEntries([
+      MapEntry<String, RoomEntity>(roomEntity.uniqueId.getOrCrash(), roomEntity)
+    ]);
+    return roomEntity;
+  }
+
+  @override
+  void addDeviceToRoomDiscoveredIfNotExist(DeviceEntityAbstract deviceEntity) {
+    final RoomEntity? roomEntity = getRoomDeviceExistIn(deviceEntity);
+    if (roomEntity != null) {
+      return;
     }
-    return null;
-  }
+    final String discoveredRoomId =
+        RoomUniqueId.discoveredRoomId().getOrCrash();
 
-  @override
-  Future<Map<String, DeviceEntityAbstract>> getAllDevices() async {
-    return allDevices;
-  }
+    if (_allRooms[discoveredRoomId] == null) {
+      _allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
+    }
 
-  @override
-  Future<Map<String, RoomEntity>> getAllRooms() async {
-    return allRooms;
-  }
-
-  @override
-  String addOrUpdateRoom(RoomEntity roomEntity) {
-    // TODO: implement addOrUpdateRoom
-    throw UnimplementedError();
+    _allRooms[discoveredRoomId]!
+        .addDeviceId(deviceEntity.uniqueId.getOrCrash());
   }
 
   @override
@@ -152,16 +150,18 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
     await removeSameDevicesFromOtherRooms(roomEntity);
 
-    if (allRooms[roomId] == null) {
-      allRooms.addEntries([MapEntry(roomId, roomEntity)]);
+    if (_allRooms[roomId] == null) {
+      _allRooms.addEntries([MapEntry(roomId, roomEntity)]);
     } else {
-      allRooms[roomId] = roomEntity;
+      _allRooms[roomId] = roomEntity;
     }
     await getIt<ILocalDbRepository>().saveSmartDevices(
-        deviceList: List<DeviceEntityAbstract>.from(allDevices.values));
+      deviceList: List<DeviceEntityAbstract>.from(_allDevices.values),
+    );
 
-    return getIt<ILocalDbRepository>()
-        .saveRoomsToDb(roomsList: List<RoomEntity>.from(allRooms.values));
+    return getIt<ILocalDbRepository>().saveRoomsToDb(
+      roomsList: List<RoomEntity>.from(_allRooms.values),
+    );
   }
 
   /// Remove all devices ID in our room from all other rooms to prevent
@@ -173,7 +173,7 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
       return;
     }
 
-    for (final RoomEntity roomEntityTemp in allRooms.values) {
+    for (final RoomEntity roomEntityTemp in _allRooms.values) {
       if (roomEntityTemp.roomDevicesId.failureOrUnit != right(unit)) {
         continue;
       }
@@ -221,5 +221,19 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
     return getIt<ILocalDbRepository>()
         .saveVendorLoginCredentials(loginEntityAbstract: loginEntity);
+  }
+
+  /// Check if allDevices does not contain the same device already
+  /// Will compare the unique id's that each company sent us
+  DeviceEntityAbstract? findDeviceIfAlreadyBeenAdded(
+    DeviceEntityAbstract deviceEntity,
+  ) {
+    for (final DeviceEntityAbstract deviceTemp in _allDevices.values) {
+      if (deviceEntity.vendorUniqueId.getOrCrash() ==
+          deviceTemp.vendorUniqueId.getOrCrash()) {
+        return deviceTemp;
+      }
+    }
+    return null;
   }
 }

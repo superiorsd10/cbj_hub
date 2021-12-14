@@ -26,7 +26,6 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
     required DevicePowerConsumption powerConsumption,
     required GenericBlindsSwitchState blindsSwitchState,
     required this.switcherMacAddress,
-    required this.switcherDeviceId,
     required this.lastKnownIp,
     this.switcherPort,
   }) : super(
@@ -50,7 +49,7 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
     }
     switcherObject = SwitcherApiObject(
       deviceType: SwitcherDevicesTypes.switcherRunner,
-      deviceId: switcherDeviceId.getOrCrash(),
+      deviceId: vendorUniqueId.getOrCrash(),
       switcherIp: lastKnownIp.getOrCrash(),
       switcherName: defaultName.getOrCrash()!,
       macAddress: switcherMacAddress.getOrCrash(),
@@ -59,8 +58,6 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
     );
   }
 
-  /// Switcher device unique id that came withe the device
-  SwitcherDeviceId switcherDeviceId;
   SwitcherMacAddress switcherMacAddress;
 
   /// Switcher communication port

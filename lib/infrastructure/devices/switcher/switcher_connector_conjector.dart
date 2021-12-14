@@ -38,12 +38,12 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
     for (final DeviceEntityAbstract savedDevice in companyDevices.values) {
       if (savedDevice is SwitcherV2Entity) {
         if (switcherApiObject.deviceId ==
-            savedDevice.switcherDeviceId.getOrCrash()) {
+            savedDevice.vendorUniqueId.getOrCrash()) {
           return;
         }
       } else if (savedDevice is SwitcherRunnerEntity) {
         if (switcherApiObject.deviceId ==
-            savedDevice.switcherDeviceId.getOrCrash()) {
+            savedDevice.vendorUniqueId.getOrCrash()) {
           return;
         }
       } else {
@@ -57,11 +57,15 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
     if (addDevice == null) {
       return;
     }
+
+    final DeviceEntityAbstract deviceToAdd =
+        CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
     final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
-        MapEntry(addDevice.uniqueId.getOrCrash(), addDevice);
+        MapEntry(deviceToAdd.uniqueId.getOrCrash(), deviceToAdd);
+
     companyDevices.addEntries([deviceAsEntry]);
 
-    CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
     logger.v('New switcher devices name:${switcherApiObject.switcherName}');
   }
 
@@ -86,14 +90,26 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
     final DeviceEntityAbstract? device =
         companyDevices[switcherDE.getDeviceId()];
 
-    if (device is SwitcherV2Entity) {
-      device.executeDeviceAction(newEntity: switcherDE);
-    } else if (device is SwitcherRunnerEntity) {
+    // if (device == null) {
+    //   setTheSameDeviceFromAllDevices(switcherDE);
+    //   device =
+    //   companyDevices[switcherDE.getDeviceId()];
+    // }
+
+    if (device != null &&
+        (device is SwitcherV2Entity || device is SwitcherRunnerEntity)) {
       device.executeDeviceAction(newEntity: switcherDE);
     } else {
-      logger.w('Switcher device type does not exist');
+      logger.w('Switcher device type ${device.runtimeType} does not exist');
     }
   }
+
+  // Future<void> setTheSameDeviceFromAllDevices(
+  //   DeviceEntityAbstract switcherDE,
+  // ) async {
+  //   final String deviceVendorUniqueId = switcherDE.vendorUniqueId.getOrCrash();
+  //   for(a)
+  // }
 
   Future<Either<CoreFailure, Unit>> updateDatabase({
     required String pathOfField,

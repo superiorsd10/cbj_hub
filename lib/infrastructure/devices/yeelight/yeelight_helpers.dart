@@ -26,7 +26,6 @@ class YeelightHelpers {
       lastKnownIp: DeviceLastKnownIp(yeelightDevice.address.address),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
-      yeelightDeviceId: YeelightDeviceId(yeelightDevice.id.toString()),
       yeelightPort: YeelightPort(yeelightDevice.port.toString()),
       lightSwitchState:
           GenericRgbwLightSwitchState(yeelightDevice.powered.toString()),
