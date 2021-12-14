@@ -77,13 +77,13 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning Tuya smart light on\n$l'),
-            (r) => logger.d('Light turn on success'),
+            (l) => logger.e('Error turning Tuya light on\n$l'),
+            (r) => logger.d('Tuya light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning Tuya smart light off\n$l'),
-            (r) => logger.d('Light turn off success'),
+            (l) => logger.e('Error turning Tuya light off\n$l'),
+            (r) => logger.d('Tuya light turn off success'),
           );
         } else {
           logger.w(

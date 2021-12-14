@@ -72,13 +72,13 @@ class ChromeCastEntity extends GenericSmartTvDE {
       if (actionToPreform.toString() != smartTvSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnSmartTv()).fold(
-            (l) => logger.e('Error turning chrome cast light on'),
-            (r) => logger.i('Light turn on success'),
+            (l) => logger.e('Error turning ChromeCast light on'),
+            (r) => logger.i('ChromeCast light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffSmartTv()).fold(
-            (l) => logger.e('Error turning chrome cast light off'),
-            (r) => logger.i('Light turn off success'),
+            (l) => logger.e('Error turning ChromeCast light off'),
+            (r) => logger.i('ChromeCast light turn off success'),
           );
         } else {
           logger.e('actionToPreform is not set correctly on Chrome Cast');

@@ -65,12 +65,12 @@ class ESPHomeLightEntity extends GenericLightDE {
       if (actionToPreform == DeviceActions.on) {
         (await turnOnLight()).fold(
           (l) => logger.e('Error turning ESPHome light on'),
-          (r) => logger.i('Light turn on success'),
+          (r) => logger.i('ESPHome light turn on success'),
         );
       } else if (actionToPreform == DeviceActions.off) {
         (await turnOffLight()).fold(
           (l) => logger.e('Error turning ESPHome light off'),
-          (r) => logger.i('Light turn off success'),
+          (r) => logger.i('ESPHome light turn off success'),
         );
       } else {
         logger.e('actionToPreform is not set correctly ESPHome light');

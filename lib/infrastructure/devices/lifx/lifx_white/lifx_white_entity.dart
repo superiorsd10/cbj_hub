@@ -64,13 +64,13 @@ class LifxWhiteEntity extends GenericLightDE {
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning lifx light on'),
-            (r) => logger.i('Light turn on success'),
+            (l) => logger.e('Error turning Lifx light on'),
+            (r) => logger.i('Lifx light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning lifx light off'),
-            (r) => logger.i('Light turn off success'),
+            (l) => logger.e('Error turning Lifx light off'),
+            (r) => logger.i('Lifx light turn off success'),
           );
         } else {
           logger.w('actionToPreform is not set correctly on Lifx White');

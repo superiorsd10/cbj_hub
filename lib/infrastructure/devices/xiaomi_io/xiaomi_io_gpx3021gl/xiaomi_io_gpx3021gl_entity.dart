@@ -94,13 +94,13 @@ class XiaomiIoGpx4021GlEntity extends GenericRgbwLightDE {
       if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning xiaomi_io light on'),
-            (r) => logger.i('Light turn on success'),
+            (l) => logger.e('Error turning XiaomiIO light on'),
+            (r) => logger.i('XiaomiIO light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning xiaomi_io light off'),
-            (r) => logger.i('Light turn off success'),
+            (l) => logger.e('Error turning XiaomiIO light off'),
+            (r) => logger.i('XiaomiIO turn off success'),
           );
         } else {
           logger

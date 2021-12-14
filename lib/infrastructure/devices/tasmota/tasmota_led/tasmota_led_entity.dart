@@ -63,13 +63,13 @@ class TasmotaLedEntity extends GenericLightDE {
 
       if (actionToPreform == DeviceActions.on) {
         (await turnOnLight()).fold(
-          (l) => logger.e('Error turning tasmota light on'),
-          (r) => logger.i('Light turn on success'),
+          (l) => logger.e('Error turning Tasmota light on'),
+          (r) => logger.i('Tasmota light turn on success'),
         );
       } else if (actionToPreform == DeviceActions.off) {
         (await turnOffLight()).fold(
-          (l) => logger.e('Error turning tasmota light off'),
-          (r) => logger.i('Light turn off success'),
+          (l) => logger.e('Error turning Tasmota light off'),
+          (r) => logger.i('Tasmota light turn off success'),
         );
       } else {
         logger.e('actionToPreform is not set correctly on Tasmota Led');

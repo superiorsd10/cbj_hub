@@ -91,12 +91,12 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
             (l) => logger.e('Error turning philips_hue light on'),
-            (r) => logger.i('Light turn on success'),
+            (r) => logger.i('Philips Hue light turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
             (l) => logger.e('Error turning philips_hue light off'),
-            (r) => logger.i('Light turn off success'),
+            (r) => logger.i('Philips Hue light turn off success'),
           );
         } else {
           logger.w('actionToPreform is not set correctly on PhilipsHue E26');

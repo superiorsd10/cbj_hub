@@ -68,12 +68,12 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
             (l) => logger.e('Error turning tuya_smart light on\n$l'),
-            (r) => logger.i('Light turn on success'),
+            (r) => logger.i('Tuya switch turn on success'),
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
             (l) => logger.e('Error turning tuya_smart light off\n$l'),
-            (r) => logger.i('Light turn off success'),
+            (r) => logger.i('Tuya switch turn off success'),
           );
         } else {
           logger.w(
