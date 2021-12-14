@@ -12,7 +12,7 @@ abstract class ISavedDevicesRepo {
   DeviceEntityAbstract addOrUpdateDevice(DeviceEntityAbstract deviceEntity);
 
   /// Add new room to saved rooms list
-  String addOrUpdateRoom(RoomEntity roomEntity);
+  RoomEntity addOrUpdateRoom(RoomEntity roomEntity);
 
   /// Check if the device exist in one of the rooms, if not will add it to
   /// Discovered room

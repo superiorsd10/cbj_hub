@@ -36,15 +36,9 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     await Future.delayed(const Duration(milliseconds: 100));
     getIt<ILocalDbRepository>().getRoomsFromDb().then((value) {
       value.fold((l) => null, (r) {
-        final Iterable<MapEntry<String, RoomEntity>> devicesAsIterableMap =
-            r.map((e) {
-          return MapEntry<String, RoomEntity>(
-            e.uniqueId.getOrCrash(),
-            e,
-          );
+        r.forEach((element) {
+          addOrUpdateRoom(element);
         });
-        _allRooms.clear();
-        _allRooms.addEntries(devicesAsIterableMap);
       });
     });
 
@@ -55,6 +49,26 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
         });
       });
     });
+  }
+
+  @override
+  Future<Map<String, DeviceEntityAbstract>> getAllDevices() async {
+    return _allDevices;
+  }
+
+  @override
+  Future<Map<String, RoomEntity>> getAllRooms() async {
+    return _allRooms;
+  }
+
+  RoomEntity? getRoomDeviceExistIn(DeviceEntityAbstract deviceEntityAbstract) {
+    final String uniqueId = deviceEntityAbstract.uniqueId.getOrCrash();
+    for (final RoomEntity roomEntity in _allRooms.values) {
+      if (roomEntity.roomDevicesId.getOrCrash().contains(uniqueId)) {
+        return roomEntity;
+      }
+    }
+    return null;
   }
 
   @override
@@ -104,6 +118,14 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
   }
 
   @override
+  RoomEntity addOrUpdateRoom(RoomEntity roomEntity) {
+    _allRooms.addEntries([
+      MapEntry<String, RoomEntity>(roomEntity.uniqueId.getOrCrash(), roomEntity)
+    ]);
+    return roomEntity;
+  }
+
+  @override
   void addDeviceToRoomDiscoveredIfNotExist(DeviceEntityAbstract deviceEntity) {
     final RoomEntity? roomEntity = getRoomDeviceExistIn(deviceEntity);
     if (roomEntity != null) {
@@ -118,22 +140,6 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
     _allRooms[discoveredRoomId]!
         .addDeviceId(deviceEntity.uniqueId.getOrCrash());
-  }
-
-  @override
-  Future<Map<String, DeviceEntityAbstract>> getAllDevices() async {
-    return _allDevices;
-  }
-
-  @override
-  Future<Map<String, RoomEntity>> getAllRooms() async {
-    return _allRooms;
-  }
-
-  @override
-  String addOrUpdateRoom(RoomEntity roomEntity) {
-    // TODO: implement addOrUpdateRoom
-    throw UnimplementedError();
   }
 
   @override
@@ -226,16 +232,6 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
       if (deviceEntity.vendorUniqueId.getOrCrash() ==
           deviceTemp.vendorUniqueId.getOrCrash()) {
         return deviceTemp;
-      }
-    }
-    return null;
-  }
-
-  RoomEntity? getRoomDeviceExistIn(DeviceEntityAbstract deviceEntityAbstract) {
-    final String uniqueId = deviceEntityAbstract.uniqueId.getOrCrash();
-    for (final RoomEntity roomEntity in _allRooms.values) {
-      if (roomEntity.roomDevicesId.getOrCrash().contains(uniqueId)) {
-        return roomEntity;
       }
     }
     return null;

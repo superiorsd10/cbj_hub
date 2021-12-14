@@ -149,7 +149,9 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         savedDeviceEntity.lightSwitchState = entityFromTheApp.lightSwitchState;
 
         deviceFromApp = MapEntry(
-            savedDeviceEntity.uniqueId.getOrCrash(), savedDeviceEntity);
+          savedDeviceEntity.uniqueId.getOrCrash(),
+          savedDeviceEntity,
+        );
       } else if (savedDeviceEntity is GenericRgbwLightDE &&
           entityFromTheApp is GenericRgbwLightDE) {
         savedDeviceEntity.lightSwitchState = entityFromTheApp.lightSwitchState;
