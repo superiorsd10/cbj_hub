@@ -513,7 +513,7 @@ class SwitcherApiObject {
   }
 
   static String extractDeviceName(List<int> data) {
-    return utf8.decode(data.sublist(42, 74));
+    return utf8.decode(data.sublist(42, 74)).replaceAll('\u0000', '');
   }
 
   /// Same as Buffer.from(value) in javascript
