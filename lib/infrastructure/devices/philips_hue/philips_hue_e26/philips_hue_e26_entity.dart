@@ -29,12 +29,11 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
     required GenericRgbwLightColorHue lightColorHue,
     required GenericRgbwLightColorSaturation lightColorSaturation,
     required GenericRgbwLightColorValue lightColorValue,
-    required this.philipsHueDeviceId,
+    required GenericRgbwLightColorTemperature lightColorTemperature,
+    required GenericRgbwLightBrightness lightBrightness,
     required this.philipsHuePort,
     this.deviceMdnsName,
     this.lastKnownIp,
-    required GenericRgbwLightColorTemperature lightColorTemperature,
-    required GenericRgbwLightBrightness lightBrightness,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
@@ -58,9 +57,6 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
           lightColorSaturation: lightColorSaturation,
           lightColorValue: lightColorValue,
         );
-
-  /// PhilipsHue device unique id that came withe the device
-  PhilipsHueDeviceId? philipsHueDeviceId;
 
   /// PhilipsHue communication port
   PhilipsHuePort? philipsHuePort;

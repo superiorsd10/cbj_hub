@@ -17,18 +17,3 @@ class TasmotaDeviceTopicName extends ValueObjectCore<String> {
   @override
   final Either<CoreFailure<String>, String> value;
 }
-
-/// Tasmota device unique address that came withe the device
-class TasmotaDeviceId extends ValueObjectCore<String> {
-  factory TasmotaDeviceId(String? input) {
-    assert(input != null);
-    return TasmotaDeviceId._(
-      validateTasmotaDeviceIdNotEmpty(input!),
-    );
-  }
-
-  const TasmotaDeviceId._(this.value);
-
-  @override
-  final Either<CoreFailure<String>, String> value;
-}

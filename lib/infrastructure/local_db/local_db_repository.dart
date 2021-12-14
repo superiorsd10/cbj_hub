@@ -117,8 +117,8 @@ class HiveRepository extends ILocalDbRepository {
       logger.e('Local DB hive error while getting rooms: $e');
     }
 
-    // Gets all rooms from db, if there are non it will create and return
-    // only a discovered room
+    /// Gets all rooms from db, if there are non it will create and return
+    /// only a discovered room
     if (rooms.isEmpty) {
       final RoomEntity discoveredRoom = RoomEntity.empty().copyWith(
         uniqueId: RoomUniqueId.discoveredRoomId(),

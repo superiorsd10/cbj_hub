@@ -33,7 +33,6 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
     required GenericRgbwLightColorHue lightColorHue,
     required GenericRgbwLightColorSaturation lightColorSaturation,
     required GenericRgbwLightColorValue lightColorValue,
-    required this.yeelightDeviceId,
     required this.yeelightPort,
     this.deviceMdnsName,
     this.lastKnownIp,
@@ -57,9 +56,6 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
           lightColorSaturation: lightColorSaturation,
           lightColorValue: lightColorValue,
         );
-
-  /// Yeelight device unique id that came withe the device
-  YeelightDeviceId? yeelightDeviceId;
 
   /// Yeelight communication port
   YeelightPort? yeelightPort;
@@ -303,7 +299,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       final responses = await Yeelight.discover();
 
       final response = responses.firstWhereOrNull(
-        (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
+        (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
       );
       if (response == null) {
         logger.v('Device cant be discovered');
@@ -337,7 +333,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       final responses = await Yeelight.discover();
 
       final response = responses.firstWhereOrNull(
-        (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
+        (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
       );
       if (response == null) {
         logger.v('Device cant be discovered');
@@ -381,7 +377,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         final responses = await Yeelight.discover();
 
         final response = responses.firstWhereOrNull(
-          (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
+          (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
         if (response == null) {
           logger.v('Device cant be discovered');
@@ -432,7 +428,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         final responses = await Yeelight.discover();
 
         final response = responses.firstWhereOrNull(
-          (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
+          (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
         if (response == null) {
           logger.v('Device cant be discovered');
@@ -490,7 +486,7 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
         final responses = await Yeelight.discover();
 
         final response = responses.firstWhereOrNull(
-          (element) => element.id.toString() == yeelightDeviceId!.getOrCrash(),
+          (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
         if (response == null) {
           logger.v('Device cant be discovered');
