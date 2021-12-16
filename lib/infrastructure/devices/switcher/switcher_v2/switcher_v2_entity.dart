@@ -82,30 +82,44 @@ class SwitcherV2Entity extends GenericBoilerDE {
       );
     }
 
-    if (newEntity.boilerSwitchState!.getOrCrash() !=
-        boilerSwitchState!.getOrCrash()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.boilerSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.boilerSwitchState!.getOrCrash() !=
+              boilerSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.boilerSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform.toString() != boilerSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnBoiler()).fold(
-            (l) => logger.e('Error turning boiler on'),
-            (r) => logger.i('Boiler turn on success'),
+            (l) {
+              logger.e('Error turning boiler on');
+              throw l;
+            },
+            (r) {
+              logger.i('Boiler turn on success');
+            },
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffBoiler()).fold(
-            (l) => logger.e('Error turning boiler off'),
-            (r) => logger.i('Boiler turn off success'),
+            (l) {
+              logger.e('Error turning boiler off');
+              throw l;
+            },
+            (r) {
+              logger.i('Boiler turn off success');
+            },
           );
         } else {
           logger.e('actionToPreform is not set correctly on Switcher V2');
         }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override

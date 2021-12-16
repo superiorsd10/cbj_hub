@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_empty_device/generic_empty_entity.dart';
@@ -84,6 +85,9 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       if (event.sendingType == SendingType.deviceType) {
         final DeviceEntityAbstract deviceEntityFromApp =
             DeviceHelper.convertJsonStringToDomain(event.allRemoteCommands);
+
+        deviceEntityFromApp.deviceStateGRPC =
+            DeviceState(DeviceStateGRPC.waitingInComp.toString());
 
         sendToMqtt(deviceEntityFromApp);
       } else if (event.sendingType == SendingType.roomType) {
@@ -201,6 +205,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         );
         return;
       }
+      deviceFromApp.value.deviceStateGRPC =
+          DeviceState(entityFromTheApp.deviceStateGRPC.getOrCrash());
       ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
     } else {
       logger.w(

@@ -97,70 +97,102 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() !=
-        lightSwitchState!.getOrCrash()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.lightSwitchState!.getOrCrash() !=
+              lightSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning Yeelight light on\n$l'),
-            (r) => logger.i('Yeelight light turn on success'),
+            (l) {
+              logger.e('Error turning Yeelight light on\n$l');
+              throw l;
+            },
+            (r) {
+              logger.i('Yeelight light turn on success');
+            },
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning Yeelight light off\n$l'),
-            (r) => logger.i('Yeelight light turn off success'),
+            (l) {
+              logger.e('Error turning Yeelight light off\n$l');
+              throw l;
+            },
+            (r) {
+              logger.i('Yeelight light turn off success');
+            },
           );
         } else {
           logger.i('actionToPreform is not set correctly on Yeelight 1SE');
         }
       }
-    }
 
-    if (newEntity.lightColorTemperature.getOrCrash() !=
-        lightColorTemperature.getOrCrash()) {
-      (await changeColorTemperature(
-        lightColorTemperatureNewValue:
-            newEntity.lightColorTemperature.getOrCrash(),
-      ))
-          .fold(
-        (l) => logger.e('Error changing Yeelight brightness\n$l'),
-        (r) => logger.i('Yeelight changed brightness successfully'),
-      );
-    }
+      if (newEntity.lightColorTemperature.getOrCrash() !=
+              lightColorTemperature.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        (await changeColorTemperature(
+          lightColorTemperatureNewValue:
+              newEntity.lightColorTemperature.getOrCrash(),
+        ))
+            .fold(
+          (l) {
+            logger.e('Error changing Yeelight brightness\n$l');
+            throw l;
+          },
+          (r) {
+            logger.i('Yeelight changed brightness successfully');
+          },
+        );
+      }
 
-    if (newEntity.lightColorAlpha.getOrCrash() !=
-            lightColorAlpha.getOrCrash() ||
-        newEntity.lightColorHue.getOrCrash() != lightColorHue.getOrCrash() ||
-        newEntity.lightColorSaturation.getOrCrash() !=
-            lightColorSaturation.getOrCrash() ||
-        newEntity.lightColorValue.getOrCrash() !=
-            lightColorValue.getOrCrash()) {
-      (await changeColorHsv(
-        lightColorAlphaNewValue: newEntity.lightColorAlpha.getOrCrash(),
-        lightColorHueNewValue: newEntity.lightColorHue.getOrCrash(),
-        lightColorSaturationNewValue:
-            newEntity.lightColorSaturation.getOrCrash(),
-        lightColorValueNewValue: newEntity.lightColorValue.getOrCrash(),
-      ))
-          .fold(
-        (l) => logger.e('Error changing Yeelight light color\n$l'),
-        (r) => logger.i('Yeelight changed color successfully'),
-      );
-    }
+      if (newEntity.lightColorAlpha.getOrCrash() !=
+              lightColorAlpha.getOrCrash() ||
+          newEntity.lightColorHue.getOrCrash() != lightColorHue.getOrCrash() ||
+          newEntity.lightColorSaturation.getOrCrash() !=
+              lightColorSaturation.getOrCrash() ||
+          newEntity.lightColorValue.getOrCrash() !=
+              lightColorValue.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        (await changeColorHsv(
+          lightColorAlphaNewValue: newEntity.lightColorAlpha.getOrCrash(),
+          lightColorHueNewValue: newEntity.lightColorHue.getOrCrash(),
+          lightColorSaturationNewValue:
+              newEntity.lightColorSaturation.getOrCrash(),
+          lightColorValueNewValue: newEntity.lightColorValue.getOrCrash(),
+        ))
+            .fold(
+          (l) {
+            logger.e('Error changing Yeelight light color\n$l');
+            throw l;
+          },
+          (r) {
+            logger.i('Yeelight changed color successfully');
+          },
+        );
+      }
 
-    if (newEntity.lightBrightness.getOrCrash() !=
-        lightBrightness.getOrCrash()) {
-      (await setBrightness(newEntity.lightBrightness.getOrCrash())).fold(
-        (l) => logger.e('Error changing Yeelight brightness\n$l'),
-        (r) => logger.i('Yeelight changed brightness successfully'),
-      );
+      if (newEntity.lightBrightness.getOrCrash() !=
+              lightBrightness.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        (await setBrightness(newEntity.lightBrightness.getOrCrash())).fold(
+          (l) {
+            logger.e('Error changing Yeelight brightness\n$l');
+            throw l;
+          },
+          (r) {
+            logger.i('Yeelight changed brightness successfully');
+          },
+        );
+      }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override
