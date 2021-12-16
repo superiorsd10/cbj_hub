@@ -63,30 +63,38 @@ class ChromeCastEntity extends GenericSmartTvDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() !=
-        smartTvSwitchState!.getOrCrash()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.lightSwitchState!.getOrCrash() !=
+              smartTvSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform.toString() != smartTvSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
-          (await turnOnSmartTv()).fold(
-            (l) => logger.e('Error turning chrome cast light on'),
-            (r) => logger.i('Light turn on success'),
-          );
+          (await turnOnSmartTv()).fold((l) {
+            logger.e('Error turning ChromeCast light on');
+            throw l;
+          }, (r) {
+            logger.i('ChromeCast light turn on success');
+          });
         } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffSmartTv()).fold(
-            (l) => logger.e('Error turning chrome cast light off'),
-            (r) => logger.i('Light turn off success'),
-          );
+          (await turnOffSmartTv()).fold((l) {
+            logger.e('Error turning ChromeCast light off');
+            throw l;
+          }, (r) {
+            logger.i('ChromeCast light turn off success');
+          });
         } else {
           logger.e('actionToPreform is not set correctly on Chrome Cast');
         }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override

@@ -81,30 +81,44 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() !=
-        lightSwitchState!.getOrCrash()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.lightSwitchState!.getOrCrash() !=
+              lightSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning philips_hue light on'),
-            (r) => logger.i('Light turn on success'),
+            (l) {
+              logger.e('Error turning philips_hue light on');
+              throw l;
+            },
+            (r) {
+              logger.i('Philips Hue light turn on success');
+            },
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning philips_hue light off'),
-            (r) => logger.i('Light turn off success'),
+            (l) {
+              logger.e('Error turning philips_hue light off');
+              throw l;
+            },
+            (r) {
+              logger.i('Philips Hue light turn off success');
+            },
           );
         } else {
           logger.w('actionToPreform is not set correctly on PhilipsHue E26');
         }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override

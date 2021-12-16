@@ -85,31 +85,46 @@ class XiaomiIoGpx4021GlEntity extends GenericRgbwLightDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() !=
-        lightSwitchState!.getOrCrash()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.lightSwitchState!.getOrCrash() !=
+              lightSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
-            (l) => logger.e('Error turning xiaomi_io light on'),
-            (r) => logger.i('Light turn on success'),
+            (l) {
+              logger.e('Error turning XiaomiIO light on');
+              throw l;
+            },
+            (r) {
+              logger.i('XiaomiIO light turn on success');
+            },
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
-            (l) => logger.e('Error turning xiaomi_io light off'),
-            (r) => logger.i('Light turn off success'),
+            (l) {
+              logger.e('Error turning XiaomiIO light off');
+              throw l;
+            },
+            (r) {
+              logger.i('XiaomiIO turn off success');
+            },
           );
         } else {
-          logger
-              .e('actionToPreform is not set correctly on XiaomiIo Gpx4021Gl');
+          logger.e(
+            'The action to preform is not set correctly on XiaomiIo Gpx4021Gl',
+          );
         }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override
