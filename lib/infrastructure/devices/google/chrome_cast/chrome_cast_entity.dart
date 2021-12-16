@@ -63,37 +63,38 @@ class ChromeCastEntity extends GenericSmartTvDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() !=
-            smartTvSwitchState!.getOrCrash() ||
-        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.lightSwitchState!.getOrCrash() !=
+              smartTvSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform == DeviceActions.on) {
-        (await turnOnSmartTv()).fold((l) {
-          logger.e('Error turning ChromeCast light on');
-          deviceStateGRPC =
-              DeviceState(DeviceStateGRPC.newStateFailed.toString());
-        }, (r) {
-          logger.i('ChromeCast light turn on success');
-          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-        });
-      } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffSmartTv()).fold((l) {
-          logger.e('Error turning ChromeCast light off');
-          deviceStateGRPC =
-              DeviceState(DeviceStateGRPC.newStateFailed.toString());
-        }, (r) {
-          logger.i('ChromeCast light turn off success');
-          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-        });
-      } else {
-        logger.e('actionToPreform is not set correctly on Chrome Cast');
+        if (actionToPreform == DeviceActions.on) {
+          (await turnOnSmartTv()).fold((l) {
+            logger.e('Error turning ChromeCast light on');
+            throw l;
+          }, (r) {
+            logger.i('ChromeCast light turn on success');
+          });
+        } else if (actionToPreform == DeviceActions.off) {
+          (await turnOffSmartTv()).fold((l) {
+            logger.e('Error turning ChromeCast light off');
+            throw l;
+          }, (r) {
+            logger.i('ChromeCast light turn off success');
+          });
+        } else {
+          logger.e('actionToPreform is not set correctly on Chrome Cast');
+        }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override

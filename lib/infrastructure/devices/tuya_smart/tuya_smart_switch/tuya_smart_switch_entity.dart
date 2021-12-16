@@ -6,6 +6,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_validators.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
@@ -59,54 +60,55 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
       );
     }
 
-    if (newEntity.switchState!.getOrCrash() != switchState!.getOrCrash() ||
-        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.switchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.switchState!.getOrCrash() != switchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.switchState!.getOrCrash(),
+        );
 
-      if (actionToPreform == DeviceActions.on) {
-        (await turnOnLight()).fold(
-          (l) {
-            logger.e('Error turning Tuya switch on\n$l');
-            deviceStateGRPC =
-                DeviceState(DeviceStateGRPC.newStateFailed.toString());
-          },
-          (r) {
-            logger.i('Tuya switch turn on success');
-            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-          },
-        );
-      } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffLight()).fold(
-          (l) {
-            logger.e('Error turning Tuya off\n$l');
-            deviceStateGRPC =
-                DeviceState(DeviceStateGRPC.newStateFailed.toString());
-          },
-          (r) {
-            logger.i('Tuya switch turn off success');
-            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-          },
-        );
-      } else {
-        logger.w(
-          'actionToPreform is not set correctly on TuyaSmart JbtA70RgbcwWfEntity',
-        );
+        if (actionToPreform == DeviceActions.on) {
+          (await turnOnLight()).fold(
+            (l) {
+              logger.e('Error turning Tuya switch on\n$l');
+              throw l;
+            },
+            (r) {
+              logger.i('Tuya switch turn on success');
+            },
+          );
+        } else if (actionToPreform == DeviceActions.off) {
+          (await turnOffLight()).fold(
+            (l) {
+              logger.e('Error turning Tuya off\n$l');
+              throw l;
+            },
+            (r) {
+              logger.i('Tuya switch turn off success');
+            },
+          );
+        } else {
+          logger.w(
+            'actionToPreform is not set correctly on Tuya Switch',
+          );
+        }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     switchState = GenericLightSwitchState(DeviceActions.on.toString());
     try {
-      cloudTuya.turnOn(
+      final String requestResponse = await cloudTuya.turnOn(
         vendorUniqueId.getOrCrash(),
       );
-      return right(unit);
+      return tuyaResponseToCyBearJinniSucessFailure(requestResponse);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
@@ -117,10 +119,10 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     switchState = GenericLightSwitchState(DeviceActions.off.toString());
 
     try {
-      cloudTuya.turnOff(
+      final String requestResponse = await cloudTuya.turnOff(
         vendorUniqueId.getOrCrash(),
       );
-      return right(unit);
+      return tuyaResponseToCyBearJinniSucessFailure(requestResponse);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }

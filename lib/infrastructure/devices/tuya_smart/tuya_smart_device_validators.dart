@@ -18,3 +18,14 @@ Either<CoreFailure<String>, String> validateTuyaSmartPortNotEmpty(
     return left(CoreFailure.empty(failedValue: input));
   }
 }
+
+Either<CoreFailure, Unit> tuyaResponseToCyBearJinniSucessFailure(
+  String tuyaResponse,
+) {
+  if (tuyaResponse == 'SUCCESS') {
+    return right(unit);
+  } else if (tuyaResponse == 'TargetOffline') {
+    return left(const CoreFailure.unableToUpdate());
+  }
+  return left(const CoreFailure.unexpected());
+}

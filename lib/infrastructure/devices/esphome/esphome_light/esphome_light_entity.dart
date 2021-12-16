@@ -56,38 +56,38 @@ class ESPHomeLightEntity extends GenericLightDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() !=
-            lightSwitchState!.getOrCrash() ||
-        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.lightSwitchState!.getOrCrash() !=
+              lightSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform == DeviceActions.on) {
-        (await turnOnLight()).fold((l) {
-          logger.e('Error turning ESPHome light on');
-          deviceStateGRPC =
-              DeviceState(DeviceStateGRPC.newStateFailed.toString());
-        }, (r) {
-          logger.i('ESPHome light turn on success');
-          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-        });
-      } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffLight()).fold((l) {
-          logger.e('Error turning ESPHome light off');
-          deviceStateGRPC =
-              DeviceState(DeviceStateGRPC.newStateFailed.toString());
-        }, (r) {
-          logger.i('ESPHome light turn off success');
-
-          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-        });
-      } else {
-        logger.e('actionToPreform is not set correctly ESPHome light');
+        if (actionToPreform == DeviceActions.on) {
+          (await turnOnLight()).fold((l) {
+            logger.e('Error turning ESPHome light on');
+            throw l;
+          }, (r) {
+            logger.i('ESPHome light turn on success');
+          });
+        } else if (actionToPreform == DeviceActions.off) {
+          (await turnOffLight()).fold((l) {
+            logger.e('Error turning ESPHome light off');
+            throw l;
+          }, (r) {
+            logger.i('ESPHome light turn off success');
+          });
+        } else {
+          logger.e('actionToPreform is not set correctly ESPHome light');
+        }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override

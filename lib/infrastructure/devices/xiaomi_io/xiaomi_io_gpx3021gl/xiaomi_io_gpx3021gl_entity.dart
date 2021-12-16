@@ -85,45 +85,46 @@ class XiaomiIoGpx4021GlEntity extends GenericRgbwLightDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() !=
-            lightSwitchState!.getOrCrash() ||
-        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.lightSwitchState!.getOrCrash() !=
+              lightSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform == DeviceActions.on) {
-        (await turnOnLight()).fold(
-          (l) {
-            logger.e('Error turning XiaomiIO light on');
-            deviceStateGRPC =
-                DeviceState(DeviceStateGRPC.newStateFailed.toString());
-          },
-          (r) {
-            logger.i('XiaomiIO light turn on success');
-            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-          },
-        );
-      } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffLight()).fold(
-          (l) {
-            logger.e('Error turning XiaomiIO light off');
-            deviceStateGRPC =
-                DeviceState(DeviceStateGRPC.newStateFailed.toString());
-          },
-          (r) {
-            logger.i('XiaomiIO turn off success');
-            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-          },
-        );
-      } else {
-        logger.e(
-          'The action to preform is not set correctly on XiaomiIo Gpx4021Gl',
-        );
+        if (actionToPreform == DeviceActions.on) {
+          (await turnOnLight()).fold(
+            (l) {
+              logger.e('Error turning XiaomiIO light on');
+              throw l;
+            },
+            (r) {
+              logger.i('XiaomiIO light turn on success');
+            },
+          );
+        } else if (actionToPreform == DeviceActions.off) {
+          (await turnOffLight()).fold(
+            (l) {
+              logger.e('Error turning XiaomiIO light off');
+              throw l;
+            },
+            (r) {
+              logger.i('XiaomiIO turn off success');
+            },
+          );
+        } else {
+          logger.e(
+            'The action to preform is not set correctly on XiaomiIo Gpx4021Gl',
+          );
+        }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override

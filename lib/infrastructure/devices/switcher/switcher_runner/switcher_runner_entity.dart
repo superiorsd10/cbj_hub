@@ -85,46 +85,45 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
       );
     }
 
-    if (newEntity.blindsSwitchState!.getOrCrash() !=
-            blindsSwitchState!.getOrCrash() ||
-        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.blindsSwitchState!.getOrCrash(),
-      );
+    try {
+      if (newEntity.blindsSwitchState!.getOrCrash() !=
+              blindsSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.blindsSwitchState!.getOrCrash(),
+        );
 
-      if (actionToPreform == DeviceActions.moveUp) {
-        (await moveUpBlinds()).fold((l) {
-          logger.e('Error turning blinds up');
-          deviceStateGRPC =
-              DeviceState(DeviceStateGRPC.newStateFailed.toString());
-        }, (r) {
-          logger.i('Blinds up success');
-          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-        });
-      } else if (actionToPreform == DeviceActions.stop) {
-        (await stopBlinds()).fold((l) {
-          logger.e('Error stopping blinds');
-          deviceStateGRPC =
-              DeviceState(DeviceStateGRPC.newStateFailed.toString());
-        }, (r) {
-          logger.i('Blinds stop success');
-          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-        });
-      } else if (actionToPreform == DeviceActions.moveDown) {
-        (await moveDownBlinds()).fold((l) {
-          logger.e('Error turning blinds down');
-          deviceStateGRPC =
-              DeviceState(DeviceStateGRPC.newStateFailed.toString());
-        }, (r) {
-          logger.i('Blinds down success');
-          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-        });
-      } else {
-        logger.e('actionToPreform is not set correctly on Switcher Runner');
+        if (actionToPreform == DeviceActions.moveUp) {
+          (await moveUpBlinds()).fold((l) {
+            logger.e('Error turning blinds up');
+            throw l;
+          }, (r) {
+            logger.i('Blinds up success');
+          });
+        } else if (actionToPreform == DeviceActions.stop) {
+          (await stopBlinds()).fold((l) {
+            logger.e('Error stopping blinds');
+            throw l;
+          }, (r) {
+            logger.i('Blinds stop success');
+          });
+        } else if (actionToPreform == DeviceActions.moveDown) {
+          (await moveDownBlinds()).fold((l) {
+            logger.e('Error turning blinds down');
+            throw l;
+          }, (r) {
+            logger.i('Blinds down success');
+          });
+        } else {
+          logger.e('actionToPreform is not set correctly on Switcher Runner');
+        }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override

@@ -81,45 +81,44 @@ class PhilipsHueE26Entity extends GenericRgbwLightDE {
       );
     }
 
-    if (newEntity.lightSwitchState!.getOrCrash() !=
-            lightSwitchState!.getOrCrash() ||
-        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-      final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
-        newEntity.lightSwitchState!.getOrCrash(),
-      );
-
-      if (actionToPreform == DeviceActions.on) {
-        (await turnOnLight()).fold(
-          (l) {
-            logger.e('Error turning philips_hue light on');
-            deviceStateGRPC =
-                DeviceState(DeviceStateGRPC.newStateFailed.toString());
-          },
-          (r) {
-            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
-
-            logger.i('Philips Hue light turn on success');
-          },
+    try {
+      if (newEntity.lightSwitchState!.getOrCrash() !=
+              lightSwitchState!.getOrCrash() ||
+          deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
+        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+          newEntity.lightSwitchState!.getOrCrash(),
         );
-      } else if (actionToPreform == DeviceActions.off) {
-        (await turnOffLight()).fold(
-          (l) {
-            logger.e('Error turning philips_hue light off');
-            deviceStateGRPC =
-                DeviceState(DeviceStateGRPC.newStateFailed.toString());
-          },
-          (r) {
-            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
 
-            logger.i('Philips Hue light turn off success');
-          },
-        );
-      } else {
-        logger.w('actionToPreform is not set correctly on PhilipsHue E26');
+        if (actionToPreform == DeviceActions.on) {
+          (await turnOnLight()).fold(
+            (l) {
+              logger.e('Error turning philips_hue light on');
+              throw l;
+            },
+            (r) {
+              logger.i('Philips Hue light turn on success');
+            },
+          );
+        } else if (actionToPreform == DeviceActions.off) {
+          (await turnOffLight()).fold(
+            (l) {
+              logger.e('Error turning philips_hue light off');
+              throw l;
+            },
+            (r) {
+              logger.i('Philips Hue light turn off success');
+            },
+          );
+        } else {
+          logger.w('actionToPreform is not set correctly on PhilipsHue E26');
+        }
       }
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+      return right(unit);
+    } catch (e) {
+      deviceStateGRPC = DeviceState(DeviceStateGRPC.newStateFailed.toString());
+      return left(const CoreFailure.unexpected());
     }
-
-    return right(unit);
   }
 
   @override
