@@ -56,20 +56,35 @@ class TasmotaLedEntity extends GenericLightDE {
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
-        lightSwitchState!.getOrCrash()) {
+            lightSwitchState!.getOrCrash() ||
+        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
         newEntity.lightSwitchState!.getOrCrash(),
       );
 
       if (actionToPreform == DeviceActions.on) {
         (await turnOnLight()).fold(
-          (l) => logger.e('Error turning Tasmota light on'),
-          (r) => logger.i('Tasmota light turn on success'),
+          (l) {
+            logger.e('Error turning Tasmota light on');
+            deviceStateGRPC =
+                DeviceState(DeviceStateGRPC.newStateFailed.toString());
+          },
+          (r) {
+            logger.i('Tasmota light turn on success');
+            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+          },
         );
       } else if (actionToPreform == DeviceActions.off) {
         (await turnOffLight()).fold(
-          (l) => logger.e('Error turning Tasmota light off'),
-          (r) => logger.i('Tasmota light turn off success'),
+          (l) {
+            logger.e('Error turning Tasmota light off');
+            deviceStateGRPC =
+                DeviceState(DeviceStateGRPC.newStateFailed.toString());
+          },
+          (r) {
+            logger.i('Tasmota light turn off success');
+            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+          },
         );
       } else {
         logger.e('actionToPreform is not set correctly on Tasmota Led');

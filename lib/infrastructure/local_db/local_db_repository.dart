@@ -1,5 +1,6 @@
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
@@ -147,7 +148,11 @@ class HiveRepository extends ILocalDbRepository {
         final DeviceEntityAbstract deviceEntity =
             DeviceHelper.convertJsonStringToDomain(deviceHive.deviceStringJson);
 
-        devices.add(deviceEntity);
+        devices.add(
+          deviceEntity
+            ..deviceStateGRPC =
+                DeviceState(DeviceStateGRPC.waitingInComp.toString()),
+        );
       }
       return right(devices);
     } catch (e) {

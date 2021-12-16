@@ -59,27 +59,40 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
       );
     }
 
-    if (newEntity.switchState!.getOrCrash() != switchState!.getOrCrash()) {
+    if (newEntity.switchState!.getOrCrash() != switchState!.getOrCrash() ||
+        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
         newEntity.switchState!.getOrCrash(),
       );
 
-      if (actionToPreform.toString() != switchState!.getOrCrash()) {
-        if (actionToPreform == DeviceActions.on) {
-          (await turnOnLight()).fold(
-            (l) => logger.e('Error turning tuya_smart light on\n$l'),
-            (r) => logger.i('Tuya switch turn on success'),
-          );
-        } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffLight()).fold(
-            (l) => logger.e('Error turning tuya_smart light off\n$l'),
-            (r) => logger.i('Tuya switch turn off success'),
-          );
-        } else {
-          logger.w(
-            'actionToPreform is not set correctly on TuyaSmart JbtA70RgbcwWfEntity',
-          );
-        }
+      if (actionToPreform == DeviceActions.on) {
+        (await turnOnLight()).fold(
+          (l) {
+            logger.e('Error turning Tuya switch on\n$l');
+            deviceStateGRPC =
+                DeviceState(DeviceStateGRPC.newStateFailed.toString());
+          },
+          (r) {
+            logger.i('Tuya switch turn on success');
+            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+          },
+        );
+      } else if (actionToPreform == DeviceActions.off) {
+        (await turnOffLight()).fold(
+          (l) {
+            logger.e('Error turning Tuya off\n$l');
+            deviceStateGRPC =
+                DeviceState(DeviceStateGRPC.newStateFailed.toString());
+          },
+          (r) {
+            logger.i('Tuya switch turn off success');
+            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+          },
+        );
+      } else {
+        logger.w(
+          'actionToPreform is not set correctly on TuyaSmart JbtA70RgbcwWfEntity',
+        );
       }
     }
 

@@ -69,40 +69,61 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
-        lightSwitchState!.getOrCrash()) {
+            lightSwitchState!.getOrCrash() ||
+        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
         newEntity.lightSwitchState!.getOrCrash(),
       );
 
-      if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
-        if (actionToPreform == DeviceActions.on) {
-          (await turnOnLight()).fold(
-            (l) => logger.e('Error turning Tuya light on\n$l'),
-            (r) => logger.d('Tuya light turn on success'),
-          );
-        } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffLight()).fold(
-            (l) => logger.e('Error turning Tuya light off\n$l'),
-            (r) => logger.d('Tuya light turn off success'),
-          );
-        } else {
-          logger.w(
-            'actionToPreform is not set correctly on TuyaSmart'
-            ' JbtA70RgbcwWfEntity',
-          );
-        }
+      if (actionToPreform == DeviceActions.on) {
+        (await turnOnLight()).fold(
+          (l) {
+            logger.e('Error turning Tuya light on\n$l');
+            deviceStateGRPC =
+                DeviceState(DeviceStateGRPC.newStateFailed.toString());
+          },
+          (r) {
+            logger.d('Tuya light turn on success');
+            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+          },
+        );
+      } else if (actionToPreform == DeviceActions.off) {
+        (await turnOffLight()).fold(
+          (l) {
+            logger.e('Error turning Tuya light off\n$l');
+            deviceStateGRPC =
+                DeviceState(DeviceStateGRPC.newStateFailed.toString());
+          },
+          (r) {
+            logger.d('Tuya light turn off success');
+            deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+          },
+        );
+      } else {
+        logger.w(
+          'actionToPreform is not set correctly on TuyaSmart'
+          ' JbtA70RgbcwWfEntity',
+        );
       }
     }
 
     if (newEntity.lightColorTemperature.getOrCrash() !=
-        lightColorTemperature.getOrCrash()) {
+            lightColorTemperature.getOrCrash() ||
+        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
       (await changeColorTemperature(
         lightColorTemperatureNewValue:
             newEntity.lightColorTemperature.getOrCrash(),
       ))
           .fold(
-        (l) => logger.e('Error changing Tuya temperature\n$l'),
-        (r) => logger.i('Tuya changed temperature successfully'),
+        (l) {
+          logger.e('Error changing Tuya temperature\n$l');
+          deviceStateGRPC =
+              DeviceState(DeviceStateGRPC.newStateFailed.toString());
+        },
+        (r) {
+          logger.i('Tuya changed temperature successfully');
+          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+        },
       );
     }
 
@@ -112,7 +133,8 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
         newEntity.lightColorSaturation.getOrCrash() !=
             lightColorSaturation.getOrCrash() ||
         newEntity.lightColorValue.getOrCrash() !=
-            lightColorValue.getOrCrash()) {
+            lightColorValue.getOrCrash() ||
+        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
       (await changeColorHsv(
         lightColorAlphaNewValue: newEntity.lightColorAlpha.getOrCrash(),
         lightColorHueNewValue: newEntity.lightColorHue.getOrCrash(),
@@ -121,16 +143,30 @@ class TuyaSmartJbtA70RgbcwWfEntity extends GenericRgbwLightDE {
         lightColorValueNewValue: newEntity.lightColorValue.getOrCrash(),
       ))
           .fold(
-        (l) => logger.e('Error changing Tuya light color\n$l'),
-        (r) => logger.i('Light changed color successfully'),
+        (l) {
+          logger.e('Error changing Tuya light color\n$l');
+          deviceStateGRPC =
+              DeviceState(DeviceStateGRPC.newStateFailed.toString());
+        },
+        (r) {
+          logger.i('Light changed color successfully');
+          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+        },
       );
     }
 
     if (newEntity.lightBrightness.getOrCrash() !=
         lightBrightness.getOrCrash()) {
       (await setBrightness(newEntity.lightBrightness.getOrCrash())).fold(
-        (l) => logger.e('Error changing Tuya brightness\n$l'),
-        (r) => logger.i('Tuya changed brightness successfully'),
+        (l) {
+          logger.e('Error changing Tuya brightness\n$l');
+          deviceStateGRPC =
+              DeviceState(DeviceStateGRPC.newStateFailed.toString());
+        },
+        (r) {
+          logger.i('Tuya changed brightness successfully');
+          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+        },
       );
     }
 

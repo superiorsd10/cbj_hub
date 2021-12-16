@@ -64,25 +64,32 @@ class ChromeCastEntity extends GenericSmartTvDE {
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
-        smartTvSwitchState!.getOrCrash()) {
+            smartTvSwitchState!.getOrCrash() ||
+        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
         newEntity.lightSwitchState!.getOrCrash(),
       );
 
-      if (actionToPreform.toString() != smartTvSwitchState!.getOrCrash()) {
-        if (actionToPreform == DeviceActions.on) {
-          (await turnOnSmartTv()).fold(
-            (l) => logger.e('Error turning ChromeCast light on'),
-            (r) => logger.i('ChromeCast light turn on success'),
-          );
-        } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffSmartTv()).fold(
-            (l) => logger.e('Error turning ChromeCast light off'),
-            (r) => logger.i('ChromeCast light turn off success'),
-          );
-        } else {
-          logger.e('actionToPreform is not set correctly on Chrome Cast');
-        }
+      if (actionToPreform == DeviceActions.on) {
+        (await turnOnSmartTv()).fold((l) {
+          logger.e('Error turning ChromeCast light on');
+          deviceStateGRPC =
+              DeviceState(DeviceStateGRPC.newStateFailed.toString());
+        }, (r) {
+          logger.i('ChromeCast light turn on success');
+          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+        });
+      } else if (actionToPreform == DeviceActions.off) {
+        (await turnOffSmartTv()).fold((l) {
+          logger.e('Error turning ChromeCast light off');
+          deviceStateGRPC =
+              DeviceState(DeviceStateGRPC.newStateFailed.toString());
+        }, (r) {
+          logger.i('ChromeCast light turn off success');
+          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+        });
+      } else {
+        logger.e('actionToPreform is not set correctly on Chrome Cast');
       }
     }
 

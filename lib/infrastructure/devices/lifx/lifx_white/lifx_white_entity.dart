@@ -56,25 +56,32 @@ class LifxWhiteEntity extends GenericLightDE {
     }
 
     if (newEntity.lightSwitchState!.getOrCrash() !=
-        lightSwitchState!.getOrCrash()) {
+            lightSwitchState!.getOrCrash() ||
+        deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
       final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
         newEntity.lightSwitchState!.getOrCrash(),
       );
 
-      if (actionToPreform.toString() != lightSwitchState!.getOrCrash()) {
-        if (actionToPreform == DeviceActions.on) {
-          (await turnOnLight()).fold(
-            (l) => logger.e('Error turning Lifx light on'),
-            (r) => logger.i('Lifx light turn on success'),
-          );
-        } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffLight()).fold(
-            (l) => logger.e('Error turning Lifx light off'),
-            (r) => logger.i('Lifx light turn off success'),
-          );
-        } else {
-          logger.w('actionToPreform is not set correctly on Lifx White');
-        }
+      if (actionToPreform == DeviceActions.on) {
+        (await turnOnLight()).fold((l) {
+          logger.e('Error turning Lifx light on');
+          deviceStateGRPC =
+              DeviceState(DeviceStateGRPC.newStateFailed.toString());
+        }, (r) {
+          logger.i('Lifx light turn on success');
+          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+        });
+      } else if (actionToPreform == DeviceActions.off) {
+        (await turnOffLight()).fold((l) {
+          logger.e('Error turning Lifx light off');
+          deviceStateGRPC =
+              DeviceState(DeviceStateGRPC.newStateFailed.toString());
+        }, (r) {
+          logger.i('Lifx light turn off success');
+          deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
+        });
+      } else {
+        logger.w('actionToPreform is not set correctly on Lifx White');
       }
     }
 
