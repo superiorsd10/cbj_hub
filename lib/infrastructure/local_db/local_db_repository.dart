@@ -205,14 +205,13 @@ class HiveRepository extends ILocalDbRepository {
         final String tuyaCountryCode = firstTuyaVendorFromDB.tuyaCountryCode;
         final String tuyaBizType = firstTuyaVendorFromDB.tuyaBizType;
         final String tuyaRegion = firstTuyaVendorFromDB.tuyaRegion;
+        final String loginVendor = firstTuyaVendorFromDB.loginVendor;
 
         await tuyaVendorCredentialsBox.close();
 
         final GenericTuyaLoginDE genericTuyaLoginDE = GenericTuyaLoginDE(
           senderUniqueId: CoreLoginSenderId.fromUniqueString(senderUniqueId),
-          loginVendor: CoreLoginVendor(
-            VendorsAndServices.tuyaSmart.name,
-          ),
+          loginVendor: CoreLoginVendor(loginVendor),
           tuyaUserName: GenericTuyaLoginUserName(tuyaUserName),
           tuyaUserPassword: GenericTuyaLoginUserPassword(tuyaUserPassword),
           tuyaCountryCode: GenericTuyaLoginCountryCode(tuyaCountryCode),
@@ -422,7 +421,8 @@ class HiveRepository extends ILocalDbRepository {
             ..tuyaUserPassword = tuyaLoginDE.tuyaUserPassword.getOrCrash()
             ..tuyaCountryCode = tuyaLoginDE.tuyaCountryCode.getOrCrash()
             ..tuyaBizType = tuyaLoginDE.tuyaBizType.getOrCrash()
-            ..tuyaRegion = tuyaLoginDE.tuyaRegion.getOrCrash();
+            ..tuyaRegion = tuyaLoginDE.tuyaRegion.getOrCrash()
+            ..loginVendor = tuyaLoginDE.loginVendor.getOrCrash();
 
       if (tuyaVendorCredentialsBox.isNotEmpty) {
         await tuyaVendorCredentialsBox.putAt(0, tuyaVendorCredentialsModel);

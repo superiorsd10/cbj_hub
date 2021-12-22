@@ -67,12 +67,14 @@ class CloudTuya {
 
     if (responseBody.contains('error')) {
       if (responseBody.contains('you cannot auth exceed once in 60 seconds')) {
-        logger.w('Tuya login warning: $responseBody\nWill try again in 60s');
+        logger.w(
+          'Tuya ($bizType) login warning: $responseBody\nWill try again in 60s',
+        );
         await Future.delayed(const Duration(seconds: 60));
         // Do not remove the await
         return await login();
       }
-      logger.e('Tuya login error: $responseBody');
+      logger.e('Tuya ($bizType) login error: $responseBody');
 
       return false;
     }
