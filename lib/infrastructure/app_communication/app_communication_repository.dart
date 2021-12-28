@@ -10,6 +10,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boi
 import 'package:cbj_hub/domain/generic_devices/generic_empty_device/generic_empty_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic_switch_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
@@ -193,6 +194,14 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           entityFromTheApp is GenericBlindsDE) {
         savedDeviceEntity.blindsSwitchState =
             entityFromTheApp.blindsSwitchState;
+
+        deviceFromApp = MapEntry(
+          savedDeviceEntity.uniqueId.getOrCrash(),
+          savedDeviceEntity,
+        );
+      } else if (savedDeviceEntity is GenericSmartPlugDE &&
+          entityFromTheApp is GenericSmartPlugDE) {
+        savedDeviceEntity.smartPlugState = entityFromTheApp.smartPlugState;
 
         deviceFromApp = MapEntry(
           savedDeviceEntity.uniqueId.getOrCrash(),

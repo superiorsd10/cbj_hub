@@ -1,18 +1,18 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic_switch_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
-import 'package:cbj_hub/infrastructure/generic_devices/generic_switch_device/generic_switch_device_dtos.dart';
+import 'package:cbj_hub/infrastructure/generic_devices/generic_smart_plug_device/generic_smart_plug_device_dtos.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
-/// Abstract smart GenericSwitch that exist inside a computer, the
-/// implementations will be actual GenericSwitch like blinds switchs and more
-class GenericSwitchDE extends DeviceEntityAbstract {
-  /// All public field of GenericSwitch entity
-  GenericSwitchDE({
+/// Abstract smart GenericSmartPlug that exist inside a computer, the
+/// implementations will be actual GenericSmartPlug like blinds smartPlugs and more
+class GenericSmartPlugDE extends DeviceEntityAbstract {
+  /// All public field of GenericSmartPlug entity
+  GenericSmartPlugDE({
     required CoreUniqueId uniqueId,
     required VendorUniqueId vendorUniqueId,
     required DeviceVendor deviceVendor,
@@ -24,12 +24,12 @@ class GenericSwitchDE extends DeviceEntityAbstract {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     DevicePowerConsumption? powerConsumption,
-    required this.switchState,
+    required this.smartPlugState,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          deviceTypes: DeviceType(DeviceTypes.switch_.toString()),
+          deviceTypes: DeviceType(DeviceTypes.smartPlug.toString()),
           deviceVendor: deviceVendor,
           deviceStateGRPC: deviceStateGRPC,
           compUuid: compUuid,
@@ -39,8 +39,8 @@ class GenericSwitchDE extends DeviceEntityAbstract {
           stateMassage: stateMassage,
         );
 
-  /// Empty instance of GenericSwitchEntity
-  factory GenericSwitchDE.empty() => GenericSwitchDE(
+  /// Empty instance of GenericSmartPlugEntity
+  factory GenericSmartPlugDE.empty() => GenericSmartPlugDE(
         uniqueId: CoreUniqueId(),
         vendorUniqueId: VendorUniqueId(),
         defaultName: DeviceDefaultName(''),
@@ -52,11 +52,11 @@ class GenericSwitchDE extends DeviceEntityAbstract {
         deviceVendor: DeviceVendor(''),
         compUuid: DeviceCompUuid(''),
         powerConsumption: DevicePowerConsumption(''),
-        switchState: GenericSwitchSwitchState(DeviceActions.off.toString()),
+        smartPlugState: GenericSmartPlugState(DeviceActions.off.toString()),
       );
 
-  /// State of the switch on/off
-  GenericSwitchSwitchState? switchState;
+  /// State of the smartPlug on/off
+  GenericSmartPlugState? smartPlugState;
 
   //
   // /// Will return failure if any of the fields failed or return unit if fields
@@ -86,8 +86,8 @@ class GenericSwitchDE extends DeviceEntityAbstract {
 
   @override
   DeviceEntityDtoAbstract toInfrastructure() {
-    return GenericSwitchDeviceDtos(
-      deviceDtoClass: (GenericSwitchDeviceDtos).toString(),
+    return GenericSmartPlugDeviceDtos(
+      deviceDtoClass: (GenericSmartPlugDeviceDtos).toString(),
       id: uniqueId.getOrCrash(),
       vendorUniqueId: vendorUniqueId.getOrCrash(),
       defaultName: defaultName.getOrCrash(),
@@ -98,7 +98,7 @@ class GenericSwitchDE extends DeviceEntityAbstract {
       senderId: senderId.getOrCrash(),
       deviceTypes: deviceTypes.getOrCrash(),
       compUuid: compUuid.getOrCrash(),
-      switchState: switchState!.getOrCrash(),
+      smartPlugState: smartPlugState!.getOrCrash(),
       deviceVendor: deviceVendor.getOrCrash(),
       // serverTimeStamp: FieldValue.serverTimestamp(),
     );
@@ -118,7 +118,7 @@ class GenericSwitchDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> turnOnSwitch() async {
+  Future<Either<CoreFailure, Unit>> turnOnSmartPlug() async {
     logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
@@ -128,7 +128,7 @@ class GenericSwitchDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
-  Future<Either<CoreFailure, Unit>> turnOffSwitch() async {
+  Future<Either<CoreFailure, Unit>> turnOffSmartPlug() async {
     logger.w('Please override this method in the non generic implementation');
     return left(
       const CoreFailure.actionExcecuter(
