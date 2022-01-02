@@ -115,7 +115,7 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
         }
         await Future.delayed(const Duration(minutes: 3));
       } catch (e) {
-        logger.e('Error discover in Tuya $e');
+        logger.e('Error discover in Tuya\n$e');
         await Future.delayed(const Duration(minutes: 1));
       }
     }

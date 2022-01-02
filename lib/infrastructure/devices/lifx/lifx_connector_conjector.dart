@@ -57,7 +57,7 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
         }
         await Future.delayed(const Duration(minutes: 3));
       } catch (e) {
-        logger.e('Error discover in Lifx $e');
+        logger.e('Error discover in Lifx\n$e');
         await Future.delayed(const Duration(minutes: 1));
       }
     }
