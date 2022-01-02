@@ -37,7 +37,7 @@ dependencies:
   # Small, easy to use and extensible logger which prints beautiful logs.
   logger: ^1.1.0
   # A server and browser based MQTT client for Dart.
-  mqtt_client: ^9.6.3
+  mqtt_client: ^9.6.5
   # Service discovery over multicast DNS (mDNS), Bonjour, and Avahi.
   multicast_dns: ^0.3.1
   # Provides runtime support for a Dart implementation of protobufs.
