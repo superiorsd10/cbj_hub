@@ -175,12 +175,17 @@ class CloudTuya {
     required dynamic body,
     Encoding? encoding,
   }) async {
-    final Response response = await post(
-      url,
-      headers: headers,
-      body: body,
-      // encoding: encoding,
-    );
+    Response response;
+    try {
+      response = await post(
+        url,
+        headers: headers,
+        body: body,
+        // encoding: encoding,
+      );
+    } catch (e) {
+      response = Response('error', 404);
+    }
 
     return response;
   }
