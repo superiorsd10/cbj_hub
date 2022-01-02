@@ -28,6 +28,7 @@ import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -54,14 +55,40 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
   @override
   Future<void> startRemotePipesConnection(String remotePipesDomain) async {
+    const int remotePipesPort = 50056;
     RemotePipesClient.createStreamWithHub(
       remotePipesDomain,
       // 'homeservice-one-service.default.g.com',
-      50056,
+      remotePipesPort,
     );
+    await Future.delayed(const Duration(minutes: 1));
+    RemotePipesClient.createStreamWithHub(
+      remotePipesDomain,
+      // 'homeservice-one-service.default.g.com',
+      remotePipesPort,
+    );
+
     // Here for easy find and local testing
     // RemotePipesClient.createStreamWithHub('127.0.0.1', 50056);
-    logger.i('Creating connection with remote pipes');
+    logger.i(
+      'Creating connection with remote pipes to the domain $remotePipesDomain'
+      ' on port $remotePipesPort',
+    );
+  }
+
+  @override
+  Future<void> startRemotePipesWhenThereIsConnectionToWww(
+    String remotePipesDomain,
+  ) async {
+    while (true) {
+      final bool result = await InternetConnectionChecker().hasConnection;
+      if (result) {
+        break;
+      }
+      await Future.delayed(const Duration(minutes: 2));
+    }
+    logger.i('Internet detected, will try to reconnect to Remote Pipes');
+    startRemotePipesConnection(remotePipesDomain);
   }
 
   @override
@@ -79,7 +106,11 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   }
 
   @override
-  Future<void> getFromApp(Stream<ClientStatusRequests> request) async {
+  Future<void> getFromApp({
+    required Stream<ClientStatusRequests> request,
+    required String requestUrl,
+    required bool isRemotePipes,
+  }) async {
     request.listen((event) async {
       logger.i('Got From App');
 
@@ -126,8 +157,47 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     }).onError((error) {
       if (error is GrpcError && error.code == 1) {
         logger.v('Client have disconnected');
+      } else if (error is GrpcError && error.code == 14) {
+        final String errorMessage = error.message!;
+
+        if (error.message == null || !isRemotePipes) {
+          logger.e('Client stream error without message\n$error');
+        } else if (!errorMessage.contains('errorCode: 0')) {
+          logger.i('Closing last stream\n$error');
+        }
+
+        /// Request reached the internet but the didn't arrive to remote pipes
+        /// service
+        else if (!errorMessage.contains('errno = -2')) {
+          logger.e(
+            'Remote Pipes service does not exist, check URL\n'
+            '$error',
+          );
+        }
+
+        /// Request Didn't reached the internet
+        else if (!errorMessage.contains('errno = -3')) {
+          logger.w(
+            'Device does not have network\n'
+            '$error',
+          );
+          startRemotePipesWhenThereIsConnectionToWww(requestUrl);
+        } else {
+          logger.e(
+            'Un none errno number\n'
+            '$error',
+          );
+        }
       } else {
-        logger.e('Client stream error: $error');
+        if (error is GrpcError &&
+            isRemotePipes &&
+            error.message != null &&
+            !error.message!.contains('errorCode: 0')) {
+          logger.i('Client stream got terminated to create new one\n$error');
+          startRemotePipesWhenThereIsConnectionToWww(requestUrl);
+        } else {
+          logger.e('Client stream error\n$error');
+        }
       }
     });
   }

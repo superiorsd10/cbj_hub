@@ -226,7 +226,9 @@ class HiveRepository extends ILocalDbRepository {
         return right(genericTuyaLoginDE);
       }
       await tuyaVendorCredentialsBox.close();
-      logger.i("Didn't find any Tuya in the local DB");
+      logger.i(
+        "Didn't find any Tuya in the local DB for box name $vendorBoxName",
+      );
     } catch (e) {
       logger.e('Local DB hive error while getting Tuya vendor: $e');
     }

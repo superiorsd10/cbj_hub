@@ -26,7 +26,11 @@ class HubAppServer extends CbjHubServiceBase {
     try {
       logger.v('Got new Client');
 
-      getIt<IAppCommunicationRepository>().getFromApp(request);
+      getIt<IAppCommunicationRepository>().getFromApp(
+        request: request,
+        requestUrl: 'Error, Hub does not suppose to have request URL',
+        isRemotePipes: false,
+      );
 
       yield* HubRequestsToApp.streamRequestsToApp
           .map((dynamic deviceEntityDto) {
