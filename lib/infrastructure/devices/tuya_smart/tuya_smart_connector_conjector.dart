@@ -6,6 +6,7 @@ import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_helpers.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_jbt_a70_rgbcw_wf/tuya_smart_jbt_a70_rgbcw_wf_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_plug/tuya_smart_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_switch/tuya_smart_switch_entity.dart';
@@ -78,7 +79,8 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
           for (final DeviceEntityAbstract savedDevice
               in companyDevices.values) {
             if (savedDevice is TuyaSmartJbtA70RgbcwWfEntity ||
-                savedDevice is TuyaSmartSwitchEntity) {
+                savedDevice is TuyaSmartSwitchEntity ||
+                savedDevice is TuyaSmartPlugEntity) {
               if (tuyaDevice.id == savedDevice.vendorUniqueId.getOrCrash()) {
                 deviceExist = true;
                 break;
@@ -113,7 +115,7 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
         }
         await Future.delayed(const Duration(minutes: 3));
       } catch (e) {
-        logger.e('Error discover in Tuya $e');
+        logger.e('Error discover in Tuya\n$e');
         await Future.delayed(const Duration(minutes: 1));
       }
     }
@@ -143,6 +145,8 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
     if (device is TuyaSmartJbtA70RgbcwWfEntity) {
       device.executeDeviceAction(newEntity: tuyaSmartDE);
     } else if (device is TuyaSmartSwitchEntity) {
+      device.executeDeviceAction(newEntity: tuyaSmartDE);
+    } else if (device is TuyaSmartPlugEntity) {
       device.executeDeviceAction(newEntity: tuyaSmartDE);
     } else {
       logger.w('TuyaSmart device type does not exist');

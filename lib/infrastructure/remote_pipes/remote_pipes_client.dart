@@ -56,14 +56,20 @@ class RemotePipesClient {
               sendingType: SendingType.undefinedType,
             );
           }
-        }).handleError((error) => logger.e('Stream have error $error')),
+        }).handleError((error) {
+          logger.e('Stream have error $error');
+        }),
       );
 
       /// All responses from the app->remote pipes going int the hub
-      getIt<IAppCommunicationRepository>().getFromApp(response);
+      getIt<IAppCommunicationRepository>().getFromApp(
+        request: response,
+        requestUrl: addressToHub,
+        isRemotePipes: true,
+      );
     } catch (e) {
       logger.e('Caught error: $e');
-      await channel?.shutdown();
+      await channel?.terminate();
     }
   }
 
@@ -84,7 +90,7 @@ class RemotePipesClient {
     String deviceIp,
     int hubPort,
   ) async {
-    await channel?.shutdown();
+    await channel?.terminate();
     return ClientChannel(
       deviceIp,
       port: hubPort,

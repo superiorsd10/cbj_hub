@@ -20,7 +20,9 @@ class LoginEntityDtoAbstract {
 
     if (jsonLoginDtoClass == VendorsAndServices.lifx.toString()) {
       loginEntityDtoAbstract = GenericLifxLoginDtos.fromJson(json);
-    } else if (jsonLoginDtoClass == VendorsAndServices.tuyaSmart.toString()) {
+    } else if (jsonLoginDtoClass == VendorsAndServices.tuyaSmart.toString() ||
+        jsonLoginDtoClass == VendorsAndServices.smartLife.toString() ||
+        jsonLoginDtoClass == VendorsAndServices.jinvooSmart.toString()) {
       loginEntityDtoAbstract = GenericTuyaLoginDtos.fromJson(json);
     } else {
       throw 'DtoClassTypeDoesNotExist';

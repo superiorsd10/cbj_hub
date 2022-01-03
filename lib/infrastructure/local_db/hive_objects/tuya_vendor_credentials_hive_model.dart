@@ -16,4 +16,6 @@ class TuyaVendorCredentialsHiveModel extends HiveObject {
   late String tuyaBizType;
   @HiveField(5)
   late String tuyaRegion;
+  @HiveField(6)
+  late String loginVendor;
 }
