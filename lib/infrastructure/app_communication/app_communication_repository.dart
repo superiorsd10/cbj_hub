@@ -175,7 +175,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           );
         }
 
-        /// Request Didn't reached the internet
+        /// Request didn't reached the internet
         else if (!errorMessage.contains('errno = -3')) {
           logger.w(
             'Device does not have network\n'
