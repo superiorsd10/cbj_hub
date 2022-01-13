@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/google/chrome_cast/chrome_cast_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/google/google_helpers.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:cbj_hub/utils.dart';
+import 'package:dart_chromecast/utils/mdns_find_chromecast.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:multicast_dns/multicast_dns.dart';
@@ -18,7 +21,47 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
   @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
-  Future<void> _discoverNewDevices() async {}
+  Future<void> _discoverNewDevices() async {
+    while (true) {
+      try {
+        final List<CastDevice> chromecastDevices = await find_chromecasts();
+
+        for (int i = 0; i < chromecastDevices.length; i++) {
+          final int index = i + 1;
+          final CastDevice chromecastDevice = chromecastDevices[i];
+          bool deviceExist = false;
+
+          for (DeviceEntityAbstract savedDevice in companyDevices.values) {
+            savedDevice = savedDevice as ChromeCastEntity;
+
+            if (chromecastDevice.name.toString() ==
+                savedDevice.deviceMdnsName!.getOrCrash()) {
+              deviceExist = true;
+              break;
+            }
+          }
+          if (!deviceExist) {
+            final DeviceEntityAbstract addDevice =
+                GoogleHelpers.addDiscoverdDevice(chromecastDevice);
+
+            final DeviceEntityAbstract deviceToAdd =
+                CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
+
+            final MapEntry<String, DeviceEntityAbstract> deviceAsEntry =
+                MapEntry(deviceToAdd.uniqueId.getOrCrash(), deviceToAdd);
+
+            companyDevices.addEntries([deviceAsEntry]);
+
+            logger.i('New Chromecast devices where added');
+          }
+        }
+        await Future.delayed(const Duration(minutes: 3));
+      } catch (e) {
+        logger.e('Error discover in Chromecast\n$e');
+        await Future.delayed(const Duration(minutes: 5));
+      }
+    }
+  }
 
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract google) {
     // TODO: implement create
