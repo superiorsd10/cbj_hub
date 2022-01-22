@@ -17,8 +17,9 @@ class MqttServerRepository extends IMqttServerRepository {
   /// Static instance of connection to mqtt broker
   static MqttServerClient client = MqttServerClient('127.0.0.1', 'CBJ_Hub');
 
-  String hubBaseTopic = 'CBJ_Hub_Topic';
-  String devicesTopicTypeName = 'Devices';
+  static const String hubBaseTopic = 'CBJ_Hub_Topic';
+
+  static const String devicesTopicTypeName = 'Devices';
 
   /// Connect the client to mqtt if not in connecting or connected state already
   @override
@@ -45,7 +46,7 @@ class MqttServerRepository extends IMqttServerRepository {
 
     final connMessage = MqttConnectMessage()
         .withClientIdentifier('Mqtt_MyClientUniqueId')
-        .withWillTopic('willtopic')
+        .withWillTopic('Will topic')
         .withWillMessage('Will message')
         .startClean()
         .withWillQos(MqttQos.atLeastOnce);
@@ -124,10 +125,14 @@ class MqttServerRepository extends IMqttServerRepository {
 
   @override
   Future<void> publishMessage(String topic, String message) async {
-    await connect();
-    final builder = MqttClientPayloadBuilder();
-    builder.addUTF8String(message);
-    client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+    try {
+      await connect();
+      final builder = MqttClientPayloadBuilder();
+      builder.addUTF8String(message);
+      client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+    } catch (error) {
+      logger.e('Error publishing MQTT message');
+    }
   }
 
   @override
