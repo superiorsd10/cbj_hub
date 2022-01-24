@@ -67,7 +67,7 @@ dev_dependencies:
   # Injectable is a convenient code generator for get_it.
   injectable_generator: ^1.5.3
   # Collection of lint rules for Dart and Flutter projects
-  lint: ^1.8.1
+  lint: ^1.8.2
   # Library for mocks
   mockito: ^5.0.17
   # A full featured library for writing and running Dart tests across platforms.

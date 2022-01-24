@@ -22,10 +22,11 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     setUpAllFromDb();
   }
 
-  static HashMap<String, DeviceEntityAbstract> _allDevices =
+  static final HashMap<String, DeviceEntityAbstract> _allDevices =
       HashMap<String, DeviceEntityAbstract>();
 
-  static HashMap<String, RoomEntity> _allRooms = HashMap<String, RoomEntity>();
+  static final HashMap<String, RoomEntity> _allRooms =
+      HashMap<String, RoomEntity>();
 
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize

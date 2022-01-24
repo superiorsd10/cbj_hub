@@ -102,7 +102,6 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     smartPlugState = GenericSmartPlugState(DeviceActions.on.toString());
     try {
@@ -115,7 +114,6 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
     smartPlugState = GenericSmartPlugState(DeviceActions.off.toString());
 

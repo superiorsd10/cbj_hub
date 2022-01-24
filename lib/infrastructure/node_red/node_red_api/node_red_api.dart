@@ -29,11 +29,11 @@ class NodeRedAPI {
 
   /// Exchange credentials for access token
   Future<Response> postAuthToken({
-    String clientId = 'node-red-editor',
     required String grantType,
     required String scope,
     required String userName,
     required String password,
+    String clientId = 'node-red-editor',
   }) async {
     logger.e('Not tested yet');
     final String jsonStringWithFields = '''
@@ -74,11 +74,11 @@ class NodeRedAPI {
 
   /// Set the active flow configuration.
   Future<Response> postFlows({
-    int vType = 1,
-    String? rev,
     required String type,
     required String id,
     required String label,
+    int vType = 1,
+    String? rev,
   }) async {
     logger.e('Not tested yet');
 
@@ -148,10 +148,10 @@ class NodeRedAPI {
 
   /// Update an individual flow configuration
   Future<Response> putFlowById({
-    bool normalFlow = true,
     required String id,
     required List<dynamic> configs,
     required List<dynamic> nodes,
+    bool normalFlow = true,
     String? label,
     List<dynamic>? subFlows,
   }) async {
