@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
@@ -75,27 +74,6 @@ class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
       companyDevices.addEntries([deviceAsEntry]);
     }
     logger.v('New espHome devices name:$mDnsName');
-  }
-
-  /// Gets mDNS name and return the IP of that device
-  static Future<String?> getIpFromMDNS(String deviceMdnsName) async {
-    String validDeviceMdnsName = deviceMdnsName;
-    if (!validDeviceMdnsName.contains('.local')) {
-      validDeviceMdnsName += '.local';
-    }
-    try {
-      final List<InternetAddress> deviceIpList =
-          await InternetAddress.lookup(validDeviceMdnsName);
-      if (deviceIpList.isNotEmpty) {
-        return deviceIpList[0].address;
-      }
-    } catch (e) {
-      logger.e(
-        'Crash when searching the IP for device with mDNS\n$e',
-      );
-    }
-
-    return null;
   }
 
   Future<void> manageHubRequestsForDevice(

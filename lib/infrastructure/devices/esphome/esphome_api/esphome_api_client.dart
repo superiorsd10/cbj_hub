@@ -3,49 +3,50 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cbj_hub/infrastructure/devices/esphome/esphome_api/esphome_objects_as_dart_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/aioesphomeapi/protoc_as_dart/aioesphomeapi/api.pbserver.dart';
 import 'package:cbj_hub/utils.dart';
 
-class EspHomeApi {
-  EspHomeApi({
-    required this.addressOfServer,
+/// Client to interact with ESPHome device
+/// TODO: All the code here need rewrite, manage to turn device on/off
+/// TODO: Source: https://github.com/esphome/aioesphomeapi
+class EspHomeApiClient {
+  EspHomeApiClient({
+    required String deviceMdnsT,
     this.devicePort = 6053,
     this.devicePass,
   }) {
-    getSocket();
-  }
-
-  factory EspHomeApi.createWithAddress({
-    required String addressOfServer,
-    String? devicePort,
-    String? devicePassword,
-  }) {
-    String addressOfServerTemp = addressOfServer;
-    if (!addressOfServerTemp.contains('.local')) {
-      addressOfServerTemp += '.local';
+    deviceMdns = deviceMdnsT;
+    if (!deviceMdns.contains('.local')) {
+      deviceMdns += '.local';
     }
-
-    int devicePortTemp = 6053;
-    if (devicePort != null && int.tryParse(devicePort) != null) {
-      devicePortTemp = int.parse(devicePort);
-    }
-
-    return EspHomeApi(
-      addressOfServer: addressOfServerTemp,
-      devicePort: devicePortTemp,
-      devicePass: devicePassword,
-    );
   }
 
   Socket? _fSocket;
   String? devicePass;
-  String addressOfServer;
+  String? addressOfServer;
+  late String deviceMdns;
   int devicePort;
 
+  /// Responses stream from the device.
+  /// Some responses come in chunks, this will help us with that.
+  /// Each response will be converted to dart object and get passed away in
+  /// the stream for the current listening function to decide if it part of their
+  /// request and stop listening.
+  /// Some request will just keep coming like ping request and button press.
+  StreamController deviceResponseStream = StreamController();
+
+  /// aioesphomeapi:
+  /// fName = _connect_socket_connect
+  /// Step 2 in connect process: connect the socket.
   Future<Socket> getSocket() async {
     if (_fSocket != null && _fSocket!.isBroadcast) {
       return _fSocket!;
     }
+    addressOfServer ??= await getIpFromMdns(deviceMdns);
+    // TODO: Test if it is possible to connect to socket using the deviceMdns
+    // TODO: instead of the address, suppose to be more consistent.
+
     return _fSocket = await Socket.connect(addressOfServer, devicePort);
   }
 
@@ -66,6 +67,15 @@ class EspHomeApi {
         else if (responseType == 2) {
           logger.v('responseType is HelloResponse');
           final HelloResponse? helloResponseData = bytesToHelloResponse(data);
+          if (helloResponseData != null) {
+            deviceResponseStream.add(
+              EspHomeHelloResponseObject(
+                apiVersionMajor: helloResponseData.apiVersionMajor,
+                apiVersionMinor: helloResponseData.apiVersionMinor,
+                serverInfo: helloResponseData.serverInfo,
+              ),
+            );
+          }
           logger.v('HelloResponse data: ${helloResponseData?.serverInfo}');
           logger.v('');
         }
@@ -389,8 +399,9 @@ class EspHomeApi {
   }
 
   Future<void> sendConnect() async {
-    // connect to the socket server
     final Socket socket = await getSocket();
+
+    await _helloRequestToEsp();
 
     final ConnectRequest connectRequest =
         ConnectRequest(password: '\n\n$devicePass');
@@ -432,7 +443,10 @@ class EspHomeApi {
     await (await getSocket()).close();
   }
 
-  Future<void> helloRequestToEsp() async {
+  /// aioesphomeapi:
+  /// fName = _connect_hello
+  /// Step 4 in connect process: send hello and get api version.
+  Future<void> _helloRequestToEsp() async {
     // connect to the socket server
     final Socket socket = await getSocket();
 
@@ -517,6 +531,9 @@ class EspHomeApi {
     socket.add(message);
   }
 
+  /// aioesphomeapi:
+  /// fName = _connect_start_ping
+  /// Step 5 in connect process: start the ping loop.
   Future<void> ping() async {
     // connect to the socket server
     final socket = await getSocket();
@@ -525,7 +542,7 @@ class EspHomeApi {
       '${socket.remoteAddress.address}:${socket.remotePort}',
     );
 
-    final PingRequest helloRequest = PingRequest();
+    final PingRequest pingRequest = PingRequest();
 
     const int numOfByteBeforeData = 3;
 
@@ -699,7 +716,7 @@ class EspHomeApi {
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
     );
 
-    final ListEntitiesRequest switchCommandRequest = ListEntitiesRequest();
+    final ListEntitiesRequest listEntitiesRequest = ListEntitiesRequest();
 
     const int numOfByteBeforeData = 3;
 
@@ -737,5 +754,38 @@ class EspHomeApi {
     helloResponse.serverInfo = utf8.decode(responseBytes);
 
     return helloResponse;
+  }
+
+  /// aioesphomeapi:
+  /// fName = _connect_init_frame_helper
+  /// Step 3 in connect process: initialize the frame helper and init read loop.
+  Future<void> connectInitFrameHelper() async {
+    final Socket socket = await getSocket();
+
+    await listenToResponses();
+  }
+
+  /// Gets mDNS name and return the IP of that device
+  /// aioesphomeapi:
+  /// fName = _connect_resolve_host
+  /// Step 1 in connect process: resolve the address.
+  static Future<String?> getIpFromMdns(String deviceMdnsName) async {
+    String validDeviceMdnsName = deviceMdnsName;
+    if (!validDeviceMdnsName.contains('.local')) {
+      validDeviceMdnsName += '.local';
+    }
+    try {
+      final List<InternetAddress> deviceIpList =
+          await InternetAddress.lookup(validDeviceMdnsName);
+      if (deviceIpList.isNotEmpty) {
+        return deviceIpList[0].address;
+      }
+    } catch (e) {
+      logger.e(
+        'Crash when searching the IP for device with mDNS\n$e',
+      );
+    }
+
+    return null;
   }
 }
