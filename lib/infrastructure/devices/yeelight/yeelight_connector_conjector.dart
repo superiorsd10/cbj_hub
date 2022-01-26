@@ -18,7 +18,6 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
     _discoverNewDevices();
   }
 
-  @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> _discoverNewDevices() async {

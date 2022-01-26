@@ -43,10 +43,8 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
           powerConsumption: powerConsumption,
           blindsSwitchState: blindsSwitchState,
         ) {
-    if (switcherPort == null) {
-      switcherPort =
-          SwitcherPort(SwitcherApiObject.switcherTcpPort2.toString());
-    }
+    switcherPort ??=
+        SwitcherPort(SwitcherApiObject.switcherTcpPort2.toString());
     switcherObject = SwitcherApiObject(
       deviceType: SwitcherDevicesTypes.switcherRunner,
       deviceId: vendorUniqueId.getOrCrash(),

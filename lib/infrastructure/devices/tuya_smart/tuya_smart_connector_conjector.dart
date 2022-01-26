@@ -63,7 +63,6 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
   static late CloudTuya cloudJinvooSmart;
   static late CloudTuya cloudSmartLife;
 
-  @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> _discoverNewDevices({

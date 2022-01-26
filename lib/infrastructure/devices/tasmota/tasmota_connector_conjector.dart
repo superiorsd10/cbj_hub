@@ -22,7 +22,6 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
     discoverNewDevices();
   }
 
-  @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> discoverNewDevices() async {
@@ -79,7 +78,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
     if (topicsSplitted.length < 3) {
       return null;
     }
-    final String deviceId = topicsSplitted[2];
+    // final String deviceId = topicsSplitted[2];
 
     if (topicsSplitted[3] != 'config') {
       return null;

@@ -11,7 +11,6 @@ import 'package:multicast_dns/multicast_dns.dart';
 
 @singleton
 class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
-  @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract espHome) {

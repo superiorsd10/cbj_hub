@@ -18,7 +18,6 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
     _discoverNewDevices();
   }
 
-  @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> _discoverNewDevices() async {
@@ -27,7 +26,7 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
         final List<CastDevice> chromecastDevices = await find_chromecasts();
 
         for (int i = 0; i < chromecastDevices.length; i++) {
-          final int index = i + 1;
+          // final int index = i + 1;
           final CastDevice chromecastDevice = chromecastDevices[i];
           bool deviceExist = false;
 

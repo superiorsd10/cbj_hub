@@ -4,50 +4,30 @@ import 'package:dartz/dartz.dart';
 Either<CoreFailure<String>, String> validateGenericRgbwLightStateNotEmpty(
   String input,
 ) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }
 
 Either<CoreFailure<String>, String> validateGenericRgbwLightStringNotEmpty(
   String input,
 ) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }
 
 Either<CoreFailure<String>, String>
     validateGenericRgbwLightColorTemperatureNotEmpty(String input) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }
 
 Either<CoreFailure<String>, String> validateGenericRgbwLightBrightnessNotEmpty(
   String input,
 ) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }
 
 Either<CoreFailure<String>, String> validateGenericRgbwLightAlphaNotEmpty(
   String input,
 ) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }
 
 Either<CoreFailure<String>, String> validateGenericRgbwLightStringIsDouble(

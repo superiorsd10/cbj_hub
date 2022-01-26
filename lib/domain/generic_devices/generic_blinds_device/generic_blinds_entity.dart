@@ -23,8 +23,9 @@ class GenericBlindsDE extends DeviceEntityAbstract {
     required DeviceSenderDeviceModel senderDeviceModel,
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
-    DevicePowerConsumption? powerConsumption,
     required this.blindsSwitchState,
+    DevicePowerConsumption? powerConsumption,
+
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
@@ -106,6 +107,7 @@ class GenericBlindsDE extends DeviceEntityAbstract {
   }
 
   /// Please override the following methods
+  @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
     required DeviceEntityAbstract newEntity,
   }) async {
