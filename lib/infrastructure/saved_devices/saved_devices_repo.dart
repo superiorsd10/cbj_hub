@@ -137,10 +137,10 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
 
     if (_allRooms[discoveredRoomId] == null) {
       _allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
+    } else {
+      _allRooms[discoveredRoomId]!
+          .addDeviceId(deviceEntity.uniqueId.getOrCrash());
     }
-
-    _allRooms[discoveredRoomId]!
-        .addDeviceId(deviceEntity.uniqueId.getOrCrash());
   }
 
   @override

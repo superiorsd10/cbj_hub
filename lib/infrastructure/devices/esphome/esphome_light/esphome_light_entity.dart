@@ -23,6 +23,7 @@ class ESPHomeLightEntity extends GenericLightDE {
     required DevicePowerConsumption powerConsumption,
     required GenericLightSwitchState lightSwitchState,
     required this.deviceMdnsName,
+    required this.devicePort,
     this.lastKnownIp,
   }) : super(
           uniqueId: uniqueId,
@@ -43,7 +44,8 @@ class ESPHomeLightEntity extends GenericLightDE {
 
   DeviceMdnsName deviceMdnsName;
 
-  /// Please override the following methods
+  DevicePort devicePort;
+
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
     required DeviceEntityAbstract newEntity,
@@ -98,17 +100,23 @@ class ESPHomeLightEntity extends GenericLightDE {
       logger.v('Turn on ESPHome device');
       EspHomeApi espHomeApi;
       try {
-        espHomeApi = EspHomeApi.createWithAddress(deviceMdnsName.getOrCrash());
+        espHomeApi = EspHomeApi.createWithAddress(
+          addressOfServer: deviceMdnsName.getOrCrash(),
+          devicePassword: 'MyPassword',
+        );
         //
         // EspHomeApi.listenToResponses();
         await espHomeApi.helloRequestToEsp();
       } catch (mDnsCannotBeFound) {
-        espHomeApi = EspHomeApi.createWithAddress(lastKnownIp!.getOrCrash());
+        espHomeApi = EspHomeApi.createWithAddress(
+          addressOfServer: lastKnownIp!.getOrCrash(),
+          devicePassword: 'MyPassword',
+        );
         //
         // EspHomeApi.listenToResponses();
         await espHomeApi.helloRequestToEsp();
       }
-      await espHomeApi.sendConnect('MyPassword');
+      await espHomeApi.sendConnect();
       // await EspHomeApi.deviceInfoRequestToEsp();
       // await EspHomeApi.listEntitiesRequest();
       // await EspHomeApi.subscribeStatesRequest();
@@ -132,18 +140,21 @@ class ESPHomeLightEntity extends GenericLightDE {
         logger.v('Turn off ESPHome device');
         EspHomeApi espHomeApi;
         try {
-          espHomeApi =
-              EspHomeApi.createWithAddress(deviceMdnsName.getOrCrash());
+          espHomeApi = EspHomeApi.createWithAddress(
+            addressOfServer: deviceMdnsName.getOrCrash(),
+          );
           //
           // EspHomeApi.listenToResponses();
           await espHomeApi.helloRequestToEsp();
         } catch (mDnsCannotBeFound) {
-          espHomeApi = EspHomeApi.createWithAddress(lastKnownIp!.getOrCrash());
+          espHomeApi = EspHomeApi.createWithAddress(
+            addressOfServer: lastKnownIp!.getOrCrash(),
+          );
           //
           // EspHomeApi.listenToResponses();
           await espHomeApi.helloRequestToEsp();
         }
-        await espHomeApi.sendConnect('MyPassword');
+        await espHomeApi.sendConnect();
         // await EspHomeApi.deviceInfoRequestToEsp();
         // await EspHomeApi.listEntitiesRequest();
         // await EspHomeApi.subscribeStatesRequest();

@@ -277,3 +277,17 @@ class DeviceSecondWiFiName extends ValueObjectCore<String> {
   @override
   final Either<CoreFailure<String>, String> value;
 }
+
+class DevicePort extends ValueObjectCore<String> {
+  factory DevicePort(String? input) {
+    assert(input != null);
+    return DevicePort._(
+      validatePortNotEmpty(input!),
+    );
+  }
+
+  const DevicePort._(this.value);
+
+  @override
+  final Either<CoreFailure<String>, String> value;
+}

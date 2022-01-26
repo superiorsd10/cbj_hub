@@ -7,16 +7,41 @@ import 'package:cbj_hub/infrastructure/gen/aioesphomeapi/protoc_as_dart/aioespho
 import 'package:cbj_hub/utils.dart';
 
 class EspHomeApi {
-  EspHomeApi(this.fSocket);
-
-  factory EspHomeApi.createWithAddress(String addressOfServer) {
-    final Future<Socket> socket = Socket.connect(addressOfServer, 6053);
-
-    return EspHomeApi(socket);
+  EspHomeApi({
+    required this.addressOfServer,
+    this.devicePort = 6053,
+    this.devicePass,
+  }) {
+    fSocket = Socket.connect(addressOfServer, devicePort);
+    Future.delayed(Duration(milliseconds: 100));
   }
 
-  Future<Socket> fSocket;
+  factory EspHomeApi.createWithAddress({
+    required String addressOfServer,
+    String? devicePort,
+    String? devicePassword,
+  }) {
+    String addressOfServerTemp = addressOfServer;
+    if (!addressOfServerTemp.contains('.local')) {
+      addressOfServerTemp += '.local';
+    }
+
+    int devicePortTemp = 6053;
+    if (devicePort != null && int.tryParse(devicePort) != null) {
+      devicePortTemp = int.parse(devicePort);
+    }
+
+    return EspHomeApi(
+      addressOfServer: addressOfServerTemp,
+      devicePort: devicePortTemp,
+      devicePass: devicePassword,
+    );
+  }
+
+  late Future<Socket> fSocket;
   String? devicePass;
+  String addressOfServer;
+  int devicePort;
 
   Future<void> listenToResponses() async {
     final Socket socket = await fSocket;
@@ -47,7 +72,9 @@ class EspHomeApi {
         /// ConnectResponse
         else if (responseType == 4) {
           logger.v('responseType is ConnectResponse');
-          logger.v('ConnectResponse data: ${utf8.decode(data.sublist(3))}');
+          logger.v(
+            'ConnectResponse data: ${utf8.decode(data.sublist(3), allowMalformed: true)}',
+          );
           logger.v('Data: $data');
           if (data.length > 3) {
             logger.v('Password is wrong');
@@ -355,8 +382,7 @@ class EspHomeApi {
     );
   }
 
-  Future<void> sendConnect(String devicePassTransfer) async {
-    devicePass = devicePassTransfer;
+  Future<void> sendConnect() async {
     // connect to the socket server
     final Socket socket = await fSocket;
 
@@ -400,7 +426,6 @@ class EspHomeApi {
     await (await fSocket).close();
   }
 
-  ///  Turn smart device on
   Future<void> helloRequestToEsp() async {
     // connect to the socket server
     final Socket socket = await fSocket;
@@ -443,15 +468,11 @@ class EspHomeApi {
     socket.add(message);
   }
 
-  ///  Turn smart device on
-  Future<void> connectRequestToEsp(
-    String addressToServer,
-    String password,
-  ) async {
+  Future<void> connectRequestToEsp() async {
     // connect to the socket server
     final socket = await fSocket;
 
-    final ConnectRequest connectRequest = ConnectRequest(password: password);
+    final ConnectRequest connectRequest = ConnectRequest(password: devicePass);
 
     final List<int> passwordAsIntList = utf8.encode(connectRequest.password);
 
@@ -489,7 +510,6 @@ class EspHomeApi {
     socket.add(message);
   }
 
-  ///  Turn smart device on
   Future<void> ping() async {
     // connect to the socket server
     final socket = await fSocket;
@@ -525,7 +545,6 @@ class EspHomeApi {
     socket.add(message);
   }
 
-  ///  Turn smart device on
   Future<void> deviceInfoRequestToEsp() async {
     // connect to the socket server
     final socket = await fSocket;
@@ -561,7 +580,6 @@ class EspHomeApi {
     socket.add(message);
   }
 
-  ///  Turn smart device on
   Future<void> subscribeStatesRequest() async {
     // connect to the socket server
     final socket = await fSocket;
@@ -597,7 +615,6 @@ class EspHomeApi {
     socket.add(message);
   }
 
-  ///  Turn smart device on
   Future<void> switchCommandRequest(int deviceKey, bool changeTostate) async {
     if (devicePass == null) {
       logger.v('Please call sendConnect, password is missing');
@@ -663,7 +680,6 @@ class EspHomeApi {
     await Future.delayed(const Duration(milliseconds: 1000));
   }
 
-  ///  Turn smart device on
   Future<void> listEntitiesRequest() async {
     if (devicePass == null) {
       logger.v('Please call sendConnect, password is missing');
