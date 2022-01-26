@@ -12,8 +12,7 @@ class EspHomeApi {
     this.devicePort = 6053,
     this.devicePass,
   }) {
-    fSocket = Socket.connect(addressOfServer, devicePort);
-    Future.delayed(Duration(milliseconds: 100));
+    getSocket();
   }
 
   factory EspHomeApi.createWithAddress({
@@ -38,13 +37,20 @@ class EspHomeApi {
     );
   }
 
-  late Future<Socket> fSocket;
+  Socket? _fSocket;
   String? devicePass;
   String addressOfServer;
   int devicePort;
 
+  Future<Socket> getSocket() async {
+    if (_fSocket != null && _fSocket!.isBroadcast) {
+      return _fSocket!;
+    }
+    return _fSocket = await Socket.connect(addressOfServer, devicePort);
+  }
+
   Future<void> listenToResponses() async {
-    final Socket socket = await fSocket;
+    final Socket socket = await getSocket();
 
     socket.listen(
       // handle data from the server
@@ -161,7 +167,7 @@ class EspHomeApi {
 
             logger.v(
               'ListEntitiesSwitchResponse data payload:'
-                  ' $dataPayload',
+              ' $dataPayload',
             );
           } catch (e) {
             logger.v(
@@ -384,7 +390,7 @@ class EspHomeApi {
 
   Future<void> sendConnect() async {
     // connect to the socket server
-    final Socket socket = await fSocket;
+    final Socket socket = await getSocket();
 
     final ConnectRequest connectRequest =
         ConnectRequest(password: '\n\n$devicePass');
@@ -423,12 +429,13 @@ class EspHomeApi {
   }
 
   Future<void> disconnect() async {
-    await (await fSocket).close();
+    await (await getSocket()).close();
   }
 
   Future<void> helloRequestToEsp() async {
     // connect to the socket server
-    final Socket socket = await fSocket;
+    final Socket socket = await getSocket();
+
     const String clientName = 'aioesphomeapi';
 
     final HelloRequest helloRequest =
@@ -470,7 +477,7 @@ class EspHomeApi {
 
   Future<void> connectRequestToEsp() async {
     // connect to the socket server
-    final socket = await fSocket;
+    final socket = await getSocket();
 
     final ConnectRequest connectRequest = ConnectRequest(password: devicePass);
 
@@ -512,7 +519,7 @@ class EspHomeApi {
 
   Future<void> ping() async {
     // connect to the socket server
-    final socket = await fSocket;
+    final socket = await getSocket();
     logger.v(
       'Connected request to: '
       '${socket.remoteAddress.address}:${socket.remotePort}',
@@ -547,7 +554,7 @@ class EspHomeApi {
 
   Future<void> deviceInfoRequestToEsp() async {
     // connect to the socket server
-    final socket = await fSocket;
+    final socket = await getSocket();
     logger.v(
       'Connected request to:'
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
@@ -582,7 +589,7 @@ class EspHomeApi {
 
   Future<void> subscribeStatesRequest() async {
     // connect to the socket server
-    final socket = await fSocket;
+    final socket = await getSocket();
     logger.v(
       'Connected request to:'
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
@@ -621,7 +628,7 @@ class EspHomeApi {
       return;
     }
     // connect to the socket server
-    final socket = await fSocket;
+    final socket = await getSocket();
     logger.v(
       'Connected request to:'
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
@@ -686,7 +693,7 @@ class EspHomeApi {
       return;
     }
     // connect to the socket server
-    final socket = await fSocket;
+    final socket = await getSocket();
     logger.v(
       'Connected request to:'
       ' ${socket.remoteAddress.address}:${socket.remotePort}',
