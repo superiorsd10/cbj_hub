@@ -26,8 +26,26 @@ class EspHomeApi {
       (Uint8List data) {
         final int responseType = data[2];
 
+        /// HelloRequest
+        if (responseType == 1) {
+          logger.v('responseType is HelloRequest');
+        }
+
+        /// HelloResponse
+        else if (responseType == 2) {
+          logger.v('responseType is HelloResponse');
+          final HelloResponse? helloResponseData = bytesToHelloResponse(data);
+          logger.v('HelloResponse data: ${helloResponseData?.serverInfo}');
+          logger.v('');
+        }
+
+        /// ConnectRequest
+        else if (responseType == 3) {
+          logger.v('responseType is ConnectRequest');
+        }
+
         /// ConnectResponse
-        if (responseType == 4) {
+        else if (responseType == 4) {
           logger.v('responseType is ConnectResponse');
           logger.v('ConnectResponse data: ${utf8.decode(data.sublist(3))}');
           logger.v('Data: $data');
@@ -40,12 +58,33 @@ class EspHomeApi {
           logger.v('');
         }
 
-        /// HelloResponse
-        else if (responseType == 2) {
-          logger.v('responseType is HelloResponse');
-          final HelloResponse? helloResponseData = bytesToHelloResponse(data);
-          logger.v('HelloResponse data: ${helloResponseData?.serverInfo}');
+        /// DisconnectRequest
+        else if (responseType == 5) {
+          logger.v('responseType is DisconnectRequest');
+        }
+
+        /// DisconnectResponse
+        else if (responseType == 6) {
+          logger.v('responseType is DisconnectResponse');
+        }
+
+        /// PingRequest
+        else if (responseType == 7) {
+          logger.v('responseType is PingRequest');
+          logger.v('PingRequest data: ${utf8.decode(data.sublist(3))}');
           logger.v('');
+        }
+
+        /// PingResponse
+        else if (responseType == 8) {
+          logger.v('responseType is PingResponse');
+          logger.v('PingResponse data: ${utf8.decode(data.sublist(3))}');
+          logger.v('');
+        }
+
+        /// DeviceInfoRequest
+        else if (responseType == 9) {
+          logger.v('responseType is DeviceInfoRequest');
         }
 
         /// DeviceInfoResponse
@@ -55,18 +94,34 @@ class EspHomeApi {
           logger.v('');
         }
 
-        /// PingRequest
-        else if (responseType == 7) {
-          logger.v('responseType is PingResponse');
-          logger.v('PingResponse data: ${utf8.decode(data.sublist(3))}');
-          logger.v('');
+        /// ListEntitiesRequest
+        else if (responseType == 11) {
+          logger.v('responseType is ListEntitiesRequest');
         }
 
-        /// PingResponse
-        else if (responseType == 8) {
-          logger.v('responseType is PingResponse');
-          logger.v('PingResponse data: ${utf8.decode(data.sublist(3))}');
-          logger.v('');
+        /// ListEntitiesBinarySensorResponse
+        else if (responseType == 12) {
+          logger.v('responseType is ListEntitiesBinarySensorResponse');
+        }
+
+        /// ListEntitiesCoverResponse
+        else if (responseType == 13) {
+          logger.v('responseType is ListEntitiesCoverResponse');
+        }
+
+        /// ListEntitiesFanResponse
+        else if (responseType == 14) {
+          logger.v('responseType is ListEntitiesFanResponse');
+        }
+
+        /// ListEntitiesLightResponse
+        else if (responseType == 15) {
+          logger.v('responseType is ListEntitiesLightResponse');
+        }
+
+        /// ListEntitiesSensorResponse
+        else if (responseType == 16) {
+          logger.v('responseType is ListEntitiesSensorResponse');
         }
 
         /// ListEntitiesSwitchResponse
@@ -79,7 +134,7 @@ class EspHomeApi {
 
             logger.v(
               'ListEntitiesSwitchResponse data payload:'
-              ' $dataPayload',
+                  ' $dataPayload',
             );
           } catch (e) {
             logger.v(
@@ -90,7 +145,12 @@ class EspHomeApi {
           logger.v('');
         }
 
-        /// ListEntitiesDoneResponse
+        /// ListEntitiesTextSensorResponse
+        else if (responseType == 18) {
+          logger.v('responseType is ListEntitiesTextSensorResponse');
+        }
+
+        /// dsaDoneResponse
         else if (responseType == 19) {
           logger.v('responseType is ListEntitiesDoneResponse');
           logger.v(
@@ -99,11 +159,181 @@ class EspHomeApi {
           logger.v('');
         }
 
-        /// PingResponse
+        /// SubscribeStatesRequest
+        else if (responseType == 20) {
+          logger.v('responseType is SubscribeStatesRequest');
+        }
+
+        /// BinarySensorStateResponse
+        else if (responseType == 21) {
+          logger.v('responseType is BinarySensorStateResponse');
+        }
+
+        /// CoverStateResponse
+        else if (responseType == 22) {
+          logger.v('responseType is CoverStateResponse');
+        }
+
+        /// FanStateResponse
+        else if (responseType == 23) {
+          logger.v('responseType is FanStateResponse');
+        }
+
+        /// LightStateResponse
+        else if (responseType == 24) {
+          logger.v('responseType is LightStateResponse');
+        }
+
+        /// SensorStateResponse
+        else if (responseType == 25) {
+          logger.v('responseType is SensorStateResponse');
+        }
+
+        /// SwitchStateResponse
         else if (responseType == 26) {
           logger.v('responseType is SwitchStateResponse');
           logger.v('SwitchStateResponse data: $data}');
           logger.v('');
+        }
+
+        /// TextSensorStateResponse
+        else if (responseType == 27) {
+          logger.v('responseType is TextSensorStateResponse');
+        }
+
+        /// SubscribeLogsRequest
+        else if (responseType == 28) {
+          logger.v('responseType is SubscribeLogsRequest');
+        }
+
+        /// SubscribeLogsResponse
+        else if (responseType == 29) {
+          logger.v('responseType is SubscribeLogsResponse');
+        }
+
+        /// CoverCommandRequest
+        else if (responseType == 30) {
+          logger.v('responseType is CoverCommandRequest');
+        }
+
+        /// FanCommandRequest
+        else if (responseType == 31) {
+          logger.v('responseType is FanCommandRequest');
+        }
+
+        /// LightCommandRequest
+        else if (responseType == 32) {
+          logger.v('responseType is LightCommandRequest');
+        }
+
+        /// SwitchCommandRequest
+        else if (responseType == 33) {
+          logger.v('responseType is SwitchCommandRequest');
+        }
+
+        /// SubscribeHomeassistantServicesRequest
+        else if (responseType == 34) {
+          logger.v('responseType is SubscribeHomeassistantServicesRequest');
+        }
+
+        /// HomeassistantServiceResponse
+        else if (responseType == 35) {
+          logger.v('responseType is HomeassistantServiceResponse');
+        }
+
+        /// GetTimeRequest
+        else if (responseType == 36) {
+          logger.v('responseType is GetTimeRequest');
+        }
+
+        /// GetTimeResponse
+        else if (responseType == 37) {
+          logger.v('responseType is GetTimeResponse');
+        }
+
+        /// SubscribeHomeAssistantStatesRequest
+        else if (responseType == 38) {
+          logger.v('responseType is SubscribeHomeAssistantStatesRequest');
+        }
+
+        /// SubscribeHomeAssistantStateResponse
+        else if (responseType == 39) {
+          logger.v('responseType is SubscribeHomeAssistantStateResponse');
+        }
+
+        /// HomeAssistantStateResponse
+        else if (responseType == 40) {
+          logger.v('responseType is HomeAssistantStateResponse');
+        }
+
+        /// ListEntitiesServicesResponse
+        else if (responseType == 41) {
+          logger.v('responseType is ListEntitiesServicesResponse');
+        }
+
+        /// ExecuteServiceRequest
+        else if (responseType == 42) {
+          logger.v('responseType is ExecuteServiceRequest');
+        }
+
+        /// ListEntitiesCameraResponse
+        else if (responseType == 43) {
+          logger.v('responseType is ListEntitiesCameraResponse');
+        }
+
+        /// CameraImageResponse
+        else if (responseType == 44) {
+          logger.v('responseType is CameraImageResponse');
+        }
+
+        /// CameraImageRequest
+        else if (responseType == 45) {
+          logger.v('responseType is CameraImageRequest');
+        }
+
+        /// ListEntitiesClimateResponse
+        else if (responseType == 46) {
+          logger.v('responseType is ListEntitiesClimateResponse');
+        }
+
+        /// ClimateStateResponse
+        else if (responseType == 47) {
+          logger.v('responseType is ClimateStateResponse');
+        }
+
+        /// ClimateCommandRequest
+        else if (responseType == 48) {
+          logger.v('responseType is ClimateCommandRequest');
+        }
+
+        /// ListEntitiesNumberResponse
+        else if (responseType == 49) {
+          logger.v('responseType is ListEntitiesNumberResponse');
+        }
+
+        /// NumberStateResponse
+        else if (responseType == 50) {
+          logger.v('responseType is NumberStateResponse');
+        }
+
+        /// NumberCommandRequest
+        else if (responseType == 51) {
+          logger.v('responseType is NumberCommandRequest');
+        }
+
+        /// ListEntitiesSelectResponse
+        else if (responseType == 52) {
+          logger.v('responseType is ListEntitiesSelectResponse');
+        }
+
+        /// SelectStateResponse
+        else if (responseType == 53) {
+          logger.v('responseType is SelectStateResponse');
+        }
+
+        /// SelectCommandRequest
+        else if (responseType == 54) {
+          logger.v('responseType is SelectCommandRequest');
         } else {
           logger.v('responseType is else');
           logger.v('Listen to data $data');
