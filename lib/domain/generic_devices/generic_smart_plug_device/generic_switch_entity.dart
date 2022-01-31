@@ -25,7 +25,6 @@ class GenericSmartPlugDE extends DeviceEntityAbstract {
     required DeviceCompUuid compUuid,
     required this.smartPlugState,
     DevicePowerConsumption? powerConsumption,
-
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
@@ -83,6 +82,12 @@ class GenericSmartPlugDE extends DeviceEntityAbstract {
   @override
   String getDeviceId() {
     return uniqueId.getOrCrash();
+  }
+
+  /// Return a list of all valid actions for this device
+  @override
+  List<String> getAllValidActions() {
+    return GenericSmartPlugState.lightValidActions();
   }
 
   @override

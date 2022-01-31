@@ -25,7 +25,6 @@ class GenericBlindsDE extends DeviceEntityAbstract {
     required DeviceCompUuid compUuid,
     required this.blindsSwitchState,
     DevicePowerConsumption? powerConsumption,
-
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
@@ -84,6 +83,12 @@ class GenericBlindsDE extends DeviceEntityAbstract {
   @override
   String getDeviceId() {
     return uniqueId.getOrCrash();
+  }
+
+  /// Return a list of all valid actions for this device
+  @override
+  List<String> getAllValidActions() {
+    return GenericBlindsSwitchState.blindsValidActions();
   }
 
   @override
