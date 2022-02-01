@@ -5,7 +5,7 @@ import 'package:cbj_hub/infrastructure/system_commands/device_pin_manager.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 
-void main(List<String> arguments) async {
+Future<void> main(List<String> arguments) async {
   configureInjection(Env.prod);
 
   try {

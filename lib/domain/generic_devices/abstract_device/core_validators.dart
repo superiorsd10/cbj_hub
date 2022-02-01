@@ -37,27 +37,19 @@ Either<CoreFailure<String>, String> validatePowerConsumptionNotEmpty(
 }
 
 Either<CoreFailure<String>, String> validateRoomNameNotEmpty(String input) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }
 
 Either<CoreFailure<String>, String> validateMdnsNameNotEmpty(String input) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }
 
 Either<CoreFailure<String>, String> validateWiFiNameNotEmpty(String input) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
+}
+
+Either<CoreFailure<String>, String> validatePortNotEmpty(String input) {
+  return right(input);
 }
 
 Either<CoreFailure<String>, String> validateDeviceMaxNameLength(

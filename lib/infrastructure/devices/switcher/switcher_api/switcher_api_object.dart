@@ -95,7 +95,6 @@ class SwitcherApiObject {
       lastShutdownRemainingSecondsValue: lastShutdownRemainingSecondsValue,
       powerConsumption: powerConsumption,
       remainingTimeForExecution: getRemaining,
-      port: switcherTcpPort,
     );
   }
 
@@ -157,7 +156,7 @@ class SwitcherApiObject {
   static SwitcherDevicesTypes getDeviceType(List<String> messageBuffer) {
     SwitcherDevicesTypes sDevicesTypes = SwitcherDevicesTypes.notRecognized;
 
-    final String hexModel = messageBuffer.sublist(75, 76)[0].toString();
+    final String hexModel = messageBuffer.sublist(75, 76)[0];
 
     if (hexModel == '0f') {
       sDevicesTypes = SwitcherDevicesTypes.switcherMini;
@@ -196,7 +195,7 @@ class SwitcherApiObject {
   Future<void> _runPowerCommand(String commandType) async {
     pSession = await _login();
     if (pSession == 'B') {
-      logger.e('Switcher error');
+      logger.e('Switcher run power command error');
       return;
     }
     var data =
@@ -234,10 +233,10 @@ class SwitcherApiObject {
   }
 
   Future<void> _runPositionCommand(String positionCommand) async {
-    final int pos = int.parse(positionCommand, radix: 16);
+    // final int pos = int.parse(positionCommand, radix: 16);
     pSession = await _login2();
     if (pSession == 'B') {
-      logger.e('Switcher error');
+      logger.e('Switcher run position command error');
       return;
     }
     var data =
@@ -288,8 +287,7 @@ class SwitcherApiObject {
 
       return resultSession;
     } catch (error) {
-      log = 'login failed due to an error $error';
-      logger.e(log);
+      logger.e('login failed due to an error\n$error');
       pSession = 'B';
     }
     return pSession!;
@@ -318,8 +316,7 @@ class SwitcherApiObject {
 
       return resultSession;
     } catch (error) {
-      log = 'login2 failed due to an error $error';
-      logger.e(log);
+      logger.e('login2 failed due to an error\n$error');
       pSession = 'B';
     }
     return pSession!;
@@ -394,7 +391,7 @@ class SwitcherApiObject {
 
     try {
       sendValueBytes.setUint64(0, valueToConvert, Endian.little);
-    } on UnsupportedError {
+    } on Exception {
       sendValueBytes.setUint32(0, valueToConvert, Endian.little);
     }
 
@@ -409,7 +406,7 @@ class SwitcherApiObject {
 
     try {
       sendValueBytes.setUint64(0, valueToConvert);
-    } on UnsupportedError {
+    } on Exception {
       sendValueBytes.setUint32(0, valueToConvert);
     }
 
@@ -458,8 +455,8 @@ class SwitcherApiObject {
   }
 
   static String extractPowerConsumption(List<String> hexSeparatedLetters) {
-    final List<String> hexPowerConsumption =
-        hexSeparatedLetters.sublist(270, 278);
+    // final List<String> hexPowerConsumption =
+    //     hexSeparatedLetters.sublist(270, 278);
     // TODO: fix this method does not return number, hexPowerConsumption.join()
     //  return the value 64000000
     // return hexPowerConsumption.join();

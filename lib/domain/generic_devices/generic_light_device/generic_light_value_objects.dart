@@ -7,7 +7,7 @@ class GenericLightSwitchState extends ValueObjectCore<String> {
   factory GenericLightSwitchState(String? input) {
     assert(input != null);
     return GenericLightSwitchState._(
-      validateGenericLightStateNotEmty(input!),
+      validateGenericLightStateNotEmpty(input!),
     );
   }
 
@@ -15,4 +15,8 @@ class GenericLightSwitchState extends ValueObjectCore<String> {
 
   @override
   final Either<CoreFailure<String>, String> value;
+
+  static List<String> lightValidActions() {
+    return lightAllValidActions();
+  }
 }

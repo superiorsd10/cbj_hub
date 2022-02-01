@@ -31,10 +31,10 @@ class XiaomiIoGpx4021GlEntity extends GenericRgbwLightDE {
     required GenericRgbwLightColorValue lightColorValue,
     required this.xiaomiIoDeviceId,
     required this.xiaomiIoPort,
-    this.deviceMdnsName,
-    this.lastKnownIp,
     required GenericRgbwLightColorTemperature lightColorTemperature,
     required GenericRgbwLightBrightness lightBrightness,
+    this.deviceMdnsName,
+    this.lastKnownIp,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,

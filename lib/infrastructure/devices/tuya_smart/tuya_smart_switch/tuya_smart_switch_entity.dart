@@ -101,7 +101,6 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     switchState = GenericSwitchSwitchState(DeviceActions.on.toString());
     try {
@@ -114,7 +113,6 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
     switchState = GenericSwitchSwitchState(DeviceActions.off.toString());
 

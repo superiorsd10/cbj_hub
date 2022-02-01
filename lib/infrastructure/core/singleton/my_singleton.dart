@@ -24,20 +24,3 @@ class MySingleton {
   static Future<String?> getLocalDbPath() =>
       _localDbPath ??= MySingletonHelper.getLocalDbPath();
 }
-
-class FirebaseAccountInformationFlutter {
-  FirebaseAccountInformationFlutter(this.fireBaseProjectId, this.fireBaseApiKey,
-      this.userEmail, this.userPassword);
-
-  String fireBaseProjectId;
-  String fireBaseApiKey;
-  String userEmail;
-  String userPassword;
-
-  bool areAllValuesNotNull() {
-    return fireBaseProjectId != null &&
-        fireBaseApiKey != null &&
-        userEmail != null &&
-        userPassword != null;
-  }
-}
