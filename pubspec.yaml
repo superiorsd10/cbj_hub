@@ -47,7 +47,7 @@ dependencies:
   # Service discovery over multicast DNS (mDNS), Bonjour, and Avahi.
   multicast_dns: ^0.3.2
   # Helps you discover open ports, devices on subnet and more.
-  network_tools: ^1.0.7
+  network_tools: ^1.0.8
   # Provides runtime support for a Dart implementation of protobufs.
   protobuf: ^2.0.1
   # Extends the capabilities of Dart Streams and StreamControllers.
