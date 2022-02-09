@@ -12,6 +12,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_ligh
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic_switch_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
+import 'package:cbj_hub/domain/node_red/i_node_red_repository.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
@@ -151,6 +152,18 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
         getIt<ISavedDevicesRepo>()
             .saveAndActivateRemotePipesDomainToDb(remotePipes: remotePipes);
+      } else if (event.sendingType == SendingType.sceneType) {
+        final String sendingTypeContentJsonString = event.allRemoteCommands
+            .substring(0, event.allRemoteCommands.indexOf('}') + 1);
+        final String sendingContent = event.allRemoteCommands
+            .substring(event.allRemoteCommands.indexOf('}') + 1);
+        final Map<String, dynamic> sendingTypeContentJson =
+            jsonDecode(sendingTypeContentJsonString) as Map<String, dynamic>;
+        if (sendingTypeContentJson['automationAction'] == 'addNew') {
+          final String sceneName =
+              sendingTypeContentJson['automationName'] as String;
+          getIt<INodeRedRepository>().createNewScene(sceneName, sendingContent);
+        }
       } else {
         logger.w('Request from app does not support this sending device type');
       }

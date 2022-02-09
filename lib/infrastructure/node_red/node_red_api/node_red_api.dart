@@ -1,5 +1,6 @@
 import 'package:cbj_hub/utils.dart';
 import 'package:http/http.dart';
+import 'package:uuid/uuid.dart';
 
 /// Admin API methods for Node-RED
 /// https://nodered.org/docs/api/admin/methods/
@@ -120,22 +121,28 @@ class NodeRedAPI {
 
   /// Add a flow to the active configuration
   Future<Response> postFlow({
-    required String id,
     required String label,
-    required List<dynamic> nodes,
-    required List<dynamic> configs,
+
+    /// Should start as list of jsons [{},{}]
+    required String nodes,
+    String? id,
+    List<dynamic>? configs,
   }) async {
     logger.e('Not tested yet');
+
+    final String flowId = id ?? const Uuid().v1();
+    final List<dynamic> configsList = configs ?? [];
+
     final String jsonStringWithFields = '''
       {
-        "id": "$id",
-        "label": "$label"
+        "id": "$flowId",
+        "label": "$label",
         "nodes": $nodes,
-        "configs": $configs
+        "configs": $configsList
       }
       ''';
     return post(
-      Uri.parse('$requestsUrl/flows'),
+      Uri.parse('$requestsUrl/flow'),
       headers: {'Content-Type': 'application/json'},
       body: jsonStringWithFields,
     );
