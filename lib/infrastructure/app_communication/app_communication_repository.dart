@@ -25,6 +25,7 @@ import 'package:cbj_hub/infrastructure/generic_vendors_login/vendor_helper.dart'
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_client.dart';
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
 import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
+import 'package:cbj_hub/infrastructure/scenes/scene_cbj_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
@@ -153,17 +154,13 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         getIt<ISavedDevicesRepo>()
             .saveAndActivateRemotePipesDomainToDb(remotePipes: remotePipes);
       } else if (event.sendingType == SendingType.sceneType) {
-        final String sendingTypeContentJsonString = event.allRemoteCommands
-            .substring(0, event.allRemoteCommands.indexOf('}') + 1);
-        final String sendingContent = event.allRemoteCommands
-            .substring(event.allRemoteCommands.indexOf('}') + 1);
-        final Map<String, dynamic> sendingTypeContentJson =
-            jsonDecode(sendingTypeContentJsonString) as Map<String, dynamic>;
-        if (sendingTypeContentJson['automationAction'] == 'addNew') {
-          final String sceneName =
-              sendingTypeContentJson['automationName'] as String;
-          getIt<INodeRedRepository>().createNewScene(sceneName, sendingContent);
-        }
+        final Map<String, dynamic> jsonSceneFromJsonString =
+            jsonDecode(event.allRemoteCommands) as Map<String, dynamic>;
+
+        SceneCbjDtos sceneCbjDtos =
+            SceneCbjDtos.fromJson(jsonSceneFromJsonString);
+
+        getIt<INodeRedRepository>().createNewScene(sceneCbjDtos.toDomain());
       } else {
         logger.w('Request from app does not support this sending device type');
       }
