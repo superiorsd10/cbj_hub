@@ -128,8 +128,6 @@ class NodeRedAPI {
     String? id,
     List<dynamic>? configs,
   }) async {
-    logger.e('Not tested yet');
-
     final String flowId = id ?? const Uuid().v1();
     final List<dynamic> configsList = configs ?? [];
 

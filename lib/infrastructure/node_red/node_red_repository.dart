@@ -8,7 +8,7 @@ import 'package:injectable/injectable.dart';
 /// Control Node-RED, create scenes and more
 @LazySingleton(as: INodeRedRepository)
 class NodeRedRepository extends INodeRedRepository {
-  List<SceneCbj> scnesList = [];
+  Map<String, SceneCbj> scnesList = {};
 
   static NodeRedAPI nodeRedAPI = NodeRedAPI();
 
@@ -28,7 +28,8 @@ class NodeRedRepository extends INodeRedRepository {
       nodes: sceneCbj.automationString!,
     );
     if (response.statusCode == 200) {
-      scnesList.add(sceneCbj);
+      scnesList
+          .addEntries([MapEntry(sceneCbj.uniqueId.getOrCrash(), sceneCbj)]);
     }
     logger.i('Response\n${response.statusCode}');
   }
@@ -36,5 +37,10 @@ class NodeRedRepository extends INodeRedRepository {
   /// Get entity and return the full MQTT path to it
   Future<String> genericDeviceEntityToMqttPath() async {
     throw 'Not implemented';
+  }
+
+  @override
+  Future<Map<String, SceneCbj>> getAllScenes() async {
+    return scnesList;
   }
 }

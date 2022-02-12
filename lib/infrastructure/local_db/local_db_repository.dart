@@ -110,6 +110,7 @@ class HiveRepository extends ILocalDbRepository {
           defaultName: RoomDefaultName(roomHive.roomDefaultName),
           roomTypes: RoomTypes(roomHive.roomTypes),
           roomDevicesId: RoomDevicesId(roomHive.roomDevicesId),
+          roomScenesId: RoomScenesId(roomHive.roomScenesId),
           roomMostUsedBy: RoomMostUsedBy(roomHive.roomMostUsedBy),
           roomPermissions: RoomPermissions(roomHive.roomPermissions),
         );
