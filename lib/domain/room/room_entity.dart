@@ -45,6 +45,16 @@ abstract class RoomEntity implements _$RoomEntity {
     }
   }
 
+  /// Will add new scene id to the scenes in the room list
+  void addSceneId(String newSceneId) {
+    /// Will not work if list got created with const
+    try {
+      roomScenesId.getOrCrash().add(newSceneId);
+    } catch (e) {
+      logger.e('Will not work if list got created with const');
+    }
+  }
+
   void deleteIdIfExist(String id) {
     roomDevicesId.getOrCrash().removeWhere((element) => element == id);
   }

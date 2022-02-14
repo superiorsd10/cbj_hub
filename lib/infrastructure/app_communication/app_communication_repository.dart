@@ -16,6 +16,7 @@ import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_swi
 import 'package:cbj_hub/domain/node_red/i_node_red_repository.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
+import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
@@ -107,7 +108,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         HubRequestsToApp.streamRequestsToApp.sink.add(deviceDtoAbstract);
       });
 
-      (await getIt<INodeRedRepository>().getAllScenes()).forEach((key, value) {
+      (await getIt<INodeRedRepository>().getAllNodeRedScenes())
+          .forEach((key, value) {
         HubRequestsToApp.streamRequestsToApp.sink.add(value.toInfrastructure());
       });
     });
@@ -135,7 +137,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           jsonDecode(event.allRemoteCommands) as Map<String, dynamic>,
         ).toDomain();
 
-        getIt<ISavedDevicesRepo>().saveAndActiveRoomToDb(
+        getIt<ISavedRoomsRepo>().saveAndActiveRoomToDb(
           roomEntity: roomEntityFromApp,
         );
 
@@ -149,6 +151,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           loginEntity: loginEntityFromApp,
         );
       } else if (event.sendingType == SendingType.firstConnection) {
+        AppCommunicationRepository.sendAllRoomsFromHubRequestsStream();
         AppCommunicationRepository.sendAllDevicesFromHubRequestsStream();
         AppCommunicationRepository.sendAllScenesFromHubRequestsStream();
       } else if (event.sendingType == SendingType.remotePipesInformation) {
@@ -167,7 +170,8 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         SceneCbjDtos sceneCbjDtos =
             SceneCbjDtos.fromJson(jsonSceneFromJsonString);
 
-        getIt<INodeRedRepository>().createNewScene(sceneCbjDtos.toDomain());
+        getIt<INodeRedRepository>()
+            .createNewNodeRedScene(sceneCbjDtos.toDomain());
       } else {
         logger.w('Request from app does not support this sending device type');
       }
@@ -312,6 +316,22 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     }
   }
 
+  /// Trigger to send all rooms from hub to app using the
+  /// HubRequestsToApp stream
+  static Future<void> sendAllRoomsFromHubRequestsStream() async {
+    final Map<String, RoomEntity> allRooms =
+        await getIt<ISavedRoomsRepo>().getAllRooms();
+
+    if (allRooms.isNotEmpty) {
+      allRooms.map((String id, RoomEntity d) {
+        HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
+        return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
+      });
+    } else {
+      logger.w("Can't find rooms in the network");
+    }
+  }
+
   /// Trigger to send all devices from hub to app using the
   /// HubRequestsToApp stream
   static Future<void> sendAllDevicesFromHubRequestsStream() async {
@@ -319,7 +339,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         await getIt<ISavedDevicesRepo>().getAllDevices();
 
     final Map<String, RoomEntity> allRooms =
-        await getIt<ISavedDevicesRepo>().getAllRooms();
+        await getIt<ISavedRoomsRepo>().getAllRooms();
 
     if (allRooms.isNotEmpty) {
       allRooms.map((String id, RoomEntity d) {
@@ -339,20 +359,13 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     }
   }
 
-  /// Trigger to send all devices from hub to app using the
+  /// Trigger to send all scenes from hub to app using the
   /// HubRequestsToApp stream
   static Future<void> sendAllScenesFromHubRequestsStream() async {
     final Map<String, SceneCbj> allScenes =
-        await getIt<INodeRedRepository>().getAllScenes();
+        await getIt<INodeRedRepository>().getAllNodeRedScenes();
 
-    // final Map<String, RoomEntity> allRooms =
-    //     await getIt<ISavedDevicesRepo>().getAllRooms();
-    //
     if (allScenes.isNotEmpty) {
-      //   allRooms.map((String id, RoomEntity d) {
-      //     HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
-      //     return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
-      //   });
       allScenes.map((String id, SceneCbj d) {
         HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
         return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));

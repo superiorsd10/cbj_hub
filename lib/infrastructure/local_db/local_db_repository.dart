@@ -118,6 +118,8 @@ class HiveRepository extends ILocalDbRepository {
       }
     } catch (e) {
       logger.e('Local DB hive error while getting rooms: $e');
+      // TODO: Check why hive crash stop this from working
+      await deleteAllSavedRooms();
     }
 
     /// Gets all rooms from db, if there are non it will create and return
@@ -444,5 +446,9 @@ class HiveRepository extends ILocalDbRepository {
       return left(const LocalDbFailures.unexpected());
     }
     return right(unit);
+  }
+
+  Future<void> deleteAllSavedRooms() async {
+    await saveRoomsToDb(roomsList: []);
   }
 }
