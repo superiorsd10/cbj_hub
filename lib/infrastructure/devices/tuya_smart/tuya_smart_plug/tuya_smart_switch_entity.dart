@@ -64,7 +64,8 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
       if (newEntity.smartPlugState!.getOrCrash() !=
               smartPlugState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.smartPlugState!.getOrCrash(),
         );
 

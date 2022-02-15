@@ -21,6 +21,23 @@ class MqttServerRepository extends IMqttServerRepository {
 
   static const String devicesTopicTypeName = 'Devices';
 
+  static const String scenesTopicTypeName = 'Scenes';
+
+  @override
+  String getHubBaseTopic() {
+    return hubBaseTopic;
+  }
+
+  @override
+  String getDevicesTopicTypeName() {
+    return devicesTopicTypeName;
+  }
+
+  @override
+  String getScenesTopicTypeName() {
+    return scenesTopicTypeName;
+  }
+
   /// Connect the client to mqtt if not in connecting or connected state already
   @override
   Future<MqttServerClient> connect() async {

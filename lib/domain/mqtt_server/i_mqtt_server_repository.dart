@@ -4,6 +4,16 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:mqtt_client/src/observable/src/records.dart';
 
 abstract class IMqttServerRepository {
+  // static const String hubBaseTopic = 'CBJ_Hub_Topic';
+  //
+  // static const String devicesTopicTypeName = 'Devices';
+
+  String getHubBaseTopic();
+
+  String getDevicesTopicTypeName();
+
+  String getScenesTopicTypeName();
+
   ///Connecting the hub client to broker
   Future<MqttServerClient> connect();
 

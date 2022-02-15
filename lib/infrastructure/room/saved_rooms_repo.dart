@@ -7,7 +7,7 @@ import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/room/value_objects_room.dart';
 import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
-import 'package:cbj_hub/domain/scene/scene_cbj.dart';
+import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
@@ -52,7 +52,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     return null;
   }
 
-  RoomEntity? getRoomSceneExistIn(SceneCbj sceneCbj) {
+  RoomEntity? getRoomSceneExistIn(SceneCbjEntity sceneCbj) {
     final String uniqueId = sceneCbj.uniqueId.getOrCrash();
     for (final RoomEntity roomEntity in _allRooms.values) {
       if (roomEntity.roomScenesId.getOrCrash().contains(uniqueId)) {
@@ -87,7 +87,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
   }
 
   @override
-  void addSceneToRoomDiscoveredIfNotExist(SceneCbj sceneCbjEntity) {
+  void addSceneToRoomDiscoveredIfNotExist(SceneCbjEntity sceneCbjEntity) {
     final RoomEntity? roomEntity = getRoomSceneExistIn(sceneCbjEntity);
     if (roomEntity != null) {
       return;

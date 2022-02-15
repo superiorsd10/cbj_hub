@@ -13,12 +13,13 @@ import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_ligh
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic_switch_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
-import 'package:cbj_hub/domain/node_red/i_node_red_repository.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
-import 'package:cbj_hub/domain/scene/scene_cbj.dart';
+import 'package:cbj_hub/domain/scene/i_scene_cbj_repository.dart';
+import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
+import 'package:cbj_hub/domain/scene/value_objects_scene_cbj.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
@@ -108,7 +109,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         HubRequestsToApp.streamRequestsToApp.sink.add(deviceDtoAbstract);
       });
 
-      (await getIt<INodeRedRepository>().getAllNodeRedScenes())
+      (await getIt<ISceneCbjRepository>().getAllScenesAsMap())
           .forEach((key, value) {
         HubRequestsToApp.streamRequestsToApp.sink.add(value.toInfrastructure());
       });
@@ -167,11 +168,25 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         final Map<String, dynamic> jsonSceneFromJsonString =
             jsonDecode(event.allRemoteCommands) as Map<String, dynamic>;
 
-        SceneCbjDtos sceneCbjDtos =
-            SceneCbjDtos.fromJson(jsonSceneFromJsonString);
+        final SceneCbjEntity sceneCbj =
+            SceneCbjDtos.fromJson(jsonSceneFromJsonString).toDomain();
 
-        getIt<INodeRedRepository>()
-            .createNewNodeRedScene(sceneCbjDtos.toDomain());
+        final String sceneStateGrpcTemp =
+            sceneCbj.deviceStateGRPC.getOrCrash()!;
+
+        sceneCbj.copyWith(
+          deviceStateGRPC: SceneCbjDeviceStateGRPC(
+            DeviceStateGRPC.waitingInComp.toString(),
+          ),
+        );
+
+        // TODO: add new type for adding new scenes and not use noDevicesToTransfer
+        if (sceneStateGrpcTemp ==
+            DeviceStateGRPC.noDevicesToTransfer.toString()) {
+          getIt<ISceneCbjRepository>().addNewScene(sceneCbj);
+        } else {
+          getIt<ISceneCbjRepository>().activateScene(sceneCbj);
+        }
       } else {
         logger.w('Request from app does not support this sending device type');
       }
@@ -362,18 +377,33 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
   /// Trigger to send all scenes from hub to app using the
   /// HubRequestsToApp stream
   static Future<void> sendAllScenesFromHubRequestsStream() async {
-    final Map<String, SceneCbj> allScenes =
-        await getIt<INodeRedRepository>().getAllNodeRedScenes();
+    final Map<String, SceneCbjEntity> allScenes =
+        await getIt<ISceneCbjRepository>().getAllScenesAsMap();
 
     if (allScenes.isNotEmpty) {
-      allScenes.map((String id, SceneCbj d) {
+      allScenes.map((String id, SceneCbjEntity d) {
         HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
         return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
       });
     } else {
       logger.w("Can't find any scenes in the network, sending empty");
-      final SceneCbj emptyScene =
-          SceneCbj(uniqueId: UniqueId(), name: 'Empty', backgroundColor: 000);
+      final SceneCbjEntity emptyScene = SceneCbjEntity(
+        uniqueId: UniqueId(),
+        name: SceneCbjName('Empty'),
+        backgroundColor: SceneCbjBackgroundColor(000.toString()),
+        firstNodeId: SceneCbjFirstNodeId(null),
+        image: SceneCbjBackgroundImage(null),
+        iconCodePoint: SceneCbjIconCodePoint(null),
+        automationString: SceneCbjAutomationString(null),
+        lastDateOfExecute: SceneCbjLastDateOfExecute(null),
+        deviceStateGRPC:
+            SceneCbjDeviceStateGRPC(DeviceStateGRPC.ack.toString()),
+        senderDeviceModel: SceneCbjSenderDeviceModel(null),
+        senderDeviceOs: SceneCbjSenderDeviceOs(null),
+        senderId: SceneCbjSenderId(null),
+        compUuid: SceneCbjCompUuid(null),
+        stateMassage: SceneCbjStateMassage(null),
+      );
       HubRequestsToApp.streamRequestsToApp.sink
           .add(emptyScene.toInfrastructure());
     }

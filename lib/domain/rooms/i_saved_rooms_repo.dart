@@ -1,7 +1,7 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
-import 'package:cbj_hub/domain/scene/scene_cbj.dart';
+import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class ISavedRoomsRepo {
@@ -14,7 +14,7 @@ abstract class ISavedRoomsRepo {
 
   /// Check if the scene exist in one of the rooms, if not will add it to
   /// Discovered room
-  void addSceneToRoomDiscoveredIfNotExist(SceneCbj sceneCbjEntity);
+  void addSceneToRoomDiscoveredIfNotExist(SceneCbjEntity sceneCbjEntity);
 
   Future<Either<LocalDbFailures, Unit>> saveAndActiveRoomToDb({
     required RoomEntity roomEntity,
