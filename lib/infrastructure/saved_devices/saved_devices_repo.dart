@@ -131,4 +131,12 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     }
     return null;
   }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>>
+      saveAndActivateSmartDevicesToDb() async {
+    return getIt<ILocalDbRepository>().saveSmartDevices(
+      deviceList: List<DeviceEntityAbstract>.from(_allDevices.values),
+    );
+  }
 }

@@ -17,6 +17,8 @@ abstract class ISavedDevicesRepo {
     required RemotePipesEntity remotePipes,
   });
 
+  Future<Either<LocalDbFailures, Unit>> saveAndActivateSmartDevicesToDb();
+
   /// Save login of different form factors to the local db
   Future<Either<LocalDbFailures, Unit>>
       saveAndActivateVendorLoginCredentialsDomainToDb({

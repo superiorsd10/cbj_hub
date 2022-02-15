@@ -1,6 +1,9 @@
+import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
+import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/domain/node_red/i_node_red_repository.dart';
 import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
+import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/scene/i_scene_cbj_repository.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_failures.dart';
@@ -10,27 +13,63 @@ import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: ISceneCbjRepository)
 class SceneCbjRepository implements ISceneCbjRepository {
-  Map<String, SceneCbjEntity> scnesList = {};
+  SceneCbjRepository() {
+    setUpAllFromDb();
+  }
+  Map<String, SceneCbjEntity> _allScnes = {};
+
+  Future<void> setUpAllFromDb() async {
+    /// Delay inorder for the Hive boxes to initialize
+    /// In case you got the following error:
+    /// "HiveError: You need to initialize Hive or provide a path to store
+    /// the box."
+    /// Please increase the duration
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    getIt<ILocalDbRepository>().getScenesFromDb().then((value) {
+      value.fold((l) => null, (r) {
+        r.forEach((element) {
+          addNewScene(element);
+        });
+      });
+    });
+  }
 
   @override
   Future<List<SceneCbjEntity>> getAllScenesAsList() async {
-    return scnesList.values.toList();
+    return _allScnes.values.toList();
   }
 
   @override
   Future<Map<String, SceneCbjEntity>> getAllScenesAsMap() async {
-    return scnesList;
+    return _allScnes;
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveAndActivateSceneToDb() {
+    return getIt<ILocalDbRepository>().saveScenes(
+      sceneList: List<SceneCbjEntity>.from(_allScnes.values),
+    );
   }
 
   @override
   Future<Either<SceneCbjFailure, Unit>> addNewScene(
     SceneCbjEntity sceneCbj,
   ) async {
-    if (!scnesList.keys.contains(sceneCbj.uniqueId.getOrCrash())) {
-      scnesList
+    /// Check if scene already exist
+    if (findSceneIfAlreadyBeenAdded(sceneCbj) == null) {
+      _allScnes
           .addEntries([MapEntry(sceneCbj.uniqueId.getOrCrash(), sceneCbj)]);
+
+      final String entityId = sceneCbj.uniqueId.getOrCrash();
+
+      /// If it is new scene
+      _allScnes[entityId] = sceneCbj;
+
+      await saveAndActivateSceneToDb();
+      await getIt<ISavedDevicesRepo>().saveAndActivateSmartDevicesToDb();
       getIt<ISavedRoomsRepo>().addSceneToRoomDiscoveredIfNotExist(sceneCbj);
-      getIt<INodeRedRepository>().createNewNodeRedScene(sceneCbj);
+      await getIt<INodeRedRepository>().createNewNodeRedScene(sceneCbj);
     }
     return right(unit);
   }
@@ -54,5 +93,13 @@ class SceneCbjRepository implements ISceneCbjRepository {
     final String sceneId = sceneCbj.firstNodeId.getOrCrash()!;
 
     return '$hubBaseTopic/$scenesTopicTypeName/$sceneId';
+  }
+
+  /// Check if all scenes does not contain the same scene already
+  /// Will compare the unique id's that each company sent us
+  SceneCbjEntity? findSceneIfAlreadyBeenAdded(
+    SceneCbjEntity sceneEntity,
+  ) {
+    return _allScnes[sceneEntity.uniqueId.getOrCrash()];
   }
 }

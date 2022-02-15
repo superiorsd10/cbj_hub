@@ -115,13 +115,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     } else {
       _allRooms[roomId] = roomEntity;
     }
-    final Map<String, DeviceEntityAbstract> allDevices =
-        await getIt<ISavedDevicesRepo>().getAllDevices();
-
-    await getIt<ILocalDbRepository>().saveSmartDevices(
-      deviceList: List<DeviceEntityAbstract>.from(allDevices.values),
-    );
-
+    await getIt<ISavedDevicesRepo>().saveAndActivateSmartDevicesToDb();
     return getIt<ILocalDbRepository>().saveRoomsToDb(
       roomsList: List<RoomEntity>.from(_allRooms.values),
     );

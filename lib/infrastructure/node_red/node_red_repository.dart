@@ -21,6 +21,7 @@ class NodeRedRepository extends INodeRedRepository {
 
   @override
   Future<bool> createNewNodeRedScene(SceneCbjEntity sceneCbj) async {
+    // TODO: Check if sceneCbj unique Id exist, if so don't try to add it again
     final Response response = await nodeRedAPI.postFlow(
       label: sceneCbj.name.getOrCrash(),
       nodes: sceneCbj.automationString.getOrCrash()!,

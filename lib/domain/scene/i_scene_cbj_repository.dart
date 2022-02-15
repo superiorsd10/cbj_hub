@@ -1,3 +1,4 @@
+import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_failures.dart';
 import 'package:dartz/dartz.dart';
@@ -11,6 +12,8 @@ abstract class ISceneCbjRepository {
   Future<Either<SceneCbjFailure, Unit>> addNewScene(
     SceneCbjEntity sceneCbj,
   );
+
+  Future<Either<LocalDbFailures, Unit>> saveAndActivateSceneToDb();
 
   Future<bool> activateScene(
     SceneCbjEntity sceneCbj,
