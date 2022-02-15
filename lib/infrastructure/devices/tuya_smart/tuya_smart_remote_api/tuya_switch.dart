@@ -1,4 +1,4 @@
-import 'tuya_device_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
 
 class TuyaSwitch extends TuyaDeviceAbstract {
   TuyaSwitch({

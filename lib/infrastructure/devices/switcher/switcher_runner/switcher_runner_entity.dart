@@ -43,10 +43,8 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
           powerConsumption: powerConsumption,
           blindsSwitchState: blindsSwitchState,
         ) {
-    if (switcherPort == null) {
-      switcherPort =
-          SwitcherPort(SwitcherApiObject.switcherTcpPort2.toString());
-    }
+    switcherPort ??=
+        SwitcherPort(SwitcherApiObject.switcherTcpPort2.toString());
     switcherObject = SwitcherApiObject(
       deviceType: SwitcherDevicesTypes.switcherRunner,
       deviceId: vendorUniqueId.getOrCrash(),
@@ -89,7 +87,8 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
       if (newEntity.blindsSwitchState!.getOrCrash() !=
               blindsSwitchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.blindsSwitchState!.getOrCrash(),
         );
 

@@ -1,9 +1,8 @@
 import 'dart:convert';
 
+import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/tuya_device_abstract.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:http/http.dart';
-
-import 'tuya_device_abstract.dart';
 
 /// Tuya integration with cloud API
 class CloudTuya {

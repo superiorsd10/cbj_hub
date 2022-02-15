@@ -60,7 +60,8 @@ class CompanysConnectorConjector {
   }
 
   static void addAllDevicesToItsRepos(
-      Map<String, DeviceEntityAbstract> allDevices) {
+    Map<String, DeviceEntityAbstract> allDevices,
+  ) {
     for (final String deviceId in allDevices.keys) {
       final MapEntry<String, DeviceEntityAbstract> currentDeviceMapEntry =
           MapEntry<String, DeviceEntityAbstract>(

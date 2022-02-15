@@ -4,19 +4,11 @@ import 'package:dartz/dartz.dart';
 Either<CoreFailure<String>, String> validateTasmotaDeviceTopicNameNotEmpty(
   String input,
 ) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }
 
 Either<CoreFailure<String>, String> validateTasmotaDeviceIdNotEmpty(
   String input,
 ) {
-  if (input != null) {
-    return right(input);
-  } else {
-    return left(CoreFailure.empty(failedValue: input));
-  }
+  return right(input);
 }

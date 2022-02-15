@@ -63,7 +63,8 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     try {
       if (newEntity.switchState!.getOrCrash() != switchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.switchState!.getOrCrash(),
         );
 
@@ -101,7 +102,6 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     switchState = GenericSwitchSwitchState(DeviceActions.on.toString());
     try {
@@ -114,7 +114,6 @@ class TuyaSmartSwitchEntity extends GenericSwitchDE {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
     switchState = GenericSwitchSwitchState(DeviceActions.off.toString());
 

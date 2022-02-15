@@ -49,10 +49,10 @@ class CommonBatchCommandsD implements SystemCommandsBaseClassD {
   }
 
   @override
-  Future<String> getFileContent(fileFullPath) async {
+  Future<String> getFileContent(String fileFullPath) async {
     final String fileText = await Process.run(
       'cmd',
-      <String>['/C', 'more', fileFullPath.toString()],
+      <String>['/C', 'more', fileFullPath],
     ).then((ProcessResult result) {
       return result.stdout.toString();
     });

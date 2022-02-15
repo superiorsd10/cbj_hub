@@ -8,6 +8,7 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/proto_gen_date.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/device_entity_dto_abstract.dart';
 import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
+import 'package:cbj_hub/infrastructure/scenes/scene_cbj_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/service_api.dart';
@@ -32,18 +33,21 @@ class HubAppServer extends CbjHubServiceBase {
         isRemotePipes: false,
       );
 
-      yield* HubRequestsToApp.streamRequestsToApp
-          .map((dynamic deviceEntityDto) {
-        if (deviceEntityDto is DeviceEntityDtoAbstract) {
+      yield* HubRequestsToApp.streamRequestsToApp.map((dynamic entityDto) {
+        if (entityDto is DeviceEntityDtoAbstract) {
           return RequestsAndStatusFromHub(
             sendingType: SendingType.deviceType,
-            allRemoteCommands:
-                DeviceHelper.convertDtoToJsonString(deviceEntityDto),
+            allRemoteCommands: DeviceHelper.convertDtoToJsonString(entityDto),
           );
-        } else if (deviceEntityDto is RoomEntityDtos) {
+        } else if (entityDto is RoomEntityDtos) {
           return RequestsAndStatusFromHub(
             sendingType: SendingType.roomType,
-            allRemoteCommands: jsonEncode(deviceEntityDto.toJson()),
+            allRemoteCommands: jsonEncode(entityDto.toJson()),
+          );
+        } else if (entityDto is SceneCbjDtos) {
+          return RequestsAndStatusFromHub(
+            sendingType: SendingType.sceneType,
+            allRemoteCommands: jsonEncode(entityDto.toJson()),
           );
         } else {
           return RequestsAndStatusFromHub(

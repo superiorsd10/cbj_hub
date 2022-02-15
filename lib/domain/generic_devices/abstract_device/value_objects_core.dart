@@ -44,7 +44,6 @@ class CoreUniqueId extends ValueObjectCore<String> {
   }
 
   factory CoreUniqueId.fromUniqueString(String uniqueId) {
-    assert(uniqueId != null);
     return CoreUniqueId._(right(uniqueId));
   }
 
@@ -61,7 +60,6 @@ class VendorUniqueId extends ValueObjectCore<String> {
   }
 
   factory VendorUniqueId.fromUniqueString(String uniqueId) {
-    assert(uniqueId != null);
     return VendorUniqueId._(right(uniqueId));
   }
 
@@ -241,7 +239,6 @@ class DeviceLastKnownIp extends ValueObjectCore<String> {
 
 class DevicePowerConsumption extends ValueObjectCore<String> {
   factory DevicePowerConsumption(String input) {
-    assert(input != null);
     return DevicePowerConsumption._(
       validatePowerConsumptionNotEmpty(input),
     );
@@ -276,6 +273,20 @@ class DeviceSecondWiFiName extends ValueObjectCore<String> {
   }
 
   const DeviceSecondWiFiName._(this.value);
+
+  @override
+  final Either<CoreFailure<String>, String> value;
+}
+
+class DevicePort extends ValueObjectCore<String> {
+  factory DevicePort(String? input) {
+    assert(input != null);
+    return DevicePort._(
+      validatePortNotEmpty(input!),
+    );
+  }
+
+  const DevicePort._(this.value);
 
   @override
   final Either<CoreFailure<String>, String> value;

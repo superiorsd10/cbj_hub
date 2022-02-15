@@ -64,7 +64,8 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
       if (newEntity.smartPlugState!.getOrCrash() !=
               smartPlugState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.smartPlugState!.getOrCrash(),
         );
 
@@ -102,7 +103,6 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
     smartPlugState = GenericSmartPlugState(DeviceActions.on.toString());
     try {
@@ -115,7 +115,6 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
     }
   }
 
-  @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
     smartPlugState = GenericSmartPlugState(DeviceActions.off.toString());
 

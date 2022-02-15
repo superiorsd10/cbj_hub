@@ -20,7 +20,6 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
     return 'Success';
   }
 
-  @override
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   static lifx.Client? lifxClient;

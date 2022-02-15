@@ -10,7 +10,6 @@ import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
-import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:yeedart/yeedart.dart';
 
@@ -101,7 +100,8 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       if (newEntity.lightSwitchState!.getOrCrash() !=
               lightSwitchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.lightSwitchState!.getOrCrash(),
         );
 
@@ -328,15 +328,11 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       return right(unit);
     } catch (e) {
       await Future.delayed(const Duration(milliseconds: 150));
-      final responses = await Yeelight.discover();
+      final List<DiscoveryResponse> responses = await Yeelight.discover();
 
-      final response = responses.firstWhereOrNull(
+      final response = responses.firstWhere(
         (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
       );
-      if (response == null) {
-        logger.v('Device cant be discovered');
-        return left(const CoreFailure.unableToUpdate());
-      }
 
       yeelightPackageObject =
           Device(address: response.address, port: response.port!);
@@ -364,13 +360,9 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
       await Future.delayed(const Duration(milliseconds: 150));
       final responses = await Yeelight.discover();
 
-      final response = responses.firstWhereOrNull(
+      final response = responses.firstWhere(
         (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
       );
-      if (response == null) {
-        logger.v('Device cant be discovered');
-        return left(const CoreFailure.unableToUpdate());
-      }
 
       yeelightPackageObject =
           Device(address: response.address, port: response.port!);
@@ -408,13 +400,9 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
         final responses = await Yeelight.discover();
 
-        final response = responses.firstWhereOrNull(
+        final response = responses.firstWhere(
           (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
-        if (response == null) {
-          logger.v('Device cant be discovered');
-          return left(const CoreFailure.unexpected());
-        }
 
         yeelightPackageObject =
             Device(address: response.address, port: response.port!);
@@ -459,13 +447,9 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
         final responses = await Yeelight.discover();
 
-        final response = responses.firstWhereOrNull(
+        final response = responses.firstWhere(
           (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
-        if (response == null) {
-          logger.v('Device cant be discovered');
-          return left(const CoreFailure.unableToUpdate());
-        }
 
         yeelightPackageObject =
             Device(address: response.address, port: response.port!);
@@ -517,13 +501,9 @@ class Yeelight1SeEntity extends GenericRgbwLightDE {
 
         final responses = await Yeelight.discover();
 
-        final response = responses.firstWhereOrNull(
+        final response = responses.firstWhere(
           (element) => element.id.toString() == vendorUniqueId.getOrCrash(),
         );
-        if (response == null) {
-          logger.v('Device cant be discovered');
-          return left(const CoreFailure.unableToUpdate());
-        }
 
         yeelightPackageObject =
             Device(address: response.address, port: response.port!);
