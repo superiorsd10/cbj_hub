@@ -67,7 +67,8 @@ class ChromeCastEntity extends GenericSmartTvDE {
       if (newEntity.lightSwitchState!.getOrCrash() !=
               smartTvSwitchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.lightSwitchState!.getOrCrash(),
         );
 

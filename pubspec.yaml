@@ -47,7 +47,7 @@ dependencies:
   # Service discovery over multicast DNS (mDNS), Bonjour, and Avahi.
   multicast_dns: ^0.3.2
   # Helps you discover open ports, devices on subnet and more.
-  network_tools: ^1.0.7
+  network_tools: ^1.0.8
   # Provides runtime support for a Dart implementation of protobufs.
   protobuf: ^2.0.1
   # Extends the capabilities of Dart Streams and StreamControllers.
@@ -71,6 +71,6 @@ dev_dependencies:
   # Collection of lint rules for Dart and Flutter projects
   lint: ^1.8.2
   # Library for mocks
-  mockito: ^5.0.17
+  mockito: ^5.1.0
   # A full featured library for writing and running Dart tests across platforms.
   test: ^1.20.1

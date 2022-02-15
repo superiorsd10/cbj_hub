@@ -225,4 +225,20 @@ class GenericRgbwLightDE extends DeviceEntityAbstract {
       ),
     );
   }
+
+  @override
+  bool replaceActionIfExist(String action) {
+    if (GenericRgbwLightSwitchState.rgbwLightValidActions().contains(action)) {
+      lightSwitchState = GenericRgbwLightSwitchState(action);
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  List<String> getListOfPropertiesToChange() {
+    return [
+      'lightSwitchState',
+    ];
+  }
 }

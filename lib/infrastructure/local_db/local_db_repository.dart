@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
@@ -5,6 +7,8 @@ import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/room/value_objects_room.dart';
+import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
+import 'package:cbj_hub/domain/scene/value_objects_scene_cbj.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/value_login_objects_core.dart';
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart';
@@ -17,8 +21,10 @@ import 'package:cbj_hub/infrastructure/local_db/hive_objects/devices_hive_model.
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/hub_entity_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/remote_pipes_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/rooms_hive_model.dart';
+import 'package:cbj_hub/infrastructure/local_db/hive_objects/scenes_hive_model.dart';
 import 'package:cbj_hub/infrastructure/local_db/hive_objects/tuya_vendor_credentials_hive_model.dart';
 import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
+import 'package:cbj_hub/infrastructure/scenes/scene_cbj_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
@@ -44,6 +50,7 @@ class HiveRepository extends ILocalDbRepository {
     Hive.registerAdapter(RemotePipesHiveModelAdapter());
     Hive.registerAdapter(RoomsHiveModelAdapter());
     Hive.registerAdapter(DevicesHiveModelAdapter());
+    Hive.registerAdapter(ScenesHiveModelAdapter());
     Hive.registerAdapter(HubEntityHiveModelAdapter());
     Hive.registerAdapter(TuyaVendorCredentialsHiveModelAdapter());
     loadFromDb();
@@ -110,6 +117,7 @@ class HiveRepository extends ILocalDbRepository {
           defaultName: RoomDefaultName(roomHive.roomDefaultName),
           roomTypes: RoomTypes(roomHive.roomTypes),
           roomDevicesId: RoomDevicesId(roomHive.roomDevicesId),
+          roomScenesId: RoomScenesId(roomHive.roomScenesId),
           roomMostUsedBy: RoomMostUsedBy(roomHive.roomMostUsedBy),
           roomPermissions: RoomPermissions(roomHive.roomPermissions),
         );
@@ -117,6 +125,8 @@ class HiveRepository extends ILocalDbRepository {
       }
     } catch (e) {
       logger.e('Local DB hive error while getting rooms: $e');
+      // TODO: Check why hive crash stop this from working
+      await deleteAllSavedRooms();
     }
 
     /// Gets all rooms from db, if there are non it will create and return
@@ -269,28 +279,28 @@ class HiveRepository extends ILocalDbRepository {
     required List<DeviceEntityAbstract> deviceList,
   }) async {
     try {
-      final List<DevicesHiveModel> roomsHiveList = [];
+      final List<DevicesHiveModel> devicesHiveList = [];
 
       final List<String> devicesListStringJson = List<String>.from(
         deviceList.map((e) => DeviceHelper.convertDomainToJsonString(e)),
       );
 
       for (final String devicesEntityDtosJsonString in devicesListStringJson) {
-        final DevicesHiveModel roomsHiveModel = DevicesHiveModel()
+        final DevicesHiveModel devicesHiveModel = DevicesHiveModel()
           ..deviceStringJson = devicesEntityDtosJsonString;
-        roomsHiveList.add(roomsHiveModel);
+        devicesHiveList.add(devicesHiveModel);
       }
 
       final Box<DevicesHiveModel> devicesBox =
           await Hive.openBox<DevicesHiveModel>(devicesBoxName);
 
       await devicesBox.clear();
-      await devicesBox.addAll(roomsHiveList);
+      await devicesBox.addAll(devicesHiveList);
 
       await devicesBox.close();
       logger.i('Devices got saved to local storage');
     } catch (e) {
-      logger.e('Error saving Devices to local storage/n$e');
+      logger.e('Error saving Devices to local storage\n$e');
       return left(const LocalDbFailures.unexpected());
     }
 
@@ -442,6 +452,76 @@ class HiveRepository extends ILocalDbRepository {
       logger.e('Error saving Remote Pipes to local storage');
       return left(const LocalDbFailures.unexpected());
     }
+    return right(unit);
+  }
+
+  Future<void> deleteAllSavedRooms() async {
+    await saveRoomsToDb(roomsList: []);
+  }
+
+  @override
+  Future<Either<LocalDbFailures, List<SceneCbjEntity>>>
+      getScenesFromDb() async {
+    final List<SceneCbjEntity> scenes = <SceneCbjEntity>[];
+
+    try {
+      final Box<ScenesHiveModel> scenesBox =
+          await Hive.openBox<ScenesHiveModel>(scenesBoxName);
+
+      final List<ScenesHiveModel> scenesHiveModelFromDb =
+          scenesBox.values.toList().cast<ScenesHiveModel>();
+
+      await scenesBox.close();
+
+      for (final ScenesHiveModel sceneHive in scenesHiveModelFromDb) {
+        final SceneCbjEntity sceneEntity = SceneCbjDtos.fromJson(
+          jsonDecode(sceneHive.scenesStringJson) as Map<String, dynamic>,
+        ).toDomain();
+
+        scenes.add(
+          sceneEntity.copyWith(
+            deviceStateGRPC: SceneCbjDeviceStateGRPC(
+              DeviceStateGRPC.waitingInComp.toString(),
+            ),
+          ),
+        );
+      }
+      return right(scenes);
+    } catch (e) {
+      logger.e('Local DB hive error while getting devices: $e');
+    }
+    return left(const LocalDbFailures.unexpected());
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveScenes(
+      {required List<SceneCbjEntity> sceneList}) async {
+    try {
+      final List<ScenesHiveModel> scenesHiveList = [];
+
+      final List<String> scenesListStringJson = List<String>.from(
+        sceneList.map((e) => jsonEncode(e.toInfrastructure().toJson())),
+      );
+
+      for (final String scenesEntityDtosJsonString in scenesListStringJson) {
+        final ScenesHiveModel scenesHiveModel = ScenesHiveModel()
+          ..scenesStringJson = scenesEntityDtosJsonString;
+        scenesHiveList.add(scenesHiveModel);
+      }
+
+      final Box<ScenesHiveModel> scenesBox =
+          await Hive.openBox<ScenesHiveModel>(scenesBoxName);
+
+      await scenesBox.clear();
+      await scenesBox.addAll(scenesHiveList);
+
+      await scenesBox.close();
+      logger.i('Scenes got saved to local storage');
+    } catch (e) {
+      logger.e('Error saving Scenes to local storage\n$e');
+      return left(const LocalDbFailures.unexpected());
+    }
+
     return right(unit);
   }
 }

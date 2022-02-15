@@ -87,7 +87,8 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
       if (newEntity.blindsSwitchState!.getOrCrash() !=
               blindsSwitchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.blindsSwitchState!.getOrCrash(),
         );
 

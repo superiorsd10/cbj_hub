@@ -5,8 +5,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abs
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
-import 'package:cbj_hub/domain/room/room_entity.dart';
-import 'package:cbj_hub/domain/room/value_objects_room.dart';
+import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
@@ -25,9 +24,6 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
   static final HashMap<String, DeviceEntityAbstract> _allDevices =
       HashMap<String, DeviceEntityAbstract>();
 
-  static final HashMap<String, RoomEntity> _allRooms =
-      HashMap<String, RoomEntity>();
-
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize
     /// In case you got the following error:
@@ -35,13 +31,6 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     /// the box."
     /// Please increase the duration
     await Future.delayed(const Duration(milliseconds: 100));
-    getIt<ILocalDbRepository>().getRoomsFromDb().then((value) {
-      value.fold((l) => null, (r) {
-        r.forEach((element) {
-          addOrUpdateRoom(element);
-        });
-      });
-    });
 
     getIt<ILocalDbRepository>().getSmartDevicesFromDb().then((value) {
       value.fold((l) => null, (r) {
@@ -55,21 +44,6 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
   @override
   Future<Map<String, DeviceEntityAbstract>> getAllDevices() async {
     return _allDevices;
-  }
-
-  @override
-  Future<Map<String, RoomEntity>> getAllRooms() async {
-    return _allRooms;
-  }
-
-  RoomEntity? getRoomDeviceExistIn(DeviceEntityAbstract deviceEntityAbstract) {
-    final String uniqueId = deviceEntityAbstract.uniqueId.getOrCrash();
-    for (final RoomEntity roomEntity in _allRooms.values) {
-      if (roomEntity.roomDevicesId.getOrCrash().contains(uniqueId)) {
-        return roomEntity;
-      }
-    }
-    return null;
   }
 
   @override
@@ -99,7 +73,7 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     /// If it is new device
     _allDevices[entityId] = deviceEntity;
 
-    addDeviceToRoomDiscoveredIfNotExist(deviceEntity);
+    getIt<ISavedRoomsRepo>().addDeviceToRoomDiscoveredIfNotExist(deviceEntity);
 
     return deviceEntity;
 
@@ -116,86 +90,6 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
     //     allRooms[discoveredRoomId]!,
     //   ),
     // );
-  }
-
-  @override
-  RoomEntity addOrUpdateRoom(RoomEntity roomEntity) {
-    _allRooms.addEntries([
-      MapEntry<String, RoomEntity>(roomEntity.uniqueId.getOrCrash(), roomEntity)
-    ]);
-    return roomEntity;
-  }
-
-  @override
-  void addDeviceToRoomDiscoveredIfNotExist(DeviceEntityAbstract deviceEntity) {
-    final RoomEntity? roomEntity = getRoomDeviceExistIn(deviceEntity);
-    if (roomEntity != null) {
-      return;
-    }
-    final String discoveredRoomId =
-        RoomUniqueId.discoveredRoomId().getOrCrash();
-
-    if (_allRooms[discoveredRoomId] == null) {
-      _allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
-    } else {
-      _allRooms[discoveredRoomId]!
-          .addDeviceId(deviceEntity.uniqueId.getOrCrash());
-    }
-  }
-
-  @override
-  Future<Either<LocalDbFailures, Unit>> saveAndActiveRoomToDb({
-    required RoomEntity roomEntity,
-  }) async {
-    final String roomId = roomEntity.uniqueId.getOrCrash();
-
-    await removeSameDevicesFromOtherRooms(roomEntity);
-
-    if (_allRooms[roomId] == null) {
-      _allRooms.addEntries([MapEntry(roomId, roomEntity)]);
-    } else {
-      _allRooms[roomId] = roomEntity;
-    }
-    await getIt<ILocalDbRepository>().saveSmartDevices(
-      deviceList: List<DeviceEntityAbstract>.from(_allDevices.values),
-    );
-
-    return getIt<ILocalDbRepository>().saveRoomsToDb(
-      roomsList: List<RoomEntity>.from(_allRooms.values),
-    );
-  }
-
-  /// Remove all devices ID in our room from all other rooms to prevent
-  /// duplicate
-  Future<void> removeSameDevicesFromOtherRooms(RoomEntity roomEntity) async {
-    final List<String> devicesIdInTheRoom =
-        List.from(roomEntity.roomDevicesId.getOrCrash());
-    if (devicesIdInTheRoom.isEmpty) {
-      return;
-    }
-
-    for (final RoomEntity roomEntityTemp in _allRooms.values) {
-      if (roomEntityTemp.roomDevicesId.failureOrUnit != right(unit)) {
-        continue;
-      }
-      final List<String> roomIdesTempList =
-          List.from(roomEntityTemp.roomDevicesId.getOrCrash());
-
-      for (final String roomIdTemp in roomIdesTempList) {
-        final int indexOfDeviceId = devicesIdInTheRoom.indexOf(roomIdTemp);
-
-        /// If device id exist in other room than delete it from that room
-        if (indexOfDeviceId != -1) {
-          roomEntityTemp.deleteIdIfExist(roomIdTemp);
-
-          devicesIdInTheRoom.removeAt(indexOfDeviceId);
-          if (devicesIdInTheRoom.isEmpty) {
-            return;
-          }
-          continue;
-        }
-      }
-    }
   }
 
   @override
@@ -236,5 +130,13 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
       }
     }
     return null;
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>>
+      saveAndActivateSmartDevicesToDb() async {
+    return getIt<ILocalDbRepository>().saveSmartDevices(
+      deviceList: List<DeviceEntityAbstract>.from(_allDevices.values),
+    );
   }
 }

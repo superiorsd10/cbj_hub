@@ -59,7 +59,8 @@ class TasmotaLedEntity extends GenericLightDE {
       if (newEntity.lightSwitchState!.getOrCrash() !=
               lightSwitchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.lightSwitchState!.getOrCrash(),
         );
 

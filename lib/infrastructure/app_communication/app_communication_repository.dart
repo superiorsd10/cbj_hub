@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
+import 'package:cbj_hub/domain/core/value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_entity.dart';
@@ -14,7 +15,11 @@ import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
+import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
+import 'package:cbj_hub/domain/scene/i_scene_cbj_repository.dart';
+import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
+import 'package:cbj_hub/domain/scene/value_objects_scene_cbj.dart';
 import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/app_communication/hub_app_server.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
@@ -24,6 +29,7 @@ import 'package:cbj_hub/infrastructure/generic_vendors_login/vendor_helper.dart'
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_client.dart';
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
 import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
+import 'package:cbj_hub/infrastructure/scenes/scene_cbj_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:grpc/grpc.dart';
@@ -102,6 +108,11 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
             DeviceHelper.convertDomainToDto(deviceEntityToSend);
         HubRequestsToApp.streamRequestsToApp.sink.add(deviceDtoAbstract);
       });
+
+      (await getIt<ISceneCbjRepository>().getAllScenesAsMap())
+          .forEach((key, value) {
+        HubRequestsToApp.streamRequestsToApp.sink.add(value.toInfrastructure());
+      });
     });
   }
 
@@ -127,7 +138,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           jsonDecode(event.allRemoteCommands) as Map<String, dynamic>,
         ).toDomain();
 
-        getIt<ISavedDevicesRepo>().saveAndActiveRoomToDb(
+        getIt<ISavedRoomsRepo>().saveAndActiveRoomToDb(
           roomEntity: roomEntityFromApp,
         );
 
@@ -141,7 +152,9 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           loginEntity: loginEntityFromApp,
         );
       } else if (event.sendingType == SendingType.firstConnection) {
+        AppCommunicationRepository.sendAllRoomsFromHubRequestsStream();
         AppCommunicationRepository.sendAllDevicesFromHubRequestsStream();
+        AppCommunicationRepository.sendAllScenesFromHubRequestsStream();
       } else if (event.sendingType == SendingType.remotePipesInformation) {
         final Map<String, dynamic> jsonDecoded =
             jsonDecode(event.allRemoteCommands) as Map<String, dynamic>;
@@ -151,6 +164,29 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
 
         getIt<ISavedDevicesRepo>()
             .saveAndActivateRemotePipesDomainToDb(remotePipes: remotePipes);
+      } else if (event.sendingType == SendingType.sceneType) {
+        final Map<String, dynamic> jsonSceneFromJsonString =
+            jsonDecode(event.allRemoteCommands) as Map<String, dynamic>;
+
+        final SceneCbjEntity sceneCbj =
+            SceneCbjDtos.fromJson(jsonSceneFromJsonString).toDomain();
+
+        final String sceneStateGrpcTemp =
+            sceneCbj.deviceStateGRPC.getOrCrash()!;
+
+        sceneCbj.copyWith(
+          deviceStateGRPC: SceneCbjDeviceStateGRPC(
+            DeviceStateGRPC.waitingInComp.toString(),
+          ),
+        );
+
+        // TODO: add new type for adding new scenes and not use noDevicesToTransfer
+        if (sceneStateGrpcTemp ==
+            DeviceStateGRPC.noDevicesToTransfer.toString()) {
+          getIt<ISceneCbjRepository>().addNewScene(sceneCbj);
+        } else {
+          getIt<ISceneCbjRepository>().activateScene(sceneCbj);
+        }
       } else {
         logger.w('Request from app does not support this sending device type');
       }
@@ -295,6 +331,22 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     }
   }
 
+  /// Trigger to send all rooms from hub to app using the
+  /// HubRequestsToApp stream
+  static Future<void> sendAllRoomsFromHubRequestsStream() async {
+    final Map<String, RoomEntity> allRooms =
+        await getIt<ISavedRoomsRepo>().getAllRooms();
+
+    if (allRooms.isNotEmpty) {
+      allRooms.map((String id, RoomEntity d) {
+        HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
+        return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
+      });
+    } else {
+      logger.w("Can't find rooms in the network");
+    }
+  }
+
   /// Trigger to send all devices from hub to app using the
   /// HubRequestsToApp stream
   static Future<void> sendAllDevicesFromHubRequestsStream() async {
@@ -302,7 +354,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         await getIt<ISavedDevicesRepo>().getAllDevices();
 
     final Map<String, RoomEntity> allRooms =
-        await getIt<ISavedDevicesRepo>().getAllRooms();
+        await getIt<ISavedRoomsRepo>().getAllRooms();
 
     if (allRooms.isNotEmpty) {
       allRooms.map((String id, RoomEntity d) {
@@ -319,6 +371,41 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
       final DeviceEntityAbstract emptyDevice = GenericEmptyDE.empty();
       HubRequestsToApp.streamRequestsToApp.sink
           .add(emptyDevice.toInfrastructure());
+    }
+  }
+
+  /// Trigger to send all scenes from hub to app using the
+  /// HubRequestsToApp stream
+  static Future<void> sendAllScenesFromHubRequestsStream() async {
+    final Map<String, SceneCbjEntity> allScenes =
+        await getIt<ISceneCbjRepository>().getAllScenesAsMap();
+
+    if (allScenes.isNotEmpty) {
+      allScenes.map((String id, SceneCbjEntity d) {
+        HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
+        return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
+      });
+    } else {
+      logger.w("Can't find any scenes in the network, sending empty");
+      final SceneCbjEntity emptyScene = SceneCbjEntity(
+        uniqueId: UniqueId(),
+        name: SceneCbjName('Empty'),
+        backgroundColor: SceneCbjBackgroundColor(000.toString()),
+        firstNodeId: SceneCbjFirstNodeId(null),
+        image: SceneCbjBackgroundImage(null),
+        iconCodePoint: SceneCbjIconCodePoint(null),
+        automationString: SceneCbjAutomationString(null),
+        lastDateOfExecute: SceneCbjLastDateOfExecute(null),
+        deviceStateGRPC:
+            SceneCbjDeviceStateGRPC(DeviceStateGRPC.ack.toString()),
+        senderDeviceModel: SceneCbjSenderDeviceModel(null),
+        senderDeviceOs: SceneCbjSenderDeviceOs(null),
+        senderId: SceneCbjSenderId(null),
+        compUuid: SceneCbjCompUuid(null),
+        stateMassage: SceneCbjStateMassage(null),
+      );
+      HubRequestsToApp.streamRequestsToApp.sink
+          .add(emptyScene.toInfrastructure());
     }
   }
 }

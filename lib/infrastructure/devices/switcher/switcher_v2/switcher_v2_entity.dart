@@ -86,7 +86,8 @@ class SwitcherV2Entity extends GenericBoilerDE {
       if (newEntity.boilerSwitchState!.getOrCrash() !=
               boilerSwitchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
-        final DeviceActions? actionToPreform = EnumHelper.stringToDeviceAction(
+        final DeviceActions? actionToPreform =
+            EnumHelperCbj.stringToDeviceAction(
           newEntity.boilerSwitchState!.getOrCrash(),
         );
 
