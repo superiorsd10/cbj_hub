@@ -325,6 +325,7 @@ class HiveRepository extends ILocalDbRepository {
           ..roomUniqueId = roomEntityDtos.uniqueId
           ..roomDefaultName = roomEntityDtos.defaultName
           ..roomDevicesId = roomEntityDtos.roomDevicesId
+          ..roomScenesId = roomEntityDtos.roomScenesId
           ..roomMostUsedBy = roomEntityDtos.roomMostUsedBy
           ..roomPermissions = roomEntityDtos.roomPermissions
           ..roomTypes = roomEntityDtos.roomTypes;
@@ -337,7 +338,7 @@ class HiveRepository extends ILocalDbRepository {
       await roomsBox.close();
       logger.i('Rooms got saved to local storage');
     } catch (e) {
-      logger.e('Error saving Rooms to local storage');
+      logger.e('Error saving Rooms to local storage\n$e');
       return left(const LocalDbFailures.unexpected());
     }
 
