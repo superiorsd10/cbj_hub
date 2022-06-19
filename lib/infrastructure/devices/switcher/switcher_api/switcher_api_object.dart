@@ -212,6 +212,32 @@ class SwitcherApiObject {
     _socket = null;
   }
 
+  /// Stops the blinds
+  Future<void> stopBlinds() async {
+    if (deviceType != SwitcherDevicesTypes.switcherRunner &&
+        deviceType != SwitcherDevicesTypes.switcherRunnerMini) {
+      logger.v('Stop blinds support only for blinds');
+      return;
+    }
+
+    pSession = await _login2();
+    if (pSession == 'B') {
+      logger.e('Switcher run position command error');
+      return;
+    }
+    var data =
+        'fef0590003050102${pSession!}232301000000000000000000${_getTimeStamp()}'
+        '00000000000000000000f0fe${deviceId}00${phoneId}0000$devicePass'
+        '000000000000000000000000000000000000000000000000000000370202000000';
+
+    data = await _crcSignFullPacketComKey(data, pKey);
+
+    _socket = await getSocket();
+    _socket!.add(hexStringToDecimalList(data));
+    await _socket?.close();
+    _socket = null;
+  }
+
   /// Sets the position of the blinds, 0 is down 100 is up
   Future<void> setPosition({int pos = 0}) async {
     if (deviceType != SwitcherDevicesTypes.switcherRunner &&
@@ -511,6 +537,8 @@ class SwitcherApiObject {
 
   static String extractDeviceName(List<int> data) {
     return utf8.decode(data.sublist(42, 74)).replaceAll('\u0000', '');
+    // Maybe better name handling will be
+    // this.data_str.substr(38, 32).replace(/[^0-9a-zA-Z_\s]/g, '').replace(/\0/g, '')
   }
 
   /// Same as Buffer.from(value) in javascript

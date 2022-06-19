@@ -142,10 +142,8 @@ class SwitcherRunnerEntity extends GenericBlindsDE {
   Future<Either<CoreFailure, Unit>> stopBlinds() async {
     blindsSwitchState = GenericBlindsSwitchState(DeviceActions.stop.toString());
 
-    // TODO: Implement stop function for switcher blinds
-
     try {
-      // await switcherObject!.stopBlinds();
+      await switcherObject!.stopBlinds();
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
