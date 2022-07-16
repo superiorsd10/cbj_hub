@@ -357,6 +357,9 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         await getIt<ISavedRoomsRepo>().getAllRooms();
 
     if (allRooms.isNotEmpty) {
+      /// The delay fix this issue in gRPC for some reason
+      /// https://github.com/grpc/grpc-dart/issues/558
+      await Future.delayed(const Duration(milliseconds: 15));
       allRooms.map((String id, RoomEntity d) {
         HubRequestsToApp.streamRequestsToApp.sink.add(d.toInfrastructure());
         return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
