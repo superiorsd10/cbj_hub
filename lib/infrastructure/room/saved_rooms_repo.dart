@@ -6,6 +6,7 @@ import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/room/value_objects_room.dart';
 import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
+import 'package:cbj_hub/domain/routine/routine_cbj_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
 import 'package:cbj_hub/injection.dart';
@@ -62,6 +63,16 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     return null;
   }
 
+  RoomEntity? getRoomRoutineExistIn(RoutineCbjEntity routineCbj) {
+    final String uniqueId = routineCbj.uniqueId.getOrCrash();
+    for (final RoomEntity roomEntity in _allRooms.values) {
+      if (roomEntity.roomRoutinesId.getOrCrash().contains(uniqueId)) {
+        return roomEntity;
+      }
+    }
+    return null;
+  }
+
   @override
   RoomEntity addOrUpdateRoom(RoomEntity roomEntity) {
     _allRooms.addEntries([
@@ -100,6 +111,22 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     }
     _allRooms[discoveredRoomId]!
         .addSceneId(sceneCbjEntity.uniqueId.getOrCrash());
+  }
+
+  @override
+  void addRoutineToRoomDiscoveredIfNotExist(RoutineCbjEntity routineCbjEntity) {
+    final RoomEntity? roomEntity = getRoomRoutineExistIn(routineCbjEntity);
+    if (roomEntity != null) {
+      return;
+    }
+    final String discoveredRoomId =
+        RoomUniqueId.discoveredRoomId().getOrCrash();
+
+    if (_allRooms[discoveredRoomId] == null) {
+      _allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
+    }
+    _allRooms[discoveredRoomId]!
+        .addRoutineId(routineCbjEntity.uniqueId.getOrCrash());
   }
 
   @override

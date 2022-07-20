@@ -23,6 +23,10 @@ class MqttServerRepository extends IMqttServerRepository {
 
   static const String scenesTopicTypeName = 'Scenes';
 
+  static const String routinesTopicTypeName = 'Routines';
+
+  static const String bindingsTopicTypeName = 'Bindings';
+
   @override
   String getHubBaseTopic() {
     return hubBaseTopic;
@@ -36,6 +40,11 @@ class MqttServerRepository extends IMqttServerRepository {
   @override
   String getScenesTopicTypeName() {
     return scenesTopicTypeName;
+  }
+
+  @override
+  String getRoutinesTopicTypeName() {
+    return routinesTopicTypeName;
   }
 
   /// Connect the client to mqtt if not in connecting or connected state already
