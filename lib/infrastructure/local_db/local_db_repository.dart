@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
+import 'package:cbj_hub/domain/binding/binding_cbj_entity.dart';
+import 'package:cbj_hub/domain/binding/value_objects_routine_cbj.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
@@ -15,6 +17,7 @@ import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart
 import 'package:cbj_hub/domain/vendors/login_abstract/value_login_objects_core.dart';
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart';
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_value_objects.dart';
+import 'package:cbj_hub/infrastructure/bindings/binding_cbj_dtos.dart';
 import 'package:cbj_hub/infrastructure/core/singleton/my_singleton.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/device_helper/device_helper.dart';
@@ -126,6 +129,7 @@ class HiveRepository extends ILocalDbRepository {
           roomDevicesId: RoomDevicesId(roomHive.roomDevicesId),
           roomScenesId: RoomScenesId(roomHive.roomScenesId),
           roomRoutinesId: RoomRoutinesId(roomHive.roomScenesId),
+          roomBindingsId: RoomBindingsId(roomHive.roomBindingsId),
           roomMostUsedBy: RoomMostUsedBy(roomHive.roomMostUsedBy),
           roomPermissions: RoomPermissions(roomHive.roomPermissions),
         );
@@ -538,6 +542,40 @@ class HiveRepository extends ILocalDbRepository {
   }
 
   @override
+  Future<Either<LocalDbFailures, List<BindingCbjEntity>>>
+      getBindingsFromDb() async {
+    final List<BindingCbjEntity> bindings = <BindingCbjEntity>[];
+
+    try {
+      final Box<BindingsHiveModel> bindingsBox =
+          await Hive.openBox<BindingsHiveModel>(bindingsBoxName);
+
+      final List<BindingsHiveModel> bindingsHiveModelFromDb =
+          bindingsBox.values.toList().cast<BindingsHiveModel>();
+
+      await bindingsBox.close();
+
+      for (final BindingsHiveModel bindingHive in bindingsHiveModelFromDb) {
+        final BindingCbjEntity bindingEntity = BindingCbjDtos.fromJson(
+          jsonDecode(bindingHive.bindingsStringJson) as Map<String, dynamic>,
+        ).toDomain();
+
+        bindings.add(
+          bindingEntity.copyWith(
+            deviceStateGRPC: BindingCbjDeviceStateGRPC(
+              DeviceStateGRPC.waitingInComp.toString(),
+            ),
+          ),
+        );
+      }
+      return right(bindings);
+    } catch (e) {
+      logger.e('Local DB hive error while getting devices: $e');
+    }
+    return left(const LocalDbFailures.unexpected());
+  }
+
+  @override
   Future<Either<LocalDbFailures, Unit>> saveScenes({
     required List<SceneCbjEntity> sceneList,
   }) async {
@@ -598,6 +636,39 @@ class HiveRepository extends ILocalDbRepository {
       logger.i('Routines got saved to local storage');
     } catch (e) {
       logger.e('Error saving Routines to local storage\n$e');
+      return left(const LocalDbFailures.unexpected());
+    }
+
+    return right(unit);
+  }
+
+  @override
+  Future<Either<LocalDbFailures, Unit>> saveBindings(
+      {required List<BindingCbjEntity> bindingList}) async {
+    try {
+      final List<BindingsHiveModel> bindingsHiveList = [];
+
+      final List<String> bindingsListStringJson = List<String>.from(
+        bindingList.map((e) => jsonEncode(e.toInfrastructure().toJson())),
+      );
+
+      for (final String bindingsEntityDtosJsonString
+          in bindingsListStringJson) {
+        final BindingsHiveModel bindingsHiveModel = BindingsHiveModel()
+          ..bindingsStringJson = bindingsEntityDtosJsonString;
+        bindingsHiveList.add(bindingsHiveModel);
+      }
+
+      final Box<BindingsHiveModel> bindingsBox =
+          await Hive.openBox<BindingsHiveModel>(bindingsBoxName);
+
+      await bindingsBox.clear();
+      await bindingsBox.addAll(bindingsHiveList);
+
+      await bindingsBox.close();
+      logger.i('Bindings got saved to local storage');
+    } catch (e) {
+      logger.e('Error saving Bindings to local storage\n$e');
       return left(const LocalDbFailures.unexpected());
     }
 

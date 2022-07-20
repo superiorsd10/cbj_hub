@@ -16,6 +16,8 @@ abstract class IMqttServerRepository {
 
   String getRoutinesTopicTypeName();
 
+  String getBindingsTopicTypeName();
+
   ///Connecting the hub client to broker
   Future<MqttServerClient> connect();
 

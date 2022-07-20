@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cbj_hub/domain/binding/binding_cbj_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
@@ -73,6 +74,16 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     return null;
   }
 
+  RoomEntity? getRoomBindingExistIn(BindingCbjEntity bindingCbj) {
+    final String uniqueId = bindingCbj.uniqueId.getOrCrash();
+    for (final RoomEntity roomEntity in _allRooms.values) {
+      if (roomEntity.roomBindingsId.getOrCrash().contains(uniqueId)) {
+        return roomEntity;
+      }
+    }
+    return null;
+  }
+
   @override
   RoomEntity addOrUpdateRoom(RoomEntity roomEntity) {
     _allRooms.addEntries([
@@ -127,6 +138,22 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     }
     _allRooms[discoveredRoomId]!
         .addRoutineId(routineCbjEntity.uniqueId.getOrCrash());
+  }
+
+  @override
+  void addBindingToRoomDiscoveredIfNotExist(BindingCbjEntity bindingCbjEntity) {
+    final RoomEntity? roomEntity = getRoomBindingExistIn(bindingCbjEntity);
+    if (roomEntity != null) {
+      return;
+    }
+    final String discoveredRoomId =
+        RoomUniqueId.discoveredRoomId().getOrCrash();
+
+    if (_allRooms[discoveredRoomId] == null) {
+      _allRooms.addEntries([MapEntry(discoveredRoomId, RoomEntity.empty())]);
+    }
+    _allRooms[discoveredRoomId]!
+        .addBindingId(bindingCbjEntity.uniqueId.getOrCrash());
   }
 
   @override

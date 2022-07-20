@@ -16,7 +16,7 @@ class RoutineCbjRepository implements IRoutineCbjRepository {
   RoutineCbjRepository() {
     setUpAllFromDb();
   }
-  Map<String, RoutineCbjEntity> _allScnes = {};
+  Map<String, RoutineCbjEntity> _allRoutines = {};
 
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize
@@ -37,18 +37,18 @@ class RoutineCbjRepository implements IRoutineCbjRepository {
 
   @override
   Future<List<RoutineCbjEntity>> getAllRoutinesAsList() async {
-    return _allScnes.values.toList();
+    return _allRoutines.values.toList();
   }
 
   @override
   Future<Map<String, RoutineCbjEntity>> getAllRoutinesAsMap() async {
-    return _allScnes;
+    return _allRoutines;
   }
 
   @override
   Future<Either<LocalDbFailures, Unit>> saveAndActivateRoutineToDb() {
     return getIt<ILocalDbRepository>().saveRoutines(
-      routineList: List<RoutineCbjEntity>.from(_allScnes.values),
+      routineList: List<RoutineCbjEntity>.from(_allRoutines.values),
     );
   }
 
@@ -58,13 +58,13 @@ class RoutineCbjRepository implements IRoutineCbjRepository {
   ) async {
     /// Check if routine already exist
     if (findRoutineIfAlreadyBeenAdded(routineCbj) == null) {
-      _allScnes
+      _allRoutines
           .addEntries([MapEntry(routineCbj.uniqueId.getOrCrash(), routineCbj)]);
 
       final String entityId = routineCbj.uniqueId.getOrCrash();
 
       /// If it is new routine
-      _allScnes[entityId] = routineCbj;
+      _allRoutines[entityId] = routineCbj;
 
       await saveAndActivateRoutineToDb();
       await getIt<ISavedDevicesRepo>().saveAndActivateSmartDevicesToDb();
@@ -100,6 +100,6 @@ class RoutineCbjRepository implements IRoutineCbjRepository {
   RoutineCbjEntity? findRoutineIfAlreadyBeenAdded(
     RoutineCbjEntity routineEntity,
   ) {
-    return _allScnes[routineEntity.uniqueId.getOrCrash()];
+    return _allRoutines[routineEntity.uniqueId.getOrCrash()];
   }
 }

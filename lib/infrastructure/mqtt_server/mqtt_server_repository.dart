@@ -47,6 +47,11 @@ class MqttServerRepository extends IMqttServerRepository {
     return routinesTopicTypeName;
   }
 
+  @override
+  String getBindingsTopicTypeName() {
+    return bindingsTopicTypeName;
+  }
+
   /// Connect the client to mqtt if not in connecting or connected state already
   @override
   Future<MqttServerClient> connect() async {
