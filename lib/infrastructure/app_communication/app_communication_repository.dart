@@ -1,18 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cbj_hub/application/connector/connector.dart';
 import 'package:cbj_hub/domain/app_communication/i_app_communication_repository.dart';
 import 'package:cbj_hub/domain/core/value_objects.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_empty_device/generic_empty_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic_switch_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
+import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
@@ -132,7 +126,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         deviceEntityFromApp.deviceStateGRPC =
             DeviceState(DeviceStateGRPC.waitingInComp.toString());
 
-        sendToMqtt(deviceEntityFromApp);
+        getIt<IMqttServerRepository>().postToMqtt(deviceEntityFromApp);
       } else if (event.sendingType == SendingType.roomType) {
         final RoomEntity roomEntityFromApp = RoomEntityDtos.fromJson(
           jsonDecode(event.allRemoteCommands) as Map<String, dynamic>,
@@ -142,7 +136,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           roomEntity: roomEntityFromApp,
         );
 
-        sendToMqtt(roomEntityFromApp);
+        getIt<IMqttServerRepository>().postToMqtt(roomEntityFromApp);
       } else if (event.sendingType == SendingType.vendorLoginType) {
         final LoginEntityAbstract loginEntityFromApp =
             VendorHelper.convertJsonStringToDomain(event.allRemoteCommands);
@@ -238,99 +232,6 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
     });
   }
 
-  static Future<void> sendToMqtt(
-    dynamic entityFromTheApp,
-  ) async {
-    if (entityFromTheApp is DeviceEntityAbstract) {
-      final ISavedDevicesRepo savedDevicesRepo = getIt<ISavedDevicesRepo>();
-      final Map<String, DeviceEntityAbstract> allDevices =
-          await savedDevicesRepo.getAllDevices();
-      final DeviceEntityAbstract? savedDeviceEntity =
-          allDevices[entityFromTheApp.getDeviceId()];
-
-      if (savedDeviceEntity == null) {
-        logger.w('Device id does not match existing device');
-        return;
-      }
-
-      MapEntry<String, DeviceEntityAbstract> deviceFromApp;
-
-      if (savedDeviceEntity is GenericLightDE &&
-          entityFromTheApp is GenericLightDE) {
-        savedDeviceEntity.lightSwitchState = entityFromTheApp.lightSwitchState;
-
-        deviceFromApp = MapEntry(
-          savedDeviceEntity.uniqueId.getOrCrash(),
-          savedDeviceEntity,
-        );
-      } else if (savedDeviceEntity is GenericRgbwLightDE &&
-          entityFromTheApp is GenericRgbwLightDE) {
-        savedDeviceEntity.lightSwitchState = entityFromTheApp.lightSwitchState;
-        savedDeviceEntity.lightColorSaturation =
-            entityFromTheApp.lightColorSaturation;
-        savedDeviceEntity.lightColorTemperature =
-            entityFromTheApp.lightColorTemperature;
-        savedDeviceEntity.lightColorHue = entityFromTheApp.lightColorHue;
-        savedDeviceEntity.lightColorAlpha = entityFromTheApp.lightColorAlpha;
-        savedDeviceEntity.lightColorValue = entityFromTheApp.lightColorValue;
-        savedDeviceEntity.lightBrightness = entityFromTheApp.lightBrightness;
-
-        deviceFromApp = MapEntry(
-          savedDeviceEntity.uniqueId.getOrCrash(),
-          savedDeviceEntity,
-        );
-      } else if (savedDeviceEntity is GenericSwitchDE &&
-          entityFromTheApp is GenericSwitchDE) {
-        savedDeviceEntity.switchState = entityFromTheApp.switchState;
-
-        deviceFromApp = MapEntry(
-          savedDeviceEntity.uniqueId.getOrCrash(),
-          savedDeviceEntity,
-        );
-      } else if (savedDeviceEntity is GenericBoilerDE &&
-          entityFromTheApp is GenericBoilerDE) {
-        savedDeviceEntity.boilerSwitchState =
-            entityFromTheApp.boilerSwitchState;
-
-        deviceFromApp = MapEntry(
-          savedDeviceEntity.uniqueId.getOrCrash(),
-          savedDeviceEntity,
-        );
-      } else if (savedDeviceEntity is GenericBlindsDE &&
-          entityFromTheApp is GenericBlindsDE) {
-        savedDeviceEntity.blindsSwitchState =
-            entityFromTheApp.blindsSwitchState;
-
-        deviceFromApp = MapEntry(
-          savedDeviceEntity.uniqueId.getOrCrash(),
-          savedDeviceEntity,
-        );
-      } else if (savedDeviceEntity is GenericSmartPlugDE &&
-          entityFromTheApp is GenericSmartPlugDE) {
-        savedDeviceEntity.smartPlugState = entityFromTheApp.smartPlugState;
-
-        deviceFromApp = MapEntry(
-          savedDeviceEntity.uniqueId.getOrCrash(),
-          savedDeviceEntity,
-        );
-      } else {
-        logger.w(
-          'Cant find device from app type '
-          '${entityFromTheApp.deviceTypes.getOrCrash()}',
-        );
-        return;
-      }
-      deviceFromApp.value.deviceStateGRPC =
-          DeviceState(entityFromTheApp.deviceStateGRPC.getOrCrash());
-      ConnectorStreamToMqtt.toMqttController.sink.add(deviceFromApp);
-    } else {
-      logger.w(
-        'Entity from app type ${entityFromTheApp.runtimeType} not '
-        'support sending to MQTT',
-      );
-    }
-  }
-
   /// Trigger to send all rooms from hub to app using the
   /// HubRequestsToApp stream
   static Future<void> sendAllRoomsFromHubRequestsStream() async {
@@ -343,7 +244,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
       });
     } else {
-      logger.w("Can't find rooms in the network");
+      logger.w("Can't find rooms in the  local DB");
     }
   }
 
@@ -370,7 +271,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         return MapEntry(id, DeviceHelper.convertDomainToJsonString(d));
       });
     } else {
-      logger.w("Can't find smart devices in the network, sending empty");
+      logger.w("Can't find smart devices in the local DB, sending empty");
       final DeviceEntityAbstract emptyDevice = GenericEmptyDE.empty();
       HubRequestsToApp.streamRequestsToApp.sink
           .add(emptyDevice.toInfrastructure());
@@ -389,7 +290,7 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         return MapEntry(id, jsonEncode(d.toInfrastructure().toJson()));
       });
     } else {
-      logger.w("Can't find any scenes in the network, sending empty");
+      logger.w("Can't find any scenes in the local DB, sending empty");
       final SceneCbjEntity emptyScene = SceneCbjEntity(
         uniqueId: UniqueId(),
         name: SceneCbjName('Empty'),

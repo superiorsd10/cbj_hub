@@ -16,7 +16,7 @@ class SceneCbjRepository implements ISceneCbjRepository {
   SceneCbjRepository() {
     setUpAllFromDb();
   }
-  Map<String, SceneCbjEntity> _allScenes = {};
+  final Map<String, SceneCbjEntity> _allScenes = {};
 
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize

@@ -16,7 +16,7 @@ class RoutineCbjRepository implements IRoutineCbjRepository {
   RoutineCbjRepository() {
     setUpAllFromDb();
   }
-  Map<String, RoutineCbjEntity> _allRoutines = {};
+  final Map<String, RoutineCbjEntity> _allRoutines = {};
 
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize

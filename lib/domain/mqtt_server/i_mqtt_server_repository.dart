@@ -53,4 +53,7 @@ abstract class IMqttServerRepository {
 
   /// Subscribe to changes in given topic
   Future<void> subscribeToTopic(String topic);
+
+  /// Post object to mqtt correctly, right path and right way to post each type
+  Future<void> postToMqtt(dynamic entityFromTheApp);
 }

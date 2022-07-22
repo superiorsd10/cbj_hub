@@ -16,7 +16,7 @@ class BindingCbjRepository implements IBindingCbjRepository {
   BindingCbjRepository() {
     setUpAllFromDb();
   }
-  Map<String, BindingCbjEntity> _allBindings = {};
+  final Map<String, BindingCbjEntity> _allBindings = {};
 
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize
