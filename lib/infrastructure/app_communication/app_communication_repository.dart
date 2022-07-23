@@ -10,6 +10,9 @@ import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/domain/remote_pipes/remote_pipes_entity.dart';
 import 'package:cbj_hub/domain/room/room_entity.dart';
 import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
+import 'package:cbj_hub/domain/routine/i_routine_cbj_repository.dart';
+import 'package:cbj_hub/domain/routine/routine_cbj_entity.dart';
+import 'package:cbj_hub/domain/routine/value_objects_routine_cbj.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/scene/i_scene_cbj_repository.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
@@ -23,6 +26,7 @@ import 'package:cbj_hub/infrastructure/generic_vendors_login/vendor_helper.dart'
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_client.dart';
 import 'package:cbj_hub/infrastructure/remote_pipes/remote_pipes_dtos.dart';
 import 'package:cbj_hub/infrastructure/room/room_entity_dtos.dart';
+import 'package:cbj_hub/infrastructure/routines/routine_cbj_dtos.dart';
 import 'package:cbj_hub/infrastructure/scenes/scene_cbj_dtos.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
@@ -180,6 +184,30 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           getIt<ISceneCbjRepository>().addNewScene(sceneCbj);
         } else {
           getIt<ISceneCbjRepository>().activateScene(sceneCbj);
+        }
+      } else if (event.sendingType == SendingType.routineType) {
+        final Map<String, dynamic> jsonRoutineFromJsonString =
+            jsonDecode(event.allRemoteCommands) as Map<String, dynamic>;
+
+        final RoutineCbjEntity routineCbj =
+            RoutineCbjDtos.fromJson(jsonRoutineFromJsonString).toDomain();
+
+        final String routineStateGrpcTemp =
+            routineCbj.deviceStateGRPC.getOrCrash()!;
+
+        routineCbj.copyWith(
+          deviceStateGRPC: RoutineCbjDeviceStateGRPC(
+            DeviceStateGRPC.waitingInComp.toString(),
+          ),
+        );
+
+        // TODO: add new type for adding new routine and not use noDevicesToTransfer
+        if (routineStateGrpcTemp ==
+            DeviceStateGRPC.noDevicesToTransfer.toString()) {
+          getIt<IRoutineCbjRepository>().addNewRoutine(routineCbj);
+        } else {
+          // For a way to active it manually
+          // getIt<IRoutineCbjRepository>().activateRoutine(routineCbj);
         }
       } else {
         logger.w('Request from app does not support this sending device type');
