@@ -7,13 +7,13 @@ import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_smart_tv/generic_smart_tv_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/google/google_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/lg/lg_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
-class ChromeCastEntity extends GenericSmartTvDE {
-  ChromeCastEntity({
+class LgWebosTvEntity extends GenericSmartTvDE {
+  LgWebosTvEntity({
     required CoreUniqueId uniqueId,
     required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
@@ -25,7 +25,7 @@ class ChromeCastEntity extends GenericSmartTvDE {
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
     required GenericSmartTvSwitchState smartTvSwitchState,
-    required this.googlePort,
+    required this.lgPort,
     this.deviceMdnsName,
     this.lastKnownIp,
   }) : super(
@@ -38,13 +38,14 @@ class ChromeCastEntity extends GenericSmartTvDE {
           senderDeviceOs: senderDeviceOs,
           senderDeviceModel: senderDeviceModel,
           senderId: senderId,
-          deviceVendor: DeviceVendor(VendorsAndServices.google.toString()),
+          deviceVendor: DeviceVendor(
+              VendorsAndServices.vendorsAndServicesNotSupported.toString()),
           compUuid: compUuid,
           powerConsumption: powerConsumption,
         );
 
-  /// Google communication port
-  GooglePort? googlePort;
+  /// Lg communication port
+  LgPort? lgPort;
 
   DeviceLastKnownIp? lastKnownIp;
 
@@ -74,20 +75,20 @@ class ChromeCastEntity extends GenericSmartTvDE {
 
         if (actionToPreform == DeviceActions.on) {
           (await turnOnSmartTv()).fold((l) {
-            logger.e('Error turning ChromeCast on');
+            logger.e('Error turning WebOs on');
             throw l;
           }, (r) {
-            logger.i('ChromeCast turn on success');
+            logger.i('WebOs turn on success');
           });
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffSmartTv()).fold((l) {
-            logger.e('Error turning ChromeCast off');
+            logger.e('Error turning WebOs off');
             throw l;
           }, (r) {
-            logger.i('ChromeCast turn off success');
+            logger.i('WebOs turn off success');
           });
         } else {
-          logger.e('actionToPreform is not set correctly on Chrome Cast');
+          logger.e('actionToPreform is not set correctly on WebOs');
         }
       }
       deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());

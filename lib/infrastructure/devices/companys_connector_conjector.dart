@@ -5,6 +5,7 @@ import 'package:cbj_hub/domain/vendors/login_abstract/login_entity_abstract.dart
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/lg/lg_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_connector_conjector.dart';
@@ -14,6 +15,7 @@ import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_connector_conje
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
+import 'package:network_tools/network_tools.dart';
 
 class CompanysConnectorConjector {
   static void updateAllDevicesReposWithDeviceChanges(
@@ -120,6 +122,67 @@ class CompanysConnectorConjector {
           .accountLogin(genericTuyaLoginDE: loginEntity);
     } else {
       logger.w('Vendor login type ${loginEntity.runtimeType} is not supported');
+    }
+  }
+
+  static Future<void> searchAllMdnsDevicesAndSetThemUp() async {
+    while (true) {
+      for (final ActiveHost activeHost
+          in await MdnsScanner.searchMdnsDevices()) {
+        final MdnsInfo? mdnsInfo = activeHost.mdnsInfo;
+
+        if (mdnsInfo != null) {
+          setMdnsDeviceByCompany(activeHost);
+        }
+      }
+      await Future.delayed(const Duration(minutes: 1));
+    }
+  }
+
+  /// Getting ActiveHost that contain MdnsInfo property and activate it inside
+  /// The correct company.
+  static Future<void> setMdnsDeviceByCompany(ActiveHost activeHost) async {
+    final MdnsInfo? hostMdnsInfo = activeHost.mdnsInfo;
+
+    if (hostMdnsInfo == null) {
+      return;
+    }
+    final String startOfMdnsName = hostMdnsInfo.getOnlyTheStartOfMdnsName();
+    final String startOfMdnsNameLower = startOfMdnsName.toLowerCase();
+
+    final String mdnsDeviceIp = activeHost.ip;
+    final String mdnsPort = hostMdnsInfo.mdnsPort.toString();
+
+    if (ESPHomeConnectorConjector.mdnsTypes
+        .contains(hostMdnsInfo.mdnsServiceType)) {
+      ESPHomeConnectorConjector().addNewDeviceByMdnsName(
+        mDnsName: startOfMdnsName,
+        ip: mdnsDeviceIp,
+        port: mdnsPort,
+      );
+    } else if (GoogleConnectorConjector.mdnsTypes
+            .contains(hostMdnsInfo.mdnsServiceType) &&
+        (startOfMdnsNameLower.contains('google') ||
+            startOfMdnsNameLower.contains('android') ||
+            startOfMdnsNameLower.contains('chrome'))) {
+      GoogleConnectorConjector().addNewDeviceByMdnsName(
+        mDnsName: startOfMdnsName,
+        ip: mdnsDeviceIp,
+        port: mdnsPort,
+      );
+    } else if (LgConnectorConjector.mdnsTypes
+            .contains(hostMdnsInfo.mdnsServiceType) &&
+        (startOfMdnsNameLower.contains('lg') ||
+            startOfMdnsNameLower.contains('webos'))) {
+      LgConnectorConjector().addNewDeviceByMdnsName(
+        mDnsName: startOfMdnsName,
+        ip: mdnsDeviceIp,
+        port: mdnsPort,
+      );
+    } else {
+      // logger.v(
+      //   'mDNS service type ${hostMdnsInfo.mdnsServiceType} is not supported\n IP: ${activeHost.ip}, Port: ${hostMdnsInfo.mdnsPort}, ServiceType: ${hostMdnsInfo.mdnsServiceType}, MdnsName: ${hostMdnsInfo.getOnlyTheStartOfMdnsName()}',
+      // );
     }
   }
 }

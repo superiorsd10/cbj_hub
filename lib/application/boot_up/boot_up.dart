@@ -30,6 +30,8 @@ class BootUp {
 
     CompanysConnectorConjector.addAllDevicesToItsRepos(allDevices);
 
+    CompanysConnectorConjector.searchAllMdnsDevicesAndSetThemUp();
+
     getIt<IMqttServerRepository>();
 
     getIt<ICbjWebServerRepository>();

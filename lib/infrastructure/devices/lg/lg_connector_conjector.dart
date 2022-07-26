@@ -3,21 +3,23 @@ import 'dart:async';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/google/chrome_cast/chrome_cast_entity.dart';
-import 'package:cbj_hub/infrastructure/devices/google/google_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/lg/lg_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/lg/lg_webos_tv/lg_webos_tv_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
 @singleton
-class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
+class LgConnectorConjector implements AbstractCompanyConnectorConjector {
+  LgConnectorConjector() {}
+
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   static const List<String> mdnsTypes = [
-    '_googlecast._tcp',
-    '_androidtvremote2._tcp',
-    '_rc._tcp',
+    '_hap._tcp',
+    '_display._tcp',
+    '_airplay._tcp'
   ];
 
   /// Add new devices to [companyDevices] if not exist
@@ -27,29 +29,28 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
     required String port,
   }) async {
     for (final DeviceEntityAbstract device in companyDevices.values) {
-      if (device is ChromeCastEntity) {
+      if (device is LgWebosTvEntity) {
         if (mDnsName == device.deviceMdnsName?.getOrCrash() ||
             ip == device.lastKnownIp!.getOrCrash()) {
           return;
         }
       } else {
-        logger.w("Can't add Google device, type was not set to get device ID");
+        logger.w("Can't add Lg device, type was not set to get device ID");
         return;
       }
     }
 
-    final List<DeviceEntityAbstract> googleDevice =
-        GoogleHelpers.addDiscoverdDevice(
+    final List<DeviceEntityAbstract> lgDevice = LgHelpers.addDiscoverdDevice(
       mDnsName: mDnsName,
       ip: ip,
       port: port,
     );
 
-    if (googleDevice.isEmpty) {
+    if (lgDevice.isEmpty) {
       return;
     }
 
-    for (final DeviceEntityAbstract entityAsDevice in googleDevice) {
+    for (final DeviceEntityAbstract entityAsDevice in lgDevice) {
       final DeviceEntityAbstract deviceToAdd =
           CompanysConnectorConjector.addDiscoverdDeviceToHub(entityAsDevice);
 
@@ -58,15 +59,15 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
 
       companyDevices.addEntries([deviceAsEntry]);
     }
-    logger.i('New Chromecast devices where added');
+    logger.i('New LG devices where added');
   }
 
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract google) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract lg) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract google) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract lg) {
     // TODO: implement delete
     throw UnimplementedError();
   }
@@ -76,13 +77,13 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
     throw UnimplementedError();
   }
 
-  Future<void> manageHubRequestsForDevice(DeviceEntityAbstract googleDE) async {
-    final DeviceEntityAbstract? device = companyDevices[googleDE.getDeviceId()];
+  Future<void> manageHubRequestsForDevice(DeviceEntityAbstract lgDE) async {
+    final DeviceEntityAbstract? device = companyDevices[lgDE.getDeviceId()];
 
-    if (device is ChromeCastEntity) {
-      device.executeDeviceAction(newEntity: googleDE);
+    if (device is LgWebosTvEntity) {
+      device.executeDeviceAction(newEntity: lgDE);
     } else {
-      logger.i('Google device type does not exist');
+      logger.i('Lg device type does not exist');
     }
   }
 
