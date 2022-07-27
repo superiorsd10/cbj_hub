@@ -6,8 +6,8 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
 import 'package:cbj_hub/infrastructure/devices/companys_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_device_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_led/tasmota_led_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_mqtt/tasmota_mqtt_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_mqtt/tasmota_mqtt_led/tasmota_mqtt_led_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:cbj_hub/injection.dart';
@@ -17,16 +17,17 @@ import 'package:injectable/injectable.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 @singleton
-class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
-  TasmotaConnectorConjector() {
-    discoverNewDevices();
-  }
+class TasmotaMqttConnectorConjector
+    implements AbstractCompanyConnectorConjector {
+  // TasmotaMqttConnectorConjector() {
+  //   discoverNewDevices();
+  // }
 
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
   Future<void> discoverNewDevices() async {
     getIt<IMqttServerRepository>()
-        .streamOfChosenSubscription('tasmota/discovery/+/config')
+        .streamOfChosenSubscription('tasmotaMqtt/discovery/+/config')
         .listen((mqttPublishMessage) async {
       final String messageTopic = mqttPublishMessage[0].topic;
 
@@ -36,7 +37,7 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
 
       bool deviceExist = false;
       for (DeviceEntityAbstract savedDevice in companyDevices.values) {
-        savedDevice = savedDevice as TasmotaLedEntity;
+        savedDevice = savedDevice as TasmotaMqttLedEntity;
 
         if (deviceId == savedDevice.vendorUniqueId.getOrCrash()) {
           deviceExist = true;
@@ -62,13 +63,13 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
           MapEntry(deviceToAdd.uniqueId.getOrCrash(), deviceToAdd);
 
       companyDevices.addEntries([deviceAsEntry]);
-      logger.v('Adding Tasmota device');
+      logger.v('Adding TasmotaMqtt device');
     });
 
-    /// Make all tasmota devices repost themselves under topic discovery
+    /// Make all tasmotaMqtt devices repost themselves under topic discovery
     /// in the MQTT broker
     getIt<IMqttServerRepository>()
-        .publishMessage('cmnd/tasmotas/SetOption19', '0');
+        .publishMessage('cmnd/tasmotaMqtts/SetOption19', '0');
   }
 
   static Future<DeviceEntityAbstract?> mqttToDevice(
@@ -101,19 +102,19 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
 
     final DeviceActions deviceActions = DeviceActions.actionNotSupported;
 
-    return TasmotaLedEntity(
+    return TasmotaMqttLedEntity(
       uniqueId: CoreUniqueId(),
       vendorUniqueId: VendorUniqueId(),
       defaultName: DeviceDefaultName(name),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
-      senderDeviceOs: DeviceSenderDeviceOs('Tasmota'),
+      senderDeviceOs: DeviceSenderDeviceOs('TasmotaMqtt'),
       senderDeviceModel: DeviceSenderDeviceModel('LED'),
       senderId: DeviceSenderId(),
       compUuid: DeviceCompUuid(mac),
       stateMassage: DeviceStateMassage('Hello World'),
       powerConsumption: DevicePowerConsumption('0'),
       lightSwitchState: GenericLightSwitchState(deviceActions.toString()),
-      tasmotaDeviceTopicName: TasmotaDeviceTopicName(deviceTopic),
+      tasmotaMqttDeviceTopicName: TasmotaMqttDeviceTopicName(deviceTopic),
     );
   }
 
@@ -128,12 +129,12 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
     return value;
   }
 
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tasmota) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract tasmotaMqtt) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract tasmota) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract tasmotaMqtt) {
     // TODO: implement delete
     throw UnimplementedError();
   }
@@ -144,17 +145,17 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
   }
 
   Future<void> manageHubRequestsForDevice(
-    DeviceEntityAbstract tasmotaDE,
+    DeviceEntityAbstract tasmotaMqttDE,
   ) async {
     final DeviceEntityAbstract? device =
-        companyDevices[tasmotaDE.getDeviceId()];
+        companyDevices[tasmotaMqttDE.getDeviceId()];
 
-    if (device is TasmotaLedEntity) {
-      device.executeDeviceAction(newEntity: tasmotaDE);
+    if (device is TasmotaMqttLedEntity) {
+      device.executeDeviceAction(newEntity: tasmotaMqttDE);
     } else {
-      logger.w('Tasmota device type does not exist');
+      logger.w('TasmotaMqtt device type does not exist');
     }
-    logger.v('manageHubRequestsForDevice in Tasmota');
+    logger.v('manageHubRequestsForDevice in TasmotaMqtt');
   }
 
   Future<Either<CoreFailure, Unit>> updateDatabase({
@@ -163,10 +164,6 @@ class TasmotaConnectorConjector implements AbstractCompanyConnectorConjector {
     String? forceUpdateLocation,
   }) async {
     // TODO: implement updateDatabase
-    throw UnimplementedError();
-  }
-
-  Future<String?> getIpFromMDNS(String deviceMdnsName) async {
     throw UnimplementedError();
   }
 }

@@ -31,6 +31,7 @@ class BootUp {
     CompanysConnectorConjector.addAllDevicesToItsRepos(allDevices);
 
     CompanysConnectorConjector.searchAllMdnsDevicesAndSetThemUp();
+    CompanysConnectorConjector.searchPingableDevicesAndSetThemUpByHostName();
 
     getIt<IMqttServerRepository>();
 

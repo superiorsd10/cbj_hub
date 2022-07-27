@@ -23,19 +23,22 @@ import 'infrastructure/bindings/binding_repository.dart' as _i8;
 import 'infrastructure/cbj_web_server/cbj_web_server_repository.dart' as _i10;
 import 'infrastructure/devices/esphome/esphome_connector_conjector.dart' as _i3;
 import 'infrastructure/devices/google/google_connector_conjector.dart' as _i4;
-import 'infrastructure/devices/lifx/lifx_connector_conjector.dart' as _i25;
+import 'infrastructure/devices/lg/lg_connector_conjector.dart' as _i25;
+import 'infrastructure/devices/lifx/lifx_connector_conjector.dart' as _i26;
 import 'infrastructure/devices/philips_hue/philips_hue_connector_conjector.dart'
-    as _i26;
-import 'infrastructure/devices/switcher/switcher_connector_conjector.dart'
     as _i27;
-import 'infrastructure/devices/tasmota/tasmota_connector_conjector.dart'
+import 'infrastructure/devices/switcher/switcher_connector_conjector.dart'
     as _i28;
-import 'infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart'
+import 'infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_connector_conjector.dart'
     as _i29;
-import 'infrastructure/devices/xiaomi_io/xiaomi_io_connector_conjector.dart'
+import 'infrastructure/devices/tasmota/tasmota_mqtt/tasmota_mqtt_connector_conjector.dart'
     as _i30;
-import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+import 'infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart'
     as _i31;
+import 'infrastructure/devices/xiaomi_io/xiaomi_io_connector_conjector.dart'
+    as _i32;
+import 'infrastructure/devices/yeelight/yeelight_connector_conjector.dart'
+    as _i33;
 import 'infrastructure/local_db/local_db_repository.dart' as _i12;
 import 'infrastructure/mqtt_server/mqtt_server_repository.dart' as _i14;
 import 'infrastructure/node_red/node_red_repository.dart' as _i16;
@@ -66,18 +69,21 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   gh.lazySingleton<_i19.ISavedDevicesRepo>(() => _i20.SavedDevicesRepo());
   gh.lazySingleton<_i21.ISavedRoomsRepo>(() => _i22.SavedRoomsRepo());
   gh.lazySingleton<_i23.ISceneCbjRepository>(() => _i24.SceneCbjRepository());
-  gh.singleton<_i25.LifxConnectorConjector>(_i25.LifxConnectorConjector());
-  gh.singleton<_i26.PhilipsHueConnectorConjector>(
-      _i26.PhilipsHueConnectorConjector());
-  gh.singleton<_i27.SwitcherConnectorConjector>(
-      _i27.SwitcherConnectorConjector());
-  gh.singleton<_i28.TasmotaConnectorConjector>(
-      _i28.TasmotaConnectorConjector());
-  gh.singleton<_i29.TuyaSmartConnectorConjector>(
-      _i29.TuyaSmartConnectorConjector());
-  gh.singleton<_i30.XiaomiIoConnectorConjector>(
-      _i30.XiaomiIoConnectorConjector());
-  gh.singleton<_i31.YeelightConnectorConjector>(
-      _i31.YeelightConnectorConjector());
+  gh.singleton<_i25.LgConnectorConjector>(_i25.LgConnectorConjector());
+  gh.singleton<_i26.LifxConnectorConjector>(_i26.LifxConnectorConjector());
+  gh.singleton<_i27.PhilipsHueConnectorConjector>(
+      _i27.PhilipsHueConnectorConjector());
+  gh.singleton<_i28.SwitcherConnectorConjector>(
+      _i28.SwitcherConnectorConjector());
+  gh.singleton<_i29.TasmotaIpConnectorConjector>(
+      _i29.TasmotaIpConnectorConjector());
+  gh.singleton<_i30.TasmotaMqttConnectorConjector>(
+      _i30.TasmotaMqttConnectorConjector());
+  gh.singleton<_i31.TuyaSmartConnectorConjector>(
+      _i31.TuyaSmartConnectorConjector());
+  gh.singleton<_i32.XiaomiIoConnectorConjector>(
+      _i32.XiaomiIoConnectorConjector());
+  gh.singleton<_i33.YeelightConnectorConjector>(
+      _i33.YeelightConnectorConjector());
   return get;
 }

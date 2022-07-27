@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/vendors/lifx_login/generic_lifx_login_entity.dart';
@@ -8,7 +10,8 @@ import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector
 import 'package:cbj_hub/infrastructure/devices/lg/lg_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_mqtt/tasmota_mqtt_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/xiaomi_io/xiaomi_io_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_connector_conjector.dart';
@@ -29,7 +32,7 @@ class CompanysConnectorConjector {
           YeelightConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
-          TasmotaConnectorConjector()
+          TasmotaMqttConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
           ESPHomeConnectorConjector()
@@ -89,7 +92,7 @@ class CompanysConnectorConjector {
     if (deviceVendor == VendorsAndServices.yeelight.toString()) {
       YeelightConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
-      TasmotaConnectorConjector.companyDevices.addEntries([devicesEntry]);
+      TasmotaMqttConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
       ESPHomeConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor ==
@@ -183,6 +186,60 @@ class CompanysConnectorConjector {
       // logger.v(
       //   'mDNS service type ${hostMdnsInfo.mdnsServiceType} is not supported\n IP: ${activeHost.ip}, Port: ${hostMdnsInfo.mdnsPort}, ServiceType: ${hostMdnsInfo.mdnsServiceType}, MdnsName: ${hostMdnsInfo.getOnlyTheStartOfMdnsName()}',
       // );
+    }
+  }
+
+  /// Get all the host names in the connected networks and try to add the device
+  static Future<void> searchPingableDevicesAndSetThemUpByHostName() async {
+    final List<Stream<ActiveHost>> activeHostStreamList = [];
+
+    while (true) {
+      final List<NetworkInterface> networkInterfaceList =
+          await NetworkInterface.list();
+
+      for (final NetworkInterface networkInterface in networkInterfaceList) {
+        for (final InternetAddress address in networkInterface.addresses) {
+          final String ip = address.address;
+          final String subnet = ip.substring(0, ip.lastIndexOf('.'));
+          activeHostStreamList.add(HostScanner.discover(subnet));
+        }
+      }
+
+      for (final Stream<ActiveHost> activeHostStream in activeHostStreamList) {
+        await for (final ActiveHost activeHost in activeHostStream) {
+          final InternetAddress? internetAddress =
+              InternetAddress.tryParse(activeHost.ip);
+          if (internetAddress == null) {
+            continue;
+          }
+          try {
+            final InternetAddress internetAddressWithHostName =
+                await internetAddress.reverse();
+            setHostNameDeviceByCompany(
+                activeHost: activeHost,
+                internetAddress: internetAddressWithHostName);
+          } catch (e) {
+            continue;
+          }
+        }
+
+        await Future.delayed(const Duration(minutes: 1));
+      }
+    }
+  }
+
+  static Future<void> setHostNameDeviceByCompany({
+    required InternetAddress internetAddress,
+    required ActiveHost activeHost,
+  }) async {
+    final String deviceHostNameLowerCase = internetAddress.host.toLowerCase();
+    if (deviceHostNameLowerCase.contains('tasmota')) {
+      TasmotaIpConnectorConjector().addNewDeviceByHostInfo(
+        activeHost: activeHost,
+        hostName: internetAddress.host,
+      );
+    } else {
+      // logger.i('Internet Name ${internetAddress.host}');
     }
   }
 }

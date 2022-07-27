@@ -5,14 +5,14 @@ import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_device_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
-class TasmotaLedEntity extends GenericLightDE {
-  TasmotaLedEntity({
+class TasmotaIpLedEntity extends GenericLightDE {
+  TasmotaIpLedEntity({
     required CoreUniqueId uniqueId,
     required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
@@ -24,7 +24,7 @@ class TasmotaLedEntity extends GenericLightDE {
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
     required GenericLightSwitchState lightSwitchState,
-    required this.tasmotaDeviceTopicName,
+    required this.tasmotaIpDeviceTopicName,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
@@ -40,7 +40,7 @@ class TasmotaLedEntity extends GenericLightDE {
           powerConsumption: powerConsumption,
         );
 
-  TasmotaDeviceTopicName tasmotaDeviceTopicName;
+  TasmotaIpDeviceTopicName tasmotaIpDeviceTopicName;
 
   /// Please override the following methods
   @override
@@ -67,25 +67,25 @@ class TasmotaLedEntity extends GenericLightDE {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnLight()).fold(
             (l) {
-              logger.e('Error turning Tasmota light on');
+              logger.e('Error turning TasmotaIp light on');
               throw l;
             },
             (r) {
-              logger.i('Tasmota light turn on success');
+              logger.i('TasmotaIp light turn on success');
             },
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffLight()).fold(
             (l) {
-              logger.e('Error turning Tasmota light off');
+              logger.e('Error turning TasmotaIp light off');
               throw l;
             },
             (r) {
-              logger.i('Tasmota light turn off success');
+              logger.i('TasmotaIp light turn off success');
             },
           );
         } else {
-          logger.e('actionToPreform is not set correctly on Tasmota Led');
+          logger.e('actionToPreform is not set correctly on TasmotaIp Led');
         }
       }
       deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
@@ -102,7 +102,7 @@ class TasmotaLedEntity extends GenericLightDE {
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
-        'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power',
+        'cmnd/${tasmotaIpDeviceTopicName.getOrCrash()}/Power',
         'ON',
       );
       return right(unit);
@@ -117,7 +117,7 @@ class TasmotaLedEntity extends GenericLightDE {
 
     try {
       getIt<IMqttServerRepository>().publishMessage(
-        'cmnd/${tasmotaDeviceTopicName.getOrCrash()}/Power',
+        'cmnd/${tasmotaIpDeviceTopicName.getOrCrash()}/Power',
         'OFF',
       );
       return right(unit);
