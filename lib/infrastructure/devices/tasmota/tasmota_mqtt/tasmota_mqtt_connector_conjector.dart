@@ -146,7 +146,6 @@ class TasmotaMqttConnectorConjector
       } else {
         value = value.substring(0, value.indexOf(',') - 1);
       }
-      print(value);
     } catch (e) {
       return null;
     }

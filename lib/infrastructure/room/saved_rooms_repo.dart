@@ -153,7 +153,6 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     }
     _allRooms[discoveredRoomId]!
         .addDeviceId(deviceEntity.uniqueId.getOrCrash());
-    print(_allRooms['00000000-0000-0000-0000-000000000000']!.roomDevicesId.getOrCrash());
   }
 
   @override
