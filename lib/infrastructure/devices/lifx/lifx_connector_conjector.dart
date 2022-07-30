@@ -49,7 +49,7 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
             companyDevices.addEntries([deviceAsEntry]);
 
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-            logger.i('New Lifx devices where add');
+            logger.i('New Lifx device got add');
           }
         }
         await Future.delayed(const Duration(minutes: 3));

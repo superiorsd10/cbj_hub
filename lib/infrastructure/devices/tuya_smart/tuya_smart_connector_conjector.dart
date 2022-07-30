@@ -74,7 +74,7 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
             companyDevices.addEntries([deviceAsEntry]);
 
             CompanysConnectorConjector.addDiscoverdDeviceToHub(addDevice);
-            logger.i('New Tuya devices where add');
+            logger.i('New Tuya device got add');
           }
         }
         await Future.delayed(const Duration(minutes: 3));
