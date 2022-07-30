@@ -99,7 +99,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
       final HashSet<String> tempAddDevicesList = HashSet<String>();
       tempAddDevicesList.addAll(allDevicesInNewRoom);
       tempAddDevicesList.addAll(allDevicesInExistingRoom);
-      newRoomEntity = roomEntity.copyWith(roomDevicesId: RoomDevicesId(List.from(tempAddDevicesList)));
+      newRoomEntity = newRoomEntity.copyWith(roomDevicesId: RoomDevicesId(List.from(tempAddDevicesList)));
 
       /// For scenes in the room
       final List<String> allScenesInNewRoom = roomEntity.roomScenesId.getOrCrash();
@@ -109,7 +109,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
       final HashSet<String> tempAddScenesList = HashSet<String>();
       tempAddScenesList.addAll(allScenesInNewRoom);
       tempAddScenesList.addAll(allScenesInExistingRoom);
-      newRoomEntity = roomEntity.copyWith(roomScenesId: RoomScenesId(List.from(tempAddScenesList)));
+      newRoomEntity = newRoomEntity.copyWith(roomScenesId: RoomScenesId(List.from(tempAddScenesList)));
 
       /// For Routines in the room
       final List<String> allRoutinesInNewRoom = roomEntity.roomRoutinesId.getOrCrash();
@@ -119,7 +119,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
       final HashSet<String> tempAddRoutinesList = HashSet<String>();
       tempAddRoutinesList.addAll(allRoutinesInNewRoom);
       tempAddRoutinesList.addAll(allRoutinesInExistingRoom);
-      newRoomEntity = roomEntity.copyWith(roomRoutinesId: RoomRoutinesId(List.from(tempAddRoutinesList)));
+      newRoomEntity = newRoomEntity.copyWith(roomRoutinesId: RoomRoutinesId(List.from(tempAddRoutinesList)));
 
       /// For Bindings in the room
       final List<String> allBindingsInNewRoom = roomEntity.roomBindingsId.getOrCrash();
@@ -129,7 +129,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
       final HashSet<String> tempAddBindingsList = HashSet<String>();
       tempAddBindingsList.addAll(allBindingsInNewRoom);
       tempAddBindingsList.addAll(allBindingsInExistingRoom);
-      newRoomEntity = roomEntity.copyWith(roomBindingsId: RoomBindingsId(List.from(tempAddBindingsList)));
+      newRoomEntity = newRoomEntity.copyWith(roomBindingsId: RoomBindingsId(List.from(tempAddBindingsList)));
 
     }
 
@@ -153,6 +153,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     }
     _allRooms[discoveredRoomId]!
         .addDeviceId(deviceEntity.uniqueId.getOrCrash());
+
   }
 
   @override
