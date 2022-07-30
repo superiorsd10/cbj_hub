@@ -10,7 +10,6 @@ import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector
 import 'package:cbj_hub/infrastructure/devices/lg/lg_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_mqtt/tasmota_mqtt_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/xiaomi_io/xiaomi_io_connector_conjector.dart';
@@ -213,11 +212,14 @@ class CompaniesConnectorConjector {
             continue;
           }
           try {
+            // TODO: Remove .reverse() part after updating to the upcoming
+            // TODO: version of network_tools as it will be built in.
             final InternetAddress internetAddressWithHostName =
                 await internetAddress.reverse();
             setHostNameDeviceByCompany(
-                activeHost: activeHost,
-                internetAddress: internetAddressWithHostName);
+              activeHost: activeHost,
+              internetAddress: internetAddressWithHostName,
+            );
           } catch (e) {
             continue;
           }
@@ -234,7 +236,7 @@ class CompaniesConnectorConjector {
   }) async {
     final String deviceHostNameLowerCase = internetAddress.host.toLowerCase();
     if (deviceHostNameLowerCase.contains('tasmota')) {
-      TasmotaIpConnectorConjector().addNewDeviceByHostInfo(
+      TasmotaMqttConnectorConjector().addNewDeviceByHostInfo(
         activeHost: activeHost,
         hostName: internetAddress.host,
       );

@@ -183,36 +183,31 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     );
   }
 
-  /// Remove all devices ID in our room from all other rooms to prevent
-  /// duplicate
+  /// Remove all devices in our room from all the rooms to prevent duplicate
   Future<void> removeSameDevicesFromOtherRooms(RoomEntity roomEntity) async {
-    final List<String> devicesIdInTheRoom =
+    final List<String> devicesIdInThePassedRoom =
         List.from(roomEntity.roomDevicesId.getOrCrash());
-    if (devicesIdInTheRoom.isEmpty) {
+    if (devicesIdInThePassedRoom.isEmpty) {
       return;
     }
 
-    for (final RoomEntity roomEntityTemp in _allRooms.values) {
+    for (RoomEntity roomEntityTemp in _allRooms.values) {
       if (roomEntityTemp.roomDevicesId.failureOrUnit != right(unit)) {
         continue;
       }
-      final List<String> roomIdesTempList =
+      final List<String> devicesIdInTheRoom =
           List.from(roomEntityTemp.roomDevicesId.getOrCrash());
 
-      for (final String roomIdTemp in roomIdesTempList) {
-        final int indexOfDeviceId = devicesIdInTheRoom.indexOf(roomIdTemp);
+      for (final String deviceIdInTheRoom in devicesIdInTheRoom) {
+        final int indexOfDeviceId =
+            devicesIdInThePassedRoom.indexOf(deviceIdInTheRoom);
 
         /// If device id exist in other room than delete it from that room
         if (indexOfDeviceId != -1) {
-          roomEntityTemp.copyWith(
-            roomDevicesId: roomEntityTemp.deleteIdIfExist(roomIdTemp),
+          roomEntityTemp = roomEntityTemp.copyWith(
+            roomDevicesId: roomEntityTemp.deleteIdIfExist(deviceIdInTheRoom),
           );
-
-          devicesIdInTheRoom.removeAt(indexOfDeviceId);
-          if (devicesIdInTheRoom.isEmpty) {
-            return;
-          }
-          continue;
+          _allRooms[roomEntityTemp.uniqueId.getOrCrash()] = roomEntityTemp;
         }
       }
     }

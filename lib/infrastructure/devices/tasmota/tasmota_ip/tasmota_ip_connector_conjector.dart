@@ -5,22 +5,14 @@ import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_led
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:injectable/injectable.dart';
-import 'package:network_tools/network_tools.dart';
 
 @singleton
 class TasmotaIpConnectorConjector implements AbstractCompanyConnectorConjector {
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
-  Future<void> addNewDeviceByHostInfo({
-    required ActiveHost activeHost,
-    required String hostName,
-  }) async {
-    // http://ip/cm?cmnd=SetOption19%200
-    // http://ip/cm?cmnd=MqttHost%200
-
-    // TODO: Find all device components so that it can choose which cbj
-    // ToODO: entity to create for each component.
-  }
+  // This is how you can interact tasmota using network calls.
+  // http://ip/cm?cmnd=SetOption19%200
+  // http://ip/cm?cmnd=MqttHost%200
 
   Future<void> manageHubRequestsForDevice(
     DeviceEntityAbstract tasmotaIpDE,
@@ -33,6 +25,5 @@ class TasmotaIpConnectorConjector implements AbstractCompanyConnectorConjector {
     } else {
       logger.w('TasmotaIp device type does not exist');
     }
-    logger.v('manageHubRequestsForDevice in TasmotaIp');
   }
 }

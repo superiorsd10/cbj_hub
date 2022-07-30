@@ -59,7 +59,7 @@ class LgConnectorConjector implements AbstractCompanyConnectorConjector {
 
       companyDevices.addEntries([deviceAsEntry]);
     }
-    logger.i('New LG devices where added');
+    logger.i('New LG device got added');
   }
 
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract lg) {

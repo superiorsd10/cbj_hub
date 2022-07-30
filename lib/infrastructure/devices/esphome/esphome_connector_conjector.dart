@@ -63,8 +63,6 @@ class ESPHomeConnectorConjector implements AbstractCompanyConnectorConjector {
     } else {
       logger.w('ESPHome device type does not exist');
     }
-
-    logger.v('manageHubRequestsForDevice in ESPHome');
   }
 
   Future<Either<CoreFailure, Unit>> updateDatabase({

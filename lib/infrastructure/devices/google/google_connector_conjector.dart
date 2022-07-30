@@ -58,7 +58,7 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
 
       companyDevices.addEntries([deviceAsEntry]);
     }
-    logger.i('New Chromecast devices where added');
+    logger.i('New Chromecast device got added');
   }
 
   Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract google) {

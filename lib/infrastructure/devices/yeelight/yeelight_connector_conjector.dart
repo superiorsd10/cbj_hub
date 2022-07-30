@@ -46,7 +46,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
 
             companyDevices.addEntries([deviceAsEntry]);
 
-            logger.i('New Yeelight devices where added');
+            logger.i('New Yeelight device got added');
           }
         }
         await Future.delayed(const Duration(minutes: 3));
