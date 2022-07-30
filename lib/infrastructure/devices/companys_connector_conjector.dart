@@ -239,7 +239,7 @@ class CompanysConnectorConjector {
         hostName: internetAddress.host,
       );
     } else {
-      // logger.i('Internet Name ${internetAddress.host}');
+      logger.i('Internet Name ${internetAddress.host}');
     }
   }
 }
