@@ -149,10 +149,16 @@ class CompaniesConnectorConjector {
     if (hostMdnsInfo == null) {
       return;
     }
+
+    final String mdnsDeviceIp = activeHost.address;
+
+    if(activeHost.internetAddress.type != InternetAddressType.IPv4){
+      return;
+    }
+
     final String startOfMdnsName = hostMdnsInfo.getOnlyTheStartOfMdnsName();
     final String startOfMdnsNameLower = startOfMdnsName.toLowerCase();
 
-    final String mdnsDeviceIp = activeHost.ip;
     final String mdnsPort = hostMdnsInfo.mdnsPort.toString();
 
     if (ESPHomeConnectorConjector.mdnsTypes
@@ -200,26 +206,21 @@ class CompaniesConnectorConjector {
         for (final InternetAddress address in networkInterface.addresses) {
           final String ip = address.address;
           final String subnet = ip.substring(0, ip.lastIndexOf('.'));
-          activeHostStreamList.add(HostScanner.discover(subnet));
+          activeHostStreamList.add(HostScanner.getAllPingableDevices(subnet));
         }
       }
 
       for (final Stream<ActiveHost> activeHostStream in activeHostStreamList) {
         await for (final ActiveHost activeHost in activeHostStream) {
-          final InternetAddress? internetAddress =
-              InternetAddress.tryParse(activeHost.ip);
-          if (internetAddress == null) {
+
+          await activeHost.waitingForActiveHostSetupToComplete;
+          if(activeHost.hostName == null){
             continue;
           }
           try {
-            // TODO: Remove .reverse() part after updating to the upcoming
-            // TODO: version of network_tools as it will be built in.
-            final InternetAddress internetAddressWithHostName =
-                await internetAddress.reverse();
             setHostNameDeviceByCompany(
-              activeHost: activeHost,
-              internetAddress: internetAddressWithHostName,
-            );
+                activeHost: activeHost,
+                internetAddress: activeHost.internetAddress,);
           } catch (e) {
             continue;
           }
@@ -243,7 +244,7 @@ class CompaniesConnectorConjector {
     } else if (deviceHostNameLowerCase.contains('xiaomi') ||
         deviceHostNameLowerCase.contains('yeelink')) {
     } else {
-      logger.i('Internet Name ${internetAddress.host}');
+      // logger.i('Internet Name ${internetAddress.host}');
     }
   }
 }

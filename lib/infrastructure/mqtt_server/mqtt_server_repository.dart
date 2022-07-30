@@ -176,7 +176,7 @@ class MqttServerRepository extends IMqttServerRepository {
       builder.addUTF8String(message);
       client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
     } catch (error) {
-      logger.e('Error publishing MQTT message');
+      logger.e('Error publishing MQTT message\n$error');
     }
   }
 
