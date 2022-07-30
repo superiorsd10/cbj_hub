@@ -86,10 +86,57 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
 
   @override
   RoomEntity addOrUpdateRoom(RoomEntity roomEntity) {
+    RoomEntity newRoomEntity = roomEntity;
+
+    final RoomEntity? roomFromAllRoomsList = _allRooms[roomEntity.uniqueId.getOrCrash()];
+    /// TODO: Check if this should only happen in discover room
+    if(roomFromAllRoomsList != null){
+      /// For devices in the room
+      final List<String> allDevicesInNewRoom = roomEntity.roomDevicesId.getOrCrash();
+      final List<String> allDevicesInExistingRoom = roomFromAllRoomsList.roomDevicesId.getOrCrash();
+
+
+      final HashSet<String> tempAddDevicesList = HashSet<String>();
+      tempAddDevicesList.addAll(allDevicesInNewRoom);
+      tempAddDevicesList.addAll(allDevicesInExistingRoom);
+      newRoomEntity = roomEntity.copyWith(roomDevicesId: RoomDevicesId(List.from(tempAddDevicesList)));
+
+      /// For scenes in the room
+      final List<String> allScenesInNewRoom = roomEntity.roomScenesId.getOrCrash();
+      final List<String> allScenesInExistingRoom = roomFromAllRoomsList.roomDevicesId.getOrCrash();
+
+
+      final HashSet<String> tempAddScenesList = HashSet<String>();
+      tempAddScenesList.addAll(allScenesInNewRoom);
+      tempAddScenesList.addAll(allScenesInExistingRoom);
+      newRoomEntity = roomEntity.copyWith(roomScenesId: RoomScenesId(List.from(tempAddScenesList)));
+
+      /// For Routines in the room
+      final List<String> allRoutinesInNewRoom = roomEntity.roomRoutinesId.getOrCrash();
+      final List<String> allRoutinesInExistingRoom = roomFromAllRoomsList.roomRoutinesId.getOrCrash();
+
+
+      final HashSet<String> tempAddRoutinesList = HashSet<String>();
+      tempAddRoutinesList.addAll(allRoutinesInNewRoom);
+      tempAddRoutinesList.addAll(allRoutinesInExistingRoom);
+      newRoomEntity = roomEntity.copyWith(roomRoutinesId: RoomRoutinesId(List.from(tempAddRoutinesList)));
+
+      /// For Bindings in the room
+      final List<String> allBindingsInNewRoom = roomEntity.roomBindingsId.getOrCrash();
+      final List<String> allBindingsInExistingRoom = roomFromAllRoomsList.roomBindingsId.getOrCrash();
+
+
+      final HashSet<String> tempAddBindingsList = HashSet<String>();
+      tempAddBindingsList.addAll(allBindingsInNewRoom);
+      tempAddBindingsList.addAll(allBindingsInExistingRoom);
+      newRoomEntity = roomEntity.copyWith(roomBindingsId: RoomBindingsId(List.from(tempAddBindingsList)));
+
+    }
+
     _allRooms.addEntries([
-      MapEntry<String, RoomEntity>(roomEntity.uniqueId.getOrCrash(), roomEntity)
+      MapEntry<String, RoomEntity>(newRoomEntity.uniqueId.getOrCrash(), newRoomEntity)
     ]);
-    return roomEntity;
+    return newRoomEntity;
   }
 
   @override
@@ -106,6 +153,7 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     }
     _allRooms[discoveredRoomId]!
         .addDeviceId(deviceEntity.uniqueId.getOrCrash());
+    print(_allRooms['00000000-0000-0000-0000-000000000000']!.roomDevicesId.getOrCrash());
   }
 
   @override
