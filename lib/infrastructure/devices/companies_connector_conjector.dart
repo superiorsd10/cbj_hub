@@ -9,6 +9,7 @@ import 'package:cbj_hub/infrastructure/devices/esphome/esphome_connector_conject
 import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lg/lg_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/shelly/shelly_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_mqtt/tasmota_mqtt_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
@@ -34,7 +35,7 @@ class CompaniesConnectorConjector {
           TasmotaMqttConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
-          ESPHomeConnectorConjector()
+          EspHomeConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else if (deviceVendor ==
             VendorsAndServices.switcherSmartHome.toString()) {
@@ -51,6 +52,9 @@ class CompaniesConnectorConjector {
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else if (deviceVendor == VendorsAndServices.lifx.toString()) {
           LifxConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor == VendorsAndServices.shelly.toString()) {
+          ShellyConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else {
           logger.i(
@@ -93,7 +97,7 @@ class CompaniesConnectorConjector {
     } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
       TasmotaMqttConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
-      ESPHomeConnectorConjector.companyDevices.addEntries([devicesEntry]);
+      EspHomeConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor ==
         VendorsAndServices.switcherSmartHome.toString()) {
       SwitcherConnectorConjector.companyDevices.addEntries([devicesEntry]);
@@ -152,7 +156,7 @@ class CompaniesConnectorConjector {
 
     final String mdnsDeviceIp = activeHost.address;
 
-    if(activeHost.internetAddress.type != InternetAddressType.IPv4){
+    if (activeHost.internetAddress.type != InternetAddressType.IPv4) {
       return;
     }
 
@@ -161,9 +165,17 @@ class CompaniesConnectorConjector {
 
     final String mdnsPort = hostMdnsInfo.mdnsPort.toString();
 
-    if (ESPHomeConnectorConjector.mdnsTypes
+    if (EspHomeConnectorConjector.mdnsTypes
         .contains(hostMdnsInfo.mdnsServiceType)) {
-      ESPHomeConnectorConjector().addNewDeviceByMdnsName(
+      EspHomeConnectorConjector().addNewDeviceByMdnsName(
+        mDnsName: startOfMdnsName,
+        ip: mdnsDeviceIp,
+        port: mdnsPort,
+      );
+    } else if (ShellyConnectorConjector.mdnsTypes
+            .contains(hostMdnsInfo.mdnsServiceType) &&
+        hostMdnsInfo.getOnlyTheStartOfMdnsName().contains('shelly')) {
+      ShellyConnectorConjector().addNewDeviceByMdnsName(
         mDnsName: startOfMdnsName,
         ip: mdnsDeviceIp,
         port: mdnsPort,
@@ -189,7 +201,7 @@ class CompaniesConnectorConjector {
       );
     } else {
       // logger.v(
-      //   'mDNS service type ${hostMdnsInfo.mdnsServiceType} is not supported\n IP: ${activeHost.ip}, Port: ${hostMdnsInfo.mdnsPort}, ServiceType: ${hostMdnsInfo.mdnsServiceType}, MdnsName: ${hostMdnsInfo.getOnlyTheStartOfMdnsName()}',
+      //   'mDNS service type ${hostMdnsInfo.mdnsServiceType} is not supported\n IP: ${activeHost.address}, Port: ${hostMdnsInfo.mdnsPort}, ServiceType: ${hostMdnsInfo.mdnsServiceType}, MdnsName: ${hostMdnsInfo.getOnlyTheStartOfMdnsName()}',
       // );
     }
   }
@@ -212,15 +224,15 @@ class CompaniesConnectorConjector {
 
       for (final Stream<ActiveHost> activeHostStream in activeHostStreamList) {
         await for (final ActiveHost activeHost in activeHostStream) {
-
           await activeHost.waitingForActiveHostSetupToComplete;
-          if(activeHost.hostName == null){
+          if (activeHost.hostName == null) {
             continue;
           }
           try {
             setHostNameDeviceByCompany(
-                activeHost: activeHost,
-                internetAddress: activeHost.internetAddress,);
+              activeHost: activeHost,
+              internetAddress: activeHost.internetAddress,
+            );
           } catch (e) {
             continue;
           }

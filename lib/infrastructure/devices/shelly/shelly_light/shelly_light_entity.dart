@@ -2,29 +2,15 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
-import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_device_value_objects.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/shelly/shelly_api/shelly_api_color_bulb.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
-import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
-// TODO: Make the commends work, currently this object does not work
-// Toggle device on/off, the o is the number of output to toggle o=2 is the second
-//    http://ip/?m=1&o=1
-// Change brightness
-//    http://ip/?m=1&d0=30
-// Change color
-//    http://ip/?m=1&h0=232
-// Change tint (I think)
-//    http://ip/?m=1&t0=500
-// Change color strength
-//    http://ip/?m=1&n0=87
-
-class TasmotaIpLedEntity extends GenericLightDE {
-  TasmotaIpLedEntity({
+class ShellyColoreLightEntity extends GenericRgbwLightDE {
+  ShellyColoreLightEntity({
     required CoreUniqueId uniqueId,
     required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
@@ -35,8 +21,17 @@ class TasmotaIpLedEntity extends GenericLightDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericLightSwitchState lightSwitchState,
-    required this.tasmotaIpDeviceTopicName,
+    required GenericRgbwLightSwitchState lightSwitchState,
+    required GenericRgbwLightColorTemperature lightColorTemperature,
+    required GenericRgbwLightBrightness lightBrightness,
+    required GenericRgbwLightColorAlpha lightColorAlpha,
+    required GenericRgbwLightColorHue lightColorHue,
+    required GenericRgbwLightColorSaturation lightColorSaturation,
+    required GenericRgbwLightColorValue lightColorValue,
+    required this.deviceMdnsName,
+    required this.devicePort,
+    required this.lastKnownIp,
+    required String hostName,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
@@ -47,19 +42,36 @@ class TasmotaIpLedEntity extends GenericLightDE {
           senderDeviceOs: senderDeviceOs,
           senderDeviceModel: senderDeviceModel,
           senderId: senderId,
-          deviceVendor: DeviceVendor(VendorsAndServices.tasmota.toString()),
+          deviceVendor: DeviceVendor(VendorsAndServices.shelly.toString()),
           compUuid: compUuid,
           powerConsumption: powerConsumption,
-        );
+          lightColorTemperature: lightColorTemperature,
+          lightBrightness: lightBrightness,
+          lightColorAlpha: lightColorAlpha,
+          lightColorHue: lightColorHue,
+          lightColorSaturation: lightColorSaturation,
+          lightColorValue: lightColorValue,
+        ) {
+    shellyColorBulb = ShellyColorBulb(
+      lastKnownIp: lastKnownIp.getOrCrash(),
+      mDnsName: deviceMdnsName.getOrCrash(),
+      hostName: hostName,
+    );
+  }
 
-  TasmotaIpDeviceTopicName tasmotaIpDeviceTopicName;
+  DeviceLastKnownIp lastKnownIp;
 
-  /// Please override the following methods
+  DeviceMdnsName deviceMdnsName;
+
+  DevicePort devicePort;
+
+  late ShellyColorBulb shellyColorBulb;
+
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
     required DeviceEntityAbstract newEntity,
   }) async {
-    if (newEntity is! GenericLightDE) {
+    if (newEntity is! GenericRgbwLightDE) {
       return left(
         const CoreFailure.actionExcecuter(
           failedValue: 'Not the correct type',
@@ -77,27 +89,21 @@ class TasmotaIpLedEntity extends GenericLightDE {
         );
 
         if (actionToPreform == DeviceActions.on) {
-          (await turnOnLight()).fold(
-            (l) {
-              logger.e('Error turning TasmotaIp light on');
-              throw l;
-            },
-            (r) {
-              logger.i('TasmotaIp light turn on success');
-            },
-          );
+          (await turnOnLight()).fold((l) {
+            logger.e('Error turning Shelly light on');
+            throw l;
+          }, (r) {
+            logger.i('Shelly light turn on success');
+          });
         } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffLight()).fold(
-            (l) {
-              logger.e('Error turning TasmotaIp light off');
-              throw l;
-            },
-            (r) {
-              logger.i('TasmotaIp light turn off success');
-            },
-          );
+          (await turnOffLight()).fold((l) {
+            logger.e('Error turning Shelly light off');
+            throw l;
+          }, (r) {
+            logger.i('Shelly light turn off success');
+          });
         } else {
-          logger.e('actionToPreform is not set correctly on TasmotaIp Led');
+          logger.e('actionToPreform is not set correctly Shelly light');
         }
       }
       deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
@@ -110,13 +116,11 @@ class TasmotaIpLedEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
+    lightSwitchState = GenericRgbwLightSwitchState(DeviceActions.on.toString());
 
     try {
-      getIt<IMqttServerRepository>().publishMessage(
-        'cmnd/${tasmotaIpDeviceTopicName.getOrCrash()}/Power',
-        'ON',
-      );
+      logger.v('Turn on Shelly device');
+      shellyColorBulb.turnOn();
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
@@ -125,14 +129,17 @@ class TasmotaIpLedEntity extends GenericLightDE {
 
   @override
   Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    lightSwitchState = GenericLightSwitchState(DeviceActions.off.toString());
+    lightSwitchState =
+        GenericRgbwLightSwitchState(DeviceActions.off.toString());
 
     try {
-      getIt<IMqttServerRepository>().publishMessage(
-        'cmnd/${tasmotaIpDeviceTopicName.getOrCrash()}/Power',
-        'OFF',
-      );
-      return right(unit);
+      try {
+        logger.v('Turn off Shelly device');
+        shellyColorBulb.turnOff();
+        return right(unit);
+      } catch (exception) {
+        return left(const CoreFailure.unexpected());
+      }
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }

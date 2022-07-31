@@ -20,7 +20,7 @@ Future<void> main(List<String> arguments) async {
   //  Setting device model and checking if configuration for this model exist
   await DevicePinListManager().setPhysicalDeviceType();
   // Fix for windows error reusePort
-  if(Platform.isWindows) {
+  if (Platform.isWindows) {
     await MySingleton.getLocalDbPath();
   }
 

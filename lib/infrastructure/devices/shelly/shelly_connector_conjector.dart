@@ -3,16 +3,16 @@ import 'dart:async';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/esphome_helpers.dart';
-import 'package:cbj_hub/infrastructure/devices/esphome/esphome_light/esphome_light_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/shelly/shelly_helpers.dart';
+import 'package:cbj_hub/infrastructure/devices/shelly/shelly_light/shelly_light_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
 @singleton
-class EspHomeConnectorConjector implements AbstractCompanyConnectorConjector {
-  static const List<String> mdnsTypes = ['_esphomelib._tcp'];
+class ShellyConnectorConjector implements AbstractCompanyConnectorConjector {
+  static const List<String> mdnsTypes = ['_http._tcp'];
 
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 
@@ -23,18 +23,22 @@ class EspHomeConnectorConjector implements AbstractCompanyConnectorConjector {
     required String port,
   }) async {
     for (final DeviceEntityAbstract device in companyDevices.values) {
-      if (device is EspHomeLightEntity) {
+      if (device is ShellyColoreLightEntity) {
         if (mDnsName == device.deviceMdnsName.getOrCrash()) {
           return;
         }
       } else {
-        logger.w("Can't add espHome device, type was not set to get device ID");
+        logger.w("Can't add shelly device, type was not set to get device ID");
         return;
       }
     }
 
     final List<DeviceEntityAbstract> espDevice =
-        await EspHomeHelpers.addDiscoverdDevice(mDnsName: mDnsName, port: port);
+        await ShellyHelpers.addDiscoverdDevice(
+      mDnsName: mDnsName,
+      ip: ip,
+      port: port,
+    );
 
     if (espDevice.isEmpty) {
       return;
@@ -49,17 +53,16 @@ class EspHomeConnectorConjector implements AbstractCompanyConnectorConjector {
 
       companyDevices.addEntries([deviceAsEntry]);
     }
-    logger.v('New espHome devices name:$mDnsName');
+    logger.v('New shelly devices name:$mDnsName');
   }
 
   Future<void> manageHubRequestsForDevice(
-    DeviceEntityAbstract espHomeDE,
+    DeviceEntityAbstract shellyDE,
   ) async {
-    final DeviceEntityAbstract? device =
-        companyDevices[espHomeDE.getDeviceId()];
+    final DeviceEntityAbstract? device = companyDevices[shellyDE.getDeviceId()];
 
-    if (device is EspHomeLightEntity) {
-      device.executeDeviceAction(newEntity: espHomeDE);
+    if (device is ShellyColoreLightEntity) {
+      device.executeDeviceAction(newEntity: shellyDE);
     } else {
       logger.w('ESPHome device type does not exist');
     }
@@ -74,12 +77,12 @@ class EspHomeConnectorConjector implements AbstractCompanyConnectorConjector {
     throw UnimplementedError();
   }
 
-  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract espHome) {
+  Future<Either<CoreFailure, Unit>> create(DeviceEntityAbstract shelly) {
     // TODO: implement create
     throw UnimplementedError();
   }
 
-  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract espHome) {
+  Future<Either<CoreFailure, Unit>> delete(DeviceEntityAbstract shelly) {
     // TODO: implement delete
     throw UnimplementedError();
   }
