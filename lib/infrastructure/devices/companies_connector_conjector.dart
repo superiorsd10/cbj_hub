@@ -10,6 +10,7 @@ import 'package:cbj_hub/infrastructure/devices/google/google_connector_conjector
 import 'package:cbj_hub/infrastructure/devices/lg/lg_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/shelly/shelly_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/sonoff_diy/sonoff_diy_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_mqtt/tasmota_mqtt_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
@@ -55,6 +56,9 @@ class CompaniesConnectorConjector {
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else if (deviceVendor == VendorsAndServices.shelly.toString()) {
           ShellyConnectorConjector()
+              .manageHubRequestsForDevice(deviceEntityAbstract);
+        } else if (deviceVendor == VendorsAndServices.sonoff.toString()) {
+          SonoffDiyConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else {
           logger.i(
@@ -109,6 +113,10 @@ class CompaniesConnectorConjector {
       TuyaSmartConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.lifx.toString()) {
       LifxConnectorConjector.companyDevices.addEntries([devicesEntry]);
+    } else if (deviceVendor == VendorsAndServices.shelly.toString()) {
+      ShellyConnectorConjector.companyDevices.addEntries([devicesEntry]);
+    } else if (deviceVendor == VendorsAndServices.sonoff.toString()) {
+      SonoffDiyConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else {
       logger.w('Cannot add device entity to its repo, type not supported');
     }
@@ -180,6 +188,13 @@ class CompaniesConnectorConjector {
         ip: mdnsDeviceIp,
         port: mdnsPort,
       );
+    } else if (SonoffDiyConnectorConjector.mdnsTypes
+        .contains(hostMdnsInfo.mdnsServiceType)) {
+      SonoffDiyConnectorConjector().addNewDeviceByMdnsName(
+        mDnsName: startOfMdnsName,
+        ip: mdnsDeviceIp,
+        port: mdnsPort,
+      );
     } else if (GoogleConnectorConjector.mdnsTypes
             .contains(hostMdnsInfo.mdnsServiceType) &&
         (startOfMdnsNameLower.contains('google') ||
@@ -200,9 +215,9 @@ class CompaniesConnectorConjector {
         port: mdnsPort,
       );
     } else {
-      // logger.v(
-      //   'mDNS service type ${hostMdnsInfo.mdnsServiceType} is not supported\n IP: ${activeHost.address}, Port: ${hostMdnsInfo.mdnsPort}, ServiceType: ${hostMdnsInfo.mdnsServiceType}, MdnsName: ${hostMdnsInfo.getOnlyTheStartOfMdnsName()}',
-      // );
+      logger.v(
+        'mDNS service type ${hostMdnsInfo.mdnsServiceType} is not supported\n IP: ${activeHost.address}, Port: ${hostMdnsInfo.mdnsPort}, ServiceType: ${hostMdnsInfo.mdnsServiceType}, MdnsName: ${hostMdnsInfo.getOnlyTheStartOfMdnsName()}',
+      );
     }
   }
 
@@ -256,7 +271,7 @@ class CompaniesConnectorConjector {
     } else if (deviceHostNameLowerCase.contains('xiaomi') ||
         deviceHostNameLowerCase.contains('yeelink')) {
     } else {
-      // logger.i('Internet Name ${internetAddress.host}');
+      logger.i('Internet Name ${internetAddress.host}');
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-abstract class ShellyDeviceAbstract {
-  ShellyDeviceAbstract({
+abstract class ShellyApiDeviceAbstract {
+  ShellyApiDeviceAbstract({
     required this.lastKnownIp,
     required this.mDnsName,
     required this.hostName,

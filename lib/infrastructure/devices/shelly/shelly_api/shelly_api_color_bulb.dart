@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:cbj_hub/infrastructure/devices/shelly/shelly_api/shelly_device_abstract.dart';
+import 'package:cbj_hub/infrastructure/devices/shelly/shelly_api/shelly_api_device_abstract.dart';
 
-class ShellyColorBulb extends ShellyDeviceAbstract {
-  ShellyColorBulb({
+class ShellyApiColorBulb extends ShellyApiDeviceAbstract {
+  ShellyApiColorBulb({
     required super.lastKnownIp,
     required super.mDnsName,
     required super.hostName,

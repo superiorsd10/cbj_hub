@@ -6,13 +6,13 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
 import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/shelly/shelly_api/shelly_api_relay_switch.dart';
+import 'package:cbj_hub/infrastructure/devices/sonoff_diy/sonoff_diy_api/sonoff_diy_api_wall_switch.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
-class ShellyRelaySwitchEntity extends GenericSwitchDE {
-  ShellyRelaySwitchEntity({
+class SonoffDiyRelaySwitchEntity extends GenericSwitchDE {
+  SonoffDiyRelaySwitchEntity({
     required CoreUniqueId uniqueId,
     required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
@@ -38,14 +38,14 @@ class ShellyRelaySwitchEntity extends GenericSwitchDE {
           senderDeviceOs: senderDeviceOs,
           senderDeviceModel: senderDeviceModel,
           senderId: senderId,
-          deviceVendor: DeviceVendor(VendorsAndServices.shelly.toString()),
+          deviceVendor: DeviceVendor(VendorsAndServices.sonoff.toString()),
           compUuid: compUuid,
           powerConsumption: powerConsumption,
         ) {
-    shellyRelaySwitch = ShellyApiRelaySwitch(
-      lastKnownIp: lastKnownIp.getOrCrash(),
-      mDnsName: deviceMdnsName.getOrCrash(),
+    sonoffDiyRelaySwitch = SonoffDiyApiWallSwitch(
+      ipAddress: lastKnownIp.getOrCrash(),
       hostName: hostName,
+      port: int.parse(devicePort.getOrCrash()),
     );
   }
 
@@ -55,7 +55,7 @@ class ShellyRelaySwitchEntity extends GenericSwitchDE {
 
   DevicePort devicePort;
 
-  late ShellyApiRelaySwitch shellyRelaySwitch;
+  late SonoffDiyApiWallSwitch sonoffDiyRelaySwitch;
 
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
@@ -80,26 +80,26 @@ class ShellyRelaySwitchEntity extends GenericSwitchDE {
         if (actionToPreform == DeviceActions.on) {
           (await turnOnSwitch()).fold(
             (l) {
-              logger.e('Error turning Shelly switch on\n$l');
+              logger.e('Error turning Sonoff diy switch on\n$l');
               throw l;
             },
             (r) {
-              logger.i('Shelly switch turn on success');
+              logger.i('Sonoff diy switch turn on success');
             },
           );
         } else if (actionToPreform == DeviceActions.off) {
           (await turnOffSwitch()).fold(
             (l) {
-              logger.e('Error turning Shelly off\n$l');
+              logger.e('Error turning Sonoff diy off\n$l');
               throw l;
             },
             (r) {
-              logger.i('Shelly switch turn off success');
+              logger.i('Sonoff diy switch turn off success');
             },
           );
         } else {
           logger.w(
-            'actionToPreform is not set correctly on Shelly Switch',
+            'actionToPreform is not set correctly on Sonoff diy Switch',
           );
         }
       }
@@ -116,8 +116,8 @@ class ShellyRelaySwitchEntity extends GenericSwitchDE {
     switchState = GenericSwitchSwitchState(DeviceActions.on.toString());
 
     try {
-      logger.v('Turn on Shelly device');
-      shellyRelaySwitch.turnOn();
+      logger.v('Turn on Sonoff diy device');
+      sonoffDiyRelaySwitch.switchOn();
       return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
@@ -129,8 +129,8 @@ class ShellyRelaySwitchEntity extends GenericSwitchDE {
     switchState = GenericSwitchSwitchState(DeviceActions.off.toString());
 
     try {
-      logger.v('Turn off Shelly device');
-      await shellyRelaySwitch.turnOff();
+      logger.v('Turn off Sonoff diy device');
+      await sonoffDiyRelaySwitch.switchOff();
       return right(unit);
     } catch (exception) {
       return left(const CoreFailure.unexpected());

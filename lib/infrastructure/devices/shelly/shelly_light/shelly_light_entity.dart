@@ -53,7 +53,7 @@ class ShellyColorLightEntity extends GenericRgbwLightDE {
           lightColorSaturation: lightColorSaturation,
           lightColorValue: lightColorValue,
         ) {
-    shellyColorBulb = ShellyColorBulb(
+    shellyColorBulb = ShellyApiColorBulb(
       lastKnownIp: lastKnownIp.getOrCrash(),
       mDnsName: deviceMdnsName.getOrCrash(),
       hostName: hostName,
@@ -66,7 +66,7 @@ class ShellyColorLightEntity extends GenericRgbwLightDE {
 
   DevicePort devicePort;
 
-  late ShellyColorBulb shellyColorBulb;
+  late ShellyApiColorBulb shellyColorBulb;
 
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
