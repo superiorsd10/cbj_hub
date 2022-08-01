@@ -10,6 +10,8 @@ environment:
 dependencies:
   # Contains utility classes in the style of dart:async to work with asynchronous computations.
   async: ^2.9.0
+  # Package to create, convert, alter, and compare colors in a variety of colorspaces.
+  color: ^3.0.0
   # Collection of cyclic redundancy check (CRC) routines as Dart converters.
   crclib: ^3.0.0
   # Cast videos to your ChromeCast device and control their playback
@@ -77,6 +79,6 @@ dev_dependencies:
   # Collection of lint rules for Dart and Flutter projects
   lint: ^1.10.0
   # Library for mocks
-  mockito: ^5.2.0
+  mockito: ^5.3.0
   # A full featured library for writing and running Dart tests across platforms.
   test: ^1.21.4

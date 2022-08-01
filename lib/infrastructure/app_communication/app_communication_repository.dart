@@ -130,7 +130,10 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         deviceEntityFromApp.deviceStateGRPC =
             DeviceState(DeviceStateGRPC.waitingInComp.toString());
 
-        getIt<IMqttServerRepository>().postToMqtt(deviceEntityFromApp);
+        getIt<IMqttServerRepository>().postToMqtt(
+          entityFromTheApp: deviceEntityFromApp,
+          gotFromApp: true,
+        );
       } else if (event.sendingType == SendingType.roomType) {
         final RoomEntity roomEntityFromApp = RoomEntityDtos.fromJson(
           jsonDecode(event.allRemoteCommands) as Map<String, dynamic>,
@@ -140,7 +143,10 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
           roomEntity: roomEntityFromApp,
         );
 
-        getIt<IMqttServerRepository>().postToMqtt(roomEntityFromApp);
+        getIt<IMqttServerRepository>().postToMqtt(
+          entityFromTheApp: roomEntityFromApp,
+          gotFromApp: true,
+        );
       } else if (event.sendingType == SendingType.vendorLoginType) {
         final LoginEntityAbstract loginEntityFromApp =
             VendorHelper.convertJsonStringToDomain(event.allRemoteCommands);

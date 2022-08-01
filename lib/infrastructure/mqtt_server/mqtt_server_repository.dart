@@ -307,15 +307,15 @@ class MqttServerRepository extends IMqttServerRepository {
       logger.i(
         'getValues got called on Device $deviceId and will get reposted to mqtt',
       );
-      postToMqtt(deviceObjectOfDeviceId);
+      postToMqtt(entityFromTheApp: deviceObjectOfDeviceId);
     } else {
       logger.w('Device id does not exist');
     }
   }
 
   @override
-  Future<void> postToMqtt(
-    dynamic entityFromTheApp, {
+  Future<void> postToMqtt({
+    dynamic entityFromTheApp,
     bool? gotFromApp,
   }) async {
     if (entityFromTheApp is DeviceEntityAbstract) {

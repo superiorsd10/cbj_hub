@@ -64,7 +64,7 @@ class ShellyConnectorConjector implements AbstractCompanyConnectorConjector {
     if (device is ShellyColoreLightEntity) {
       device.executeDeviceAction(newEntity: shellyDE);
     } else {
-      logger.w('ESPHome device type does not exist');
+      logger.w('Shelly device type does not exist');
     }
   }
 
