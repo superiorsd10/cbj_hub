@@ -5,6 +5,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abs
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/shelly/shelly_helpers.dart';
 import 'package:cbj_hub/infrastructure/devices/shelly/shelly_light/shelly_light_entity.dart';
+import 'package:cbj_hub/infrastructure/devices/shelly/shelly_relay_switch/shelly_relay_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/generic_devices/abstract_device/abstract_company_connector_conjector.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
@@ -23,7 +24,7 @@ class ShellyConnectorConjector implements AbstractCompanyConnectorConjector {
     required String port,
   }) async {
     for (final DeviceEntityAbstract device in companyDevices.values) {
-      if (device is ShellyColoreLightEntity) {
+      if (device is ShellyColorLightEntity) {
         if (mDnsName == device.deviceMdnsName.getOrCrash()) {
           return;
         }
@@ -61,7 +62,9 @@ class ShellyConnectorConjector implements AbstractCompanyConnectorConjector {
   ) async {
     final DeviceEntityAbstract? device = companyDevices[shellyDE.getDeviceId()];
 
-    if (device is ShellyColoreLightEntity) {
+    if (device is ShellyColorLightEntity) {
+      device.executeDeviceAction(newEntity: shellyDE);
+    } else if (device is ShellyRelaySwitchEntity) {
       device.executeDeviceAction(newEntity: shellyDE);
     } else {
       logger.w('Shelly device type does not exist');

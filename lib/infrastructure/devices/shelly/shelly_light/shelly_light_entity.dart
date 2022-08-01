@@ -10,8 +10,8 @@ import 'package:cbj_hub/utils.dart';
 import 'package:color/color.dart';
 import 'package:dartz/dartz.dart';
 
-class ShellyColoreLightEntity extends GenericRgbwLightDE {
-  ShellyColoreLightEntity({
+class ShellyColorLightEntity extends GenericRgbwLightDE {
+  ShellyColorLightEntity({
     required CoreUniqueId uniqueId,
     required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
@@ -192,14 +192,10 @@ class ShellyColoreLightEntity extends GenericRgbwLightDE {
         GenericRgbwLightSwitchState(DeviceActions.off.toString());
 
     try {
-      try {
-        logger.v('Turn off Shelly device');
-        await shellyColorBulb.turnOff();
-        return right(unit);
-      } catch (exception) {
-        return left(const CoreFailure.unexpected());
-      }
-    } catch (e) {
+      logger.v('Turn off Shelly device');
+      await shellyColorBulb.turnOff();
+      return right(unit);
+    } catch (exception) {
       return left(const CoreFailure.unexpected());
     }
   }

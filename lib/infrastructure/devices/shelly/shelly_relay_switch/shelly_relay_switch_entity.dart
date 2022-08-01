@@ -4,16 +4,15 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dar
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic_switch_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic_switch_value_objects.dart';
-import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_device_validators.dart';
-import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_remote_api/cloudtuya.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_value_objects.dart';
+import 'package:cbj_hub/infrastructure/devices/shelly/shelly_api/shelly_api_relay_switch.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 
-class TuyaSmartPlugEntity extends GenericSmartPlugDE {
-  TuyaSmartPlugEntity({
+class ShellyRelaySwitchEntity extends GenericSwitchDE {
+  ShellyRelaySwitchEntity({
     required CoreUniqueId uniqueId,
     required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
@@ -24,31 +23,45 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericSmartPlugState smartPlugState,
-    required this.cloudTuya,
+    required GenericSwitchSwitchState switchState,
+    required this.deviceMdnsName,
+    required this.devicePort,
+    required this.lastKnownIp,
+    required String hostName,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          smartPlugState: smartPlugState,
+          switchState: switchState,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,
           senderDeviceModel: senderDeviceModel,
           senderId: senderId,
-          deviceVendor: DeviceVendor(VendorsAndServices.tuyaSmart.toString()),
+          deviceVendor: DeviceVendor(VendorsAndServices.shelly.toString()),
           compUuid: compUuid,
           powerConsumption: powerConsumption,
-        );
+        ) {
+    shellyRelaySwitch = ShellyRelaySwitch(
+      lastKnownIp: lastKnownIp.getOrCrash(),
+      mDnsName: deviceMdnsName.getOrCrash(),
+      hostName: hostName,
+    );
+  }
 
-  /// Will be the cloud api reference, can be Tuya or Jinvoo Smart or Smart Life
-  CloudTuya cloudTuya;
+  DeviceLastKnownIp lastKnownIp;
+
+  DeviceMdnsName deviceMdnsName;
+
+  DevicePort devicePort;
+
+  late ShellyRelaySwitch shellyRelaySwitch;
 
   @override
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
     required DeviceEntityAbstract newEntity,
   }) async {
-    if (newEntity is! GenericSmartPlugDE) {
+    if (newEntity is! GenericSwitchDE) {
       return left(
         const CoreFailure.actionExcecuter(
           failedValue: 'Not the correct type',
@@ -57,37 +70,36 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
     }
 
     try {
-      if (newEntity.smartPlugState!.getOrCrash() !=
-              smartPlugState!.getOrCrash() ||
+      if (newEntity.switchState!.getOrCrash() != switchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
         final DeviceActions? actionToPreform =
             EnumHelperCbj.stringToDeviceAction(
-          newEntity.smartPlugState!.getOrCrash(),
+          newEntity.switchState!.getOrCrash(),
         );
 
         if (actionToPreform == DeviceActions.on) {
-          (await turnOnLight()).fold(
+          (await turnOnSwitch()).fold(
             (l) {
-              logger.e('Error turning Tuya plug on\n$l');
+              logger.e('Error turning Shelly switch on\n$l');
               throw l;
             },
             (r) {
-              logger.i('Tuya plug turn on success');
+              logger.i('Shelly switch turn on success');
             },
           );
         } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffLight()).fold(
+          (await turnOffSwitch()).fold(
             (l) {
-              logger.e('Error turning Tuya off\n$l');
+              logger.e('Error turning Shelly off\n$l');
               throw l;
             },
             (r) {
-              logger.i('Tuya plug turn off success');
+              logger.i('Shelly switch turn off success');
             },
           );
         } else {
           logger.w(
-            'actionToPreform is not set correctly on Tuya Plug',
+            'actionToPreform is not set correctly on Shelly Switch',
           );
         }
       }
@@ -99,27 +111,28 @@ class TuyaSmartPlugEntity extends GenericSmartPlugDE {
     }
   }
 
-  Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    smartPlugState = GenericSmartPlugState(DeviceActions.on.toString());
+  @override
+  Future<Either<CoreFailure, Unit>> turnOnSwitch() async {
+    switchState = GenericSwitchSwitchState(DeviceActions.on.toString());
+
     try {
-      final String requestResponse = await cloudTuya.turnOn(
-        vendorUniqueId.getOrCrash(),
-      );
-      return tuyaResponseToCyBearJinniSucessFailure(requestResponse);
+      logger.v('Turn on Shelly device');
+      shellyRelaySwitch.turnOn();
+      return right(unit);
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
   }
 
-  Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    smartPlugState = GenericSmartPlugState(DeviceActions.off.toString());
+  @override
+  Future<Either<CoreFailure, Unit>> turnOffSwitch() async {
+    switchState = GenericSwitchSwitchState(DeviceActions.off.toString());
 
     try {
-      final String requestResponse = await cloudTuya.turnOff(
-        vendorUniqueId.getOrCrash(),
-      );
-      return tuyaResponseToCyBearJinniSucessFailure(requestResponse);
-    } catch (e) {
+      logger.v('Turn off Shelly device');
+      await shellyRelaySwitch.turnOff();
+      return right(unit);
+    } catch (exception) {
       return left(const CoreFailure.unexpected());
     }
   }
