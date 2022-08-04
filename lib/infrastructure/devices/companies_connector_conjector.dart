@@ -143,7 +143,7 @@ class CompaniesConnectorConjector {
     while (true) {
       for (final ActiveHost activeHost
           in await MdnsScanner.searchMdnsDevices()) {
-        final MdnsInfo? mdnsInfo = activeHost.mdnsInfo;
+        final MdnsInfo? mdnsInfo = await activeHost.mdnsInfo;
 
         if (mdnsInfo != null) {
           setMdnsDeviceByCompany(activeHost);
@@ -156,7 +156,7 @@ class CompaniesConnectorConjector {
   /// Getting ActiveHost that contain MdnsInfo property and activate it inside
   /// The correct company.
   static Future<void> setMdnsDeviceByCompany(ActiveHost activeHost) async {
-    final MdnsInfo? hostMdnsInfo = activeHost.mdnsInfo;
+    final MdnsInfo? hostMdnsInfo = await  activeHost.mdnsInfo;
 
     if (hostMdnsInfo == null) {
       return;
@@ -215,9 +215,9 @@ class CompaniesConnectorConjector {
         port: mdnsPort,
       );
     } else {
-      logger.v(
-        'mDNS service type ${hostMdnsInfo.mdnsServiceType} is not supported\n IP: ${activeHost.address}, Port: ${hostMdnsInfo.mdnsPort}, ServiceType: ${hostMdnsInfo.mdnsServiceType}, MdnsName: ${hostMdnsInfo.getOnlyTheStartOfMdnsName()}',
-      );
+      // logger.v(
+      //   'mDNS service type ${hostMdnsInfo.mdnsServiceType} is not supported\n IP: ${activeHost.address}, Port: ${hostMdnsInfo.mdnsPort}, ServiceType: ${hostMdnsInfo.mdnsServiceType}, MdnsName: ${hostMdnsInfo.getOnlyTheStartOfMdnsName()}',
+      // );
     }
   }
 
@@ -239,8 +239,7 @@ class CompaniesConnectorConjector {
 
       for (final Stream<ActiveHost> activeHostStream in activeHostStreamList) {
         await for (final ActiveHost activeHost in activeHostStream) {
-          await activeHost.waitingForActiveHostSetupToComplete;
-          if (activeHost.hostName == null) {
+          if ( await activeHost.hostName == null) {
             continue;
           }
           try {
