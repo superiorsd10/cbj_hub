@@ -4,12 +4,12 @@ import 'package:cbj_hub/infrastructure/system_commands/system_commands_base_clas
 import 'package:cbj_hub/utils.dart';
 
 class CommonBatchCommandsD implements SystemCommandsBaseClassD {
-   String? currentUserName;
-   String? currentDriveLetter;
+  String? currentUserName;
+  String? currentDriveLetter;
 
   @override
   Future<String> getCurrentUserName() async {
-    if(currentUserName != null){
+    if (currentUserName != null) {
       return currentUserName!;
     }
     final String whoAmI =
@@ -89,16 +89,17 @@ class CommonBatchCommandsD implements SystemCommandsBaseClassD {
   }
 
   Future<String> getCurrentDriveLetter() async {
-    if(currentDriveLetter != null){
+    if (currentDriveLetter != null) {
       return currentDriveLetter!;
     }
 
     final String driveLetter;
-      driveLetter =
-      await Process.run('cmd', <String>['/C', 'echo', '%cd:~0,2%'], )
-          .then((ProcessResult result) {
-        return result.stdout.toString();
-      });
+    driveLetter = await Process.run(
+      'cmd',
+      <String>['/C', 'echo', '%cd:~0,2%'],
+    ).then((ProcessResult result) {
+      return result.stdout.toString();
+    });
 
     currentDriveLetter = driveLetter.substring(0, driveLetter.indexOf('\r'));
 

@@ -156,7 +156,7 @@ class CompaniesConnectorConjector {
   /// Getting ActiveHost that contain MdnsInfo property and activate it inside
   /// The correct company.
   static Future<void> setMdnsDeviceByCompany(ActiveHost activeHost) async {
-    final MdnsInfo? hostMdnsInfo = await  activeHost.mdnsInfo;
+    final MdnsInfo? hostMdnsInfo = await activeHost.mdnsInfo;
 
     if (hostMdnsInfo == null) {
       return;
@@ -239,7 +239,7 @@ class CompaniesConnectorConjector {
 
       for (final Stream<ActiveHost> activeHostStream in activeHostStreamList) {
         await for (final ActiveHost activeHost in activeHostStream) {
-          if ( await activeHost.hostName == null) {
+          if (await activeHost.hostName == null) {
             continue;
           }
           try {
