@@ -149,7 +149,7 @@ class CompaniesConnectorConjector {
           setMdnsDeviceByCompany(activeHost);
         }
       }
-      await Future.delayed(const Duration(minutes: 1));
+      await Future.delayed(const Duration(minutes: 2));
     }
   }
 
@@ -252,7 +252,7 @@ class CompaniesConnectorConjector {
           }
         }
 
-        await Future.delayed(const Duration(minutes: 1));
+        await Future.delayed(const Duration(minutes: 5));
       }
     }
   }
@@ -270,7 +270,7 @@ class CompaniesConnectorConjector {
     } else if (deviceHostNameLowerCase.contains('xiaomi') ||
         deviceHostNameLowerCase.contains('yeelink')) {
     } else {
-      logger.i('Internet Name ${internetAddress.host}');
+      // logger.i('Internet Name ${internetAddress.host}');
     }
   }
 }
