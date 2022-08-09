@@ -141,8 +141,9 @@ class CompaniesConnectorConjector {
 
   static Future<void> searchAllMdnsDevicesAndSetThemUp() async {
     while (true) {
-      for (final ActiveHost activeHost
-          in await MdnsScanner.searchMdnsDevices()) {
+      for (final ActiveHost activeHost in await MdnsScanner.searchMdnsDevices(
+        forceUseOfSavedSrvRecordList: true,
+      )) {
         final MdnsInfo? mdnsInfo = await activeHost.mdnsInfo;
 
         if (mdnsInfo != null) {
