@@ -38,8 +38,7 @@ class LgWebosTvEntity extends GenericSmartTvDE {
           senderDeviceOs: senderDeviceOs,
           senderDeviceModel: senderDeviceModel,
           senderId: senderId,
-          deviceVendor: DeviceVendor(
-              VendorsAndServices.vendorsAndServicesNotSupported.toString()),
+          deviceVendor: DeviceVendor(VendorsAndServices.lg.toString()),
           compUuid: compUuid,
           powerConsumption: powerConsumption,
         );

@@ -96,6 +96,12 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
               /// Device exist as generic and needs to get converted to non generic type for this vendor
               tempCoreUniqueId = savedDevice.uniqueId;
               break;
+            } else if (tuyaDevice.id ==
+                savedDevice.vendorUniqueId.getOrCrash()) {
+              logger.w(
+                'Tuya Mqtt device type supported but implementation is missing here',
+              );
+              break;
             }
           }
           if (!deviceExist) {

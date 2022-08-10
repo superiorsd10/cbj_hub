@@ -64,6 +64,11 @@ class TasmotaMqttConnectorConjector
           /// Device exist as generic and needs to get converted to non generic type for this vendor
           tempCoreUniqueId = savedDevice.uniqueId;
           break;
+        } else if (deviceId == savedDevice.vendorUniqueId.getOrCrash()) {
+          logger.e(
+            'Tasmota Mqtt device type supported but implementation is missing here',
+          );
+          return;
         }
       }
       if (deviceExist) {

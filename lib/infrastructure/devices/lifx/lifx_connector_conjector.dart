@@ -44,6 +44,12 @@ class LifxConnectorConjector implements AbstractCompanyConnectorConjector {
                 lifxDevice.id == savedDevice.vendorUniqueId.getOrCrash()) {
               tempCoreUniqueId = savedDevice.uniqueId;
               break;
+            } else if (lifxDevice.id ==
+                savedDevice.vendorUniqueId.getOrCrash()) {
+              logger.e(
+                'Lifx device type supported but implementation is missing here',
+              );
+              break;
             }
           }
           if (!deviceExist) {

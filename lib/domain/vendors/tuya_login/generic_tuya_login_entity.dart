@@ -28,7 +28,7 @@ class GenericTuyaLoginDE extends LoginEntityAbstract {
   factory GenericTuyaLoginDE.empty() => GenericTuyaLoginDE(
         senderUniqueId: CoreLoginSenderId.fromUniqueString(''),
         loginVendor: CoreLoginVendor(
-          VendorsAndServices.vendorsAndServicesNotSupported.name,
+          VendorsAndServices.tuyaSmart.name,
         ),
         tuyaUserName: GenericTuyaLoginUserName(''),
         tuyaUserPassword: GenericTuyaLoginUserPassword(''),

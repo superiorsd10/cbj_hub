@@ -43,8 +43,10 @@ class LgConnectorConjector implements AbstractCompanyConnectorConjector {
       //         ip == device.lastKnownIp!.getOrCrash())) {
       //   return;
       // }
-      else {
-        logger.w("Can't add Lg device, type was not set to get device ID");
+      else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'LG device type supported but implementation is missing here',
+        );
         return;
       }
     }

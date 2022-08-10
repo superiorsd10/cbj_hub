@@ -34,8 +34,10 @@ class EspHomeConnectorConjector implements AbstractCompanyConnectorConjector {
           mDnsName == device.vendorUniqueId.getOrCrash()) {
         tempCoreUniqueId = device.uniqueId;
         break;
-      } else {
-        logger.w("Can't add espHome device, type was not set to get device ID");
+      } else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'ESPHome device type supported but implementation is missing here',
+        );
         return;
       }
     }

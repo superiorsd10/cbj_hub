@@ -51,9 +51,11 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
         /// Device exist as generic and needs to get converted to non generic type for this vendor
         tempCoreUniqueId = savedDevice.uniqueId;
         break;
-      } else {
-        logger
-            .w("Can't add switcher device, type was not set to get device ID");
+      } else if (switcherApiObject.deviceId ==
+          savedDevice.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'Switcher device type supported but implementation is missing here',
+        );
       }
     }
 

@@ -40,7 +40,12 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
       //         ip == device.lastKnownIp!.getOrCrash())) {
       //   return;
       // }
-
+      else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'Google device type supported but implementation is missing here',
+        );
+        return;
+      }
     }
 
     final List<DeviceEntityAbstract> googleDevice =

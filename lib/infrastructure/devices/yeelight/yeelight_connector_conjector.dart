@@ -42,6 +42,12 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
               /// Device exist as generic and needs to get converted to non generic type for this vendor
               tempCoreUniqueId = savedDevice.uniqueId;
               break;
+            } else if (yeelightDevice.id.toString() ==
+                savedDevice.vendorUniqueId.getOrCrash()) {
+              logger.e(
+                'Yeelight Mqtt device type supported but implementation is missing here',
+              );
+              break;
             }
           }
           if (!deviceExist) {

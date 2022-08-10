@@ -38,6 +38,11 @@ class ShellyConnectorConjector implements AbstractCompanyConnectorConjector {
         /// Device exist as generic and needs to get converted to non generic type for this vendor
         tempCoreUniqueId = device.uniqueId;
         break;
+      } else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'Shelly device type supported but implementation is missing here',
+        );
+        return;
       }
     }
 

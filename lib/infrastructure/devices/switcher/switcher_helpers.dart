@@ -59,7 +59,11 @@ class SwitcherHelpers {
       );
 
       return switcherRunnerDe;
-    } else {
+    } else if (switcherDevice.deviceType == SwitcherDevicesTypes.switcherMini ||
+        switcherDevice.deviceType == SwitcherDevicesTypes.switcherTouch ||
+        switcherDevice.deviceType == SwitcherDevicesTypes.switcherV2Esp ||
+        switcherDevice.deviceType == SwitcherDevicesTypes.switcherV2qualcomm ||
+        switcherDevice.deviceType == SwitcherDevicesTypes.switcherV4) {
       DeviceActions deviceActions = DeviceActions.actionNotSupported;
       if (switcherDevice.deviceState == SwitcherDeviceState.on) {
         deviceActions = DeviceActions.on;
@@ -89,7 +93,6 @@ class SwitcherHelpers {
       return switcherV2De;
     }
 
-    // TODO: Add if device type does not supported return null
     logger.i(
       'Please add new Switcher device type ${switcherDevice.deviceType}',
     );
