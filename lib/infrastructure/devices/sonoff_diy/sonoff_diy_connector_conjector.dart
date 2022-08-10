@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/sonoff_diy/sonoff__diy_wall_switch/sonoff_diy_mod_wall_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/sonoff_diy/sonoff_diy_helpers.dart';
@@ -22,23 +24,31 @@ class SonoffDiyConnectorConjector implements AbstractCompanyConnectorConjector {
     required String ip,
     required String port,
   }) async {
+    CoreUniqueId? tempCoreUniqueId;
+
     for (final DeviceEntityAbstract device in companyDevices.values) {
-      if (device is SonoffDiyRelaySwitchEntity) {
-        if (mDnsName == device.deviceMdnsName.getOrCrash()) {
-          return;
-        }
-      } else {
-        logger.w(
-            "Can't add sonoff diy device, type was not set to get device ID");
+      if (device is SonoffDiyRelaySwitchEntity &&
+          mDnsName == device.vendorUniqueId.getOrCrash()) {
+        return;
+      } else if (device is GenericSwitchDE &&
+          mDnsName == device.vendorUniqueId.getOrCrash()) {
+        /// Device exist as generic and needs to get converted to non generic type for this vendor
+        tempCoreUniqueId = device.uniqueId;
+        break;
+      } else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'Sonoff device type supported but implementation is missing here',
+        );
         return;
       }
     }
 
     final List<DeviceEntityAbstract> espDevice =
-        await SonoffDiyHelpers.addDiscoverdDevice(
+        SonoffDiyHelpers.addDiscoverdDevice(
       mDnsName: mDnsName,
       ip: ip,
       port: port,
+      uniqueDeviceId: tempCoreUniqueId,
     );
 
     if (espDevice.isEmpty) {

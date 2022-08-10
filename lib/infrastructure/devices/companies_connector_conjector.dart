@@ -61,8 +61,8 @@ class CompaniesConnectorConjector {
           SonoffDiyConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else {
-          logger.i(
-            'Cannot send device changes to its repo, company not supported',
+          logger.w(
+            'Cannot send device changes to its repo, company not supported $deviceVendor',
           );
         }
       } else {

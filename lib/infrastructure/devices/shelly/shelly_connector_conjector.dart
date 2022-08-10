@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/shelly/shelly_helpers.dart';
 import 'package:cbj_hub/infrastructure/devices/shelly/shelly_light/shelly_light_entity.dart';
@@ -23,26 +26,32 @@ class ShellyConnectorConjector implements AbstractCompanyConnectorConjector {
     required String ip,
     required String port,
   }) async {
+    CoreUniqueId? tempCoreUniqueId;
+
     for (final DeviceEntityAbstract device in companyDevices.values) {
-      if (device is ShellyColorLightEntity) {
-        if (mDnsName == device.deviceMdnsName.getOrCrash()) {
-          return;
-        }
-      } else if (device is ShellyRelaySwitchEntity) {
-        if (mDnsName == device.deviceMdnsName.getOrCrash()) {
-          return;
-        }
-      } else {
-        logger.w("Can't add shelly device, type was not set to get device ID");
+      if ((device is ShellyColorLightEntity ||
+              device is ShellyRelaySwitchEntity) &&
+          mDnsName == device.vendorUniqueId.getOrCrash()) {
+        return;
+      } else if ((device is GenericRgbwLightDE || device is GenericSwitchDE) &&
+          mDnsName == device.vendorUniqueId.getOrCrash()) {
+        /// Device exist as generic and needs to get converted to non generic type for this vendor
+        tempCoreUniqueId = device.uniqueId;
+        break;
+      } else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'Shelly device type supported but implementation is missing here',
+        );
         return;
       }
     }
 
     final List<DeviceEntityAbstract> espDevice =
-        await ShellyHelpers.addDiscoverdDevice(
+        ShellyHelpers.addDiscoverdDevice(
       mDnsName: mDnsName,
       ip: ip,
       port: port,
+      uniqueDeviceId: tempCoreUniqueId,
     );
 
     if (espDevice.isEmpty) {

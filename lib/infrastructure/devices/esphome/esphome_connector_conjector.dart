@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_helpers.dart';
 import 'package:cbj_hub/infrastructure/devices/esphome/esphome_light/esphome_light_entity.dart';
@@ -22,19 +24,30 @@ class EspHomeConnectorConjector implements AbstractCompanyConnectorConjector {
     required String ip,
     required String port,
   }) async {
+    CoreUniqueId? tempCoreUniqueId;
+
     for (final DeviceEntityAbstract device in companyDevices.values) {
-      if (device is EspHomeLightEntity) {
-        if (mDnsName == device.deviceMdnsName.getOrCrash()) {
-          return;
-        }
-      } else {
-        logger.w("Can't add espHome device, type was not set to get device ID");
+      if (device is EspHomeLightEntity &&
+          mDnsName == device.vendorUniqueId.getOrCrash()) {
+        return;
+      } else if (device is GenericLightDE &&
+          mDnsName == device.vendorUniqueId.getOrCrash()) {
+        tempCoreUniqueId = device.uniqueId;
+        break;
+      } else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'ESPHome device type supported but implementation is missing here',
+        );
         return;
       }
     }
 
     final List<DeviceEntityAbstract> espDevice =
-        await EspHomeHelpers.addDiscoverdDevice(mDnsName: mDnsName, port: port);
+        await EspHomeHelpers.addDiscoverdDevice(
+      mDnsName: mDnsName,
+      port: port,
+      uniqueDeviceId: tempCoreUniqueId,
+    );
 
     if (espDevice.isEmpty) {
       return;

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/google/chrome_cast/chrome_cast_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/google/google_helpers.dart';
@@ -26,14 +27,23 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
     required String ip,
     required String port,
   }) async {
+    CoreUniqueId? tempCoreUniqueId;
+
     for (final DeviceEntityAbstract device in companyDevices.values) {
-      if (device is ChromeCastEntity) {
-        if (mDnsName == device.deviceMdnsName?.getOrCrash() ||
-            ip == device.lastKnownIp!.getOrCrash()) {
-          return;
-        }
-      } else {
-        logger.w("Can't add Google device, type was not set to get device ID");
+      if (device is ChromeCastEntity &&
+          (mDnsName == device.vendorUniqueId.getOrCrash() ||
+              ip == device.lastKnownIp!.getOrCrash())) {
+        return;
+      } // Same tv can have multiple mDns names so we can't compere it without ip in the object
+      // else if (device is GenericSmartTvDE &&
+      //     (mDnsName == device.vendorUniqueId.getOrCrash() ||
+      //         ip == device.lastKnownIp!.getOrCrash())) {
+      //   return;
+      // }
+      else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'Google device type supported but implementation is missing here',
+        );
         return;
       }
     }
@@ -43,6 +53,7 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
       mDnsName: mDnsName,
       ip: ip,
       port: port,
+      uniqueDeviceId: tempCoreUniqueId,
     );
 
     if (googleDevice.isEmpty) {
@@ -82,7 +93,9 @@ class GoogleConnectorConjector implements AbstractCompanyConnectorConjector {
     if (device is ChromeCastEntity) {
       device.executeDeviceAction(newEntity: googleDE);
     } else {
-      logger.i('Google device type does not exist');
+      logger.w(
+        'Google device type does not exist ${device?.deviceTypes.getOrCrash()}',
+      );
     }
   }
 
