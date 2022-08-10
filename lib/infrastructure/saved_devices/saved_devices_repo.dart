@@ -24,6 +24,8 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
   static final HashMap<String, DeviceEntityAbstract> _allDevices =
       HashMap<String, DeviceEntityAbstract>();
 
+  static bool setUpAllFromDbAtLestOnce = false;
+
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize
     /// In case you got the following error:
@@ -39,10 +41,14 @@ class SavedDevicesRepo extends ISavedDevicesRepo {
         });
       });
     });
+    setUpAllFromDbAtLestOnce = true;
   }
 
   @override
   Future<Map<String, DeviceEntityAbstract>> getAllDevices() async {
+    while (!setUpAllFromDbAtLestOnce) {
+      await Future.delayed(const Duration(milliseconds: 200));
+    }
     return _allDevices;
   }
 
