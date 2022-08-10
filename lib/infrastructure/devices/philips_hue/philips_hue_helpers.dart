@@ -4,14 +4,23 @@ import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic
 import 'package:cbj_hub/infrastructure/devices/philips_hue/philips_hue_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/philips_hue/philips_hue_e26/philips_hue_e26_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:yeedart/yeedart.dart';
 
 class PhilipsHueHelpers {
-  static DeviceEntityAbstract addDiscoverdDevice(
-    DiscoveryResponse philipsHueDevice,
-  ) {
+  static DeviceEntityAbstract? addDiscoverdDevice({
+    required DiscoveryResponse philipsHueDevice,
+    required CoreUniqueId? uniqueDeviceId,
+  }) {
+    CoreUniqueId uniqueDeviceIdTemp;
+
+    if (uniqueDeviceId != null) {
+      uniqueDeviceIdTemp = uniqueDeviceId;
+    } else {
+      uniqueDeviceIdTemp = CoreUniqueId();
+    }
     final PhilipsHueE26Entity philipsHueDE = PhilipsHueE26Entity(
-      uniqueId: CoreUniqueId(),
+      uniqueId: uniqueDeviceIdTemp,
       vendorUniqueId:
           VendorUniqueId.fromUniqueString(philipsHueDevice.id.toString()),
       defaultName: DeviceDefaultName(
@@ -43,5 +52,11 @@ class PhilipsHueHelpers {
     );
 
     return philipsHueDE;
+
+    // TODO: Add if device type does not supported return null
+    logger.i(
+      'Please add new philips device type ${philipsHueDevice.model}',
+    );
+    return null;
   }
 }

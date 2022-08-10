@@ -14,15 +14,24 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:cbj_hub/utils.dart';
 
 class TuyaSmartHelpers {
-  static DeviceEntityAbstract addDiscoverdDevice({
+  static DeviceEntityAbstract? addDiscoverdDevice({
     required TuyaDeviceAbstract tuyaSmartDevice,
     required CloudTuya cloudTuyaOrSmartLifeOrJinvooSmart,
+    required CoreUniqueId? uniqueDeviceId,
   }) {
+    CoreUniqueId uniqueDeviceIdTemp;
+
+    if (uniqueDeviceId != null) {
+      uniqueDeviceIdTemp = uniqueDeviceId;
+    } else {
+      uniqueDeviceIdTemp = CoreUniqueId();
+    }
+
     DeviceEntityAbstract tuyaSmartDE;
 
     if (tuyaSmartDevice is TuyaLight) {
       tuyaSmartDE = TuyaSmartJbtA70RgbcwWfEntity(
-        uniqueId: CoreUniqueId(),
+        uniqueId: uniqueDeviceIdTemp,
         vendorUniqueId: VendorUniqueId.fromUniqueString(tuyaSmartDevice.id),
         defaultName: DeviceDefaultName(
           tuyaSmartDevice.name != ''
@@ -57,7 +66,7 @@ class TuyaSmartHelpers {
       /// Spacial cases to differentiate smart plug from regular switch
 
       tuyaSmartDE = TuyaSmartPlugEntity(
-        uniqueId: CoreUniqueId(),
+        uniqueId: uniqueDeviceIdTemp,
         vendorUniqueId: VendorUniqueId.fromUniqueString(tuyaSmartDevice.id),
         defaultName: DeviceDefaultName(
           tuyaSmartDevice.name != ''
@@ -76,7 +85,7 @@ class TuyaSmartHelpers {
       );
     } else if (tuyaSmartDevice is TuyaSwitch) {
       tuyaSmartDE = TuyaSmartSwitchEntity(
-        uniqueId: CoreUniqueId(),
+        uniqueId: uniqueDeviceIdTemp,
         vendorUniqueId: VendorUniqueId.fromUniqueString(tuyaSmartDevice.id),
         defaultName: DeviceDefaultName(
           tuyaSmartDevice.name != ''
@@ -94,8 +103,9 @@ class TuyaSmartHelpers {
         cloudTuya: cloudTuyaOrSmartLifeOrJinvooSmart,
       );
     } else {
-      logger.e('Tuya type does not exist');
-      throw 'Error Tuya type does not exist ${tuyaSmartDevice.haType}';
+      logger.i(
+          'Please add new Tuya device type ${tuyaSmartDevice.haType} ${tuyaSmartDevice.haType}');
+      return null;
     }
     return tuyaSmartDE;
   }

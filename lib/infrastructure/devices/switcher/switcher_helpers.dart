@@ -7,11 +7,21 @@ import 'package:cbj_hub/infrastructure/devices/switcher/switcher_device_value_ob
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_runner/switcher_runner_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_v2/switcher_v2_entity.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/utils.dart';
 
 class SwitcherHelpers {
-  static DeviceEntityAbstract? addDiscoverdDevice(
-    SwitcherApiObject switcherDevice,
-  ) {
+  static DeviceEntityAbstract? addDiscoverdDevice({
+    required SwitcherApiObject switcherDevice,
+    required CoreUniqueId? uniqueDeviceId,
+  }) {
+    CoreUniqueId uniqueDeviceIdTemp;
+
+    if (uniqueDeviceId != null) {
+      uniqueDeviceIdTemp = uniqueDeviceId;
+    } else {
+      uniqueDeviceIdTemp = CoreUniqueId();
+    }
+
     if (switcherDevice.deviceType == SwitcherDevicesTypes.switcherRunner ||
         switcherDevice.deviceType == SwitcherDevicesTypes.switcherRunnerMini) {
       DeviceActions deviceActions = DeviceActions.actionNotSupported;
@@ -27,7 +37,7 @@ class SwitcherHelpers {
       }
 
       final SwitcherRunnerEntity switcherRunnerDe = SwitcherRunnerEntity(
-        uniqueId: CoreUniqueId(),
+        uniqueId: uniqueDeviceIdTemp,
         vendorUniqueId:
             VendorUniqueId.fromUniqueString(switcherDevice.deviceId),
         defaultName: DeviceDefaultName(switcherDevice.switcherName),
@@ -57,7 +67,7 @@ class SwitcherHelpers {
         deviceActions = DeviceActions.off;
       }
       final SwitcherV2Entity switcherV2De = SwitcherV2Entity(
-        uniqueId: CoreUniqueId(),
+        uniqueId: uniqueDeviceIdTemp,
         vendorUniqueId:
             VendorUniqueId.fromUniqueString(switcherDevice.deviceId),
         defaultName: DeviceDefaultName(switcherDevice.switcherName),
@@ -78,5 +88,11 @@ class SwitcherHelpers {
 
       return switcherV2De;
     }
+
+    // TODO: Add if device type does not supported return null
+    logger.i(
+      'Please add new Switcher device type ${switcherDevice.deviceType}',
+    );
+    return null;
   }
 }

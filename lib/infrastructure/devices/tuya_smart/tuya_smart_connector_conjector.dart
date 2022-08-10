@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_smart_plug_device/generic_switch_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
 import 'package:cbj_hub/domain/vendors/tuya_login/generic_tuya_login_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_helpers.dart';
@@ -75,29 +79,36 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
 
         for (final TuyaDeviceAbstract tuyaDevice in deviceList) {
           bool deviceExist = false;
+          CoreUniqueId? tempCoreUniqueId;
+
           for (final DeviceEntityAbstract savedDevice
               in companyDevices.values) {
-            if (savedDevice is TuyaSmartJbtA70RgbcwWfEntity ||
-                savedDevice is TuyaSmartSwitchEntity ||
-                savedDevice is TuyaSmartPlugEntity) {
-              if (tuyaDevice.id == savedDevice.vendorUniqueId.getOrCrash()) {
-                deviceExist = true;
-                break;
-              }
-            } else {
-              logger.i('Please add new Tuya device type ${tuyaDevice.haType}');
+            if ((savedDevice is TuyaSmartJbtA70RgbcwWfEntity ||
+                    savedDevice is TuyaSmartSwitchEntity ||
+                    savedDevice is TuyaSmartPlugEntity) &&
+                tuyaDevice.id == savedDevice.vendorUniqueId.getOrCrash()) {
               deviceExist = true;
+              break;
+            } else if ((savedDevice is GenericRgbwLightDE ||
+                    savedDevice is GenericSwitchDE ||
+                    savedDevice is GenericSmartPlugDE) &&
+                tuyaDevice.id == savedDevice.vendorUniqueId.getOrCrash()) {
+              /// Device exist as generic and needs to get converted to non generic type for this vendor
+              tempCoreUniqueId = savedDevice.uniqueId;
               break;
             }
           }
           if (!deviceExist) {
-            final DeviceEntityAbstract addDevice =
+            final DeviceEntityAbstract? addDevice =
                 TuyaSmartHelpers.addDiscoverdDevice(
               tuyaSmartDevice: tuyaDevice,
               cloudTuyaOrSmartLifeOrJinvooSmart:
                   cloudTuyaOrSmartLifeOrJinvooSmart,
+              uniqueDeviceId: tempCoreUniqueId,
             );
-
+            if (addDevice == null) {
+              continue;
+            }
             final DeviceEntityAbstract deviceToAdd =
                 CompaniesConnectorConjector.addDiscoverdDeviceToHub(addDevice);
 
@@ -148,7 +159,9 @@ class TuyaSmartConnectorConjector implements AbstractCompanyConnectorConjector {
     } else if (device is TuyaSmartPlugEntity) {
       device.executeDeviceAction(newEntity: tuyaSmartDE);
     } else {
-      logger.w('TuyaSmart device type does not exist');
+      logger.w(
+        'TuyaSmart device type does not exist ${device?.deviceTypes.getOrCrash()}',
+      );
     }
   }
 

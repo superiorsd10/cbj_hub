@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_blinds_device/generic_blinds_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_boiler_device/generic_boiler_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_api_object.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_api/switcher_discover.dart';
@@ -33,25 +36,29 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
   Future<void> addOnlyNewSwitcherDevice(
     SwitcherApiObject switcherApiObject,
   ) async {
+    CoreUniqueId? tempCoreUniqueId;
+
     for (final DeviceEntityAbstract savedDevice in companyDevices.values) {
-      if (savedDevice is SwitcherV2Entity) {
-        if (switcherApiObject.deviceId ==
-            savedDevice.vendorUniqueId.getOrCrash()) {
-          return;
-        }
-      } else if (savedDevice is SwitcherRunnerEntity) {
-        if (switcherApiObject.deviceId ==
-            savedDevice.vendorUniqueId.getOrCrash()) {
-          return;
-        }
+      if ((savedDevice is SwitcherV2Entity ||
+              savedDevice is SwitcherRunnerEntity) &&
+          switcherApiObject.deviceId ==
+              savedDevice.vendorUniqueId.getOrCrash()) {
+        return;
+      } else if (savedDevice is GenericBoilerDE ||
+          savedDevice is GenericBlindsDE &&
+              switcherApiObject.deviceId ==
+                  savedDevice.vendorUniqueId.getOrCrash()) {
+        /// Device exist as generic and needs to get converted to non generic type for this vendor
+        tempCoreUniqueId = savedDevice.uniqueId;
+        break;
       } else {
         logger
             .w("Can't add switcher device, type was not set to get device ID");
       }
     }
 
-    final DeviceEntityAbstract? addDevice =
-        SwitcherHelpers.addDiscoverdDevice(switcherApiObject);
+    final DeviceEntityAbstract? addDevice = SwitcherHelpers.addDiscoverdDevice(
+        switcherDevice: switcherApiObject, uniqueDeviceId: tempCoreUniqueId);
     if (addDevice == null) {
       return;
     }

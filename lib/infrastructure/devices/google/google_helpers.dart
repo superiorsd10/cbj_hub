@@ -10,9 +10,18 @@ class GoogleHelpers {
     required String mDnsName,
     required String ip,
     required String port,
+    required CoreUniqueId? uniqueDeviceId,
   }) {
+    CoreUniqueId uniqueDeviceIdTemp;
+
+    if (uniqueDeviceId != null) {
+      uniqueDeviceIdTemp = uniqueDeviceId;
+    } else {
+      uniqueDeviceIdTemp = CoreUniqueId();
+    }
+
     final ChromeCastEntity googleDE = ChromeCastEntity(
-      uniqueId: CoreUniqueId(),
+      uniqueId: uniqueDeviceIdTemp,
       vendorUniqueId: VendorUniqueId.fromUniqueString(mDnsName),
       defaultName: DeviceDefaultName('Chromecast'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
