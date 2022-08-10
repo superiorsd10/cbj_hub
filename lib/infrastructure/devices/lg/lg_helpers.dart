@@ -10,11 +10,20 @@ class LgHelpers {
     required String mDnsName,
     required String ip,
     required String port,
+    required CoreUniqueId? uniqueDeviceId,
   }) {
+    CoreUniqueId uniqueDeviceIdTemp;
+
+    if (uniqueDeviceId != null) {
+      uniqueDeviceIdTemp = uniqueDeviceId;
+    } else {
+      uniqueDeviceIdTemp = CoreUniqueId();
+    }
+
     final LgWebosTvEntity lgDE = LgWebosTvEntity(
-      uniqueId: CoreUniqueId(),
+      uniqueId: uniqueDeviceIdTemp,
       vendorUniqueId: VendorUniqueId.fromUniqueString(mDnsName),
-      defaultName: DeviceDefaultName('LG'),
+      defaultName: DeviceDefaultName('LG TV'),
       deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),
       senderDeviceOs: DeviceSenderDeviceOs('WebOs'),
       senderDeviceModel: DeviceSenderDeviceModel('UP7550PVG'),

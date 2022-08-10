@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/lg/lg_helpers.dart';
 import 'package:cbj_hub/infrastructure/devices/lg/lg_webos_tv/lg_webos_tv_entity.dart';
@@ -28,14 +29,24 @@ class LgConnectorConjector implements AbstractCompanyConnectorConjector {
     required String ip,
     required String port,
   }) async {
+    CoreUniqueId? tempCoreUniqueId;
+
     for (final DeviceEntityAbstract device in companyDevices.values) {
-      if (device is LgWebosTvEntity) {
-        if (mDnsName == device.deviceMdnsName?.getOrCrash() ||
-            ip == device.lastKnownIp!.getOrCrash()) {
-          return;
-        }
-      } else {
-        logger.w("Can't add Lg device, type was not set to get device ID");
+      if (device is LgWebosTvEntity &&
+          (mDnsName == device.vendorUniqueId.getOrCrash() ||
+              ip == device.lastKnownIp!.getOrCrash())) {
+        return;
+      }
+      // Same tv can have multiple mDns names so we can't compere it without ip in the object
+      // else if (device is GenericSmartTvDE &&
+      //     (mDnsName == device.vendorUniqueId.getOrCrash() ||
+      //         ip == device.lastKnownIp!.getOrCrash())) {
+      //   return;
+      // }
+      else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
+        logger.e(
+          'LG device type supported but implementation is missing here',
+        );
         return;
       }
     }
@@ -44,6 +55,7 @@ class LgConnectorConjector implements AbstractCompanyConnectorConjector {
       mDnsName: mDnsName,
       ip: ip,
       port: port,
+      uniqueDeviceId: tempCoreUniqueId,
     );
 
     if (lgDevice.isEmpty) {

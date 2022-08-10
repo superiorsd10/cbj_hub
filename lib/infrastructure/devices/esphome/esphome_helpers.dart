@@ -1,10 +1,19 @@
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 
 class EspHomeHelpers {
   static Future<List<DeviceEntityAbstract>> addDiscoverdDevice({
     required String mDnsName,
     required String? port,
+    required CoreUniqueId? uniqueDeviceId,
   }) async {
+    CoreUniqueId uniqueDeviceIdTemp;
+
+    if (uniqueDeviceId != null) {
+      uniqueDeviceIdTemp = uniqueDeviceId;
+    } else {
+      uniqueDeviceIdTemp = CoreUniqueId();
+    }
     final List<DeviceEntityAbstract> deviceEntityList = [];
 
     // TODO: Search for all the entities in this device and add all of them as
@@ -51,7 +60,7 @@ class EspHomeHelpers {
     // }
 
     // final DeviceEntityAbstract espHomeDE = ESPHomeLightEntity(
-    //   uniqueId: CoreUniqueId(),
+    //   uniqueId: uniqueDeviceIdTemp,
     //   vendorUniqueId: VendorUniqueId(),
     //   defaultName: DeviceDefaultName('Esp test'),
     //   deviceStateGRPC: DeviceState('on'),

@@ -6,18 +6,27 @@ import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub
 import 'package:cbj_hub/utils.dart';
 
 class SonoffDiyHelpers {
-  static Future<List<DeviceEntityAbstract>> addDiscoverdDevice({
+  static List<DeviceEntityAbstract> addDiscoverdDevice({
     required String mDnsName,
     required String? port,
     required String ip,
-  }) async {
+    required CoreUniqueId? uniqueDeviceId,
+  }) {
+    CoreUniqueId uniqueDeviceIdTemp;
+
+    if (uniqueDeviceId != null) {
+      uniqueDeviceIdTemp = uniqueDeviceId;
+    } else {
+      uniqueDeviceIdTemp = CoreUniqueId();
+    }
+
     final List<DeviceEntityAbstract> deviceEntityList = [];
 
     try {
       if (mDnsName.contains('sonoffDiy1-C45BBE78005D')) {
         final SonoffDiyRelaySwitchEntity sonoffDiyRelaySwitchEntity =
             SonoffDiyRelaySwitchEntity(
-          uniqueId: CoreUniqueId(),
+          uniqueId: uniqueDeviceIdTemp,
           vendorUniqueId: VendorUniqueId.fromUniqueString(mDnsName),
           defaultName: DeviceDefaultName(mDnsName),
           deviceStateGRPC: DeviceState(DeviceStateGRPC.ack.toString()),

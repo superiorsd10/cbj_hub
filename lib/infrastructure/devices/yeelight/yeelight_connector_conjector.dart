@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
+import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_rgbw_light_device/generic_rgbw_light_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/companies_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_1se/yeelight_1se_entity.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_helpers.dart';
@@ -25,18 +27,39 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
         final responses = await Yeelight.discover();
         for (final DiscoveryResponse yeelightDevice in responses) {
           bool deviceExist = false;
-          for (DeviceEntityAbstract savedDevice in companyDevices.values) {
-            savedDevice = savedDevice as Yeelight1SeEntity;
+          CoreUniqueId? tempCoreUniqueId;
 
-            if (yeelightDevice.id.toString() ==
-                savedDevice.vendorUniqueId.getOrCrash()) {
+          for (final DeviceEntityAbstract savedDevice
+              in companyDevices.values) {
+            if (savedDevice is Yeelight1SeEntity &&
+                yeelightDevice.id.toString() ==
+                    savedDevice.vendorUniqueId.getOrCrash()) {
               deviceExist = true;
+              break;
+            } else if (savedDevice is GenericRgbwLightDE &&
+                yeelightDevice.id.toString() ==
+                    savedDevice.vendorUniqueId.getOrCrash()) {
+              /// Device exist as generic and needs to get converted to non generic type for this vendor
+              tempCoreUniqueId = savedDevice.uniqueId;
+              break;
+            } else if (yeelightDevice.id.toString() ==
+                savedDevice.vendorUniqueId.getOrCrash()) {
+              logger.e(
+                'Yeelight Mqtt device type supported but implementation is missing here',
+              );
               break;
             }
           }
           if (!deviceExist) {
-            final DeviceEntityAbstract addDevice =
-                YeelightHelpers.addDiscoverdDevice(yeelightDevice);
+            final DeviceEntityAbstract? addDevice =
+                YeelightHelpers.addDiscoverdDevice(
+              yeelightDevice: yeelightDevice,
+              uniqueDeviceId: tempCoreUniqueId,
+            );
+
+            if (addDevice == null) {
+              continue;
+            }
 
             final DeviceEntityAbstract deviceToAdd =
                 CompaniesConnectorConjector.addDiscoverdDeviceToHub(addDevice);
