@@ -28,7 +28,9 @@ class GenericTuyaLoginDE extends LoginEntityAbstract {
   factory GenericTuyaLoginDE.empty() => GenericTuyaLoginDE(
         senderUniqueId: CoreLoginSenderId.fromUniqueString(''),
         loginVendor: CoreLoginVendor(
-          VendorsAndServices.tuyaSmart.name,
+          /// I think this should stay vendorsAndServicesNotSupported so that
+          /// the correct tuya/smartLife/jinvooSmart to be inserted later.
+          VendorsAndServices.vendorsAndServicesNotSupported.name,
         ),
         tuyaUserName: GenericTuyaLoginUserName(''),
         tuyaUserPassword: GenericTuyaLoginUserPassword(''),
