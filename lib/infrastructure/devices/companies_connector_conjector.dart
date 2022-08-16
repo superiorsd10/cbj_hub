@@ -12,7 +12,7 @@ import 'package:cbj_hub/infrastructure/devices/lifx/lifx_connector_conjector.dar
 import 'package:cbj_hub/infrastructure/devices/shelly/shelly_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/sonoff_diy/sonoff_diy_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/switcher/switcher_connector_conjector.dart';
-import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_mqtt/tasmota_mqtt_connector_conjector.dart';
+import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/tuya_smart/tuya_smart_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/xiaomi_io/xiaomi_io_connector_conjector.dart';
 import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_connector_conjector.dart';
@@ -33,7 +33,7 @@ class CompaniesConnectorConjector {
           YeelightConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
-          TasmotaMqttConnectorConjector()
+          TasmotaIpConnectorConjector()
               .manageHubRequestsForDevice(deviceEntityAbstract);
         } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
           EspHomeConnectorConjector()
@@ -99,7 +99,7 @@ class CompaniesConnectorConjector {
     if (deviceVendor == VendorsAndServices.yeelight.toString()) {
       YeelightConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.tasmota.toString()) {
-      TasmotaMqttConnectorConjector.companyDevices.addEntries([devicesEntry]);
+      TasmotaIpConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor == VendorsAndServices.espHome.toString()) {
       EspHomeConnectorConjector.companyDevices.addEntries([devicesEntry]);
     } else if (deviceVendor ==
@@ -240,13 +240,9 @@ class CompaniesConnectorConjector {
 
       for (final Stream<ActiveHost> activeHostStream in activeHostStreamList) {
         await for (final ActiveHost activeHost in activeHostStream) {
-          if (await activeHost.hostName == null) {
-            continue;
-          }
           try {
             setHostNameDeviceByCompany(
               activeHost: activeHost,
-              internetAddress: activeHost.internetAddress,
             );
           } catch (e) {
             continue;
@@ -259,14 +255,16 @@ class CompaniesConnectorConjector {
   }
 
   static Future<void> setHostNameDeviceByCompany({
-    required InternetAddress internetAddress,
     required ActiveHost activeHost,
   }) async {
-    final String deviceHostNameLowerCase = internetAddress.host.toLowerCase();
+    final String? deviceHostNameLowerCase =
+        (await activeHost.hostName)?.toLowerCase();
+    if (deviceHostNameLowerCase == null) {
+      return;
+    }
     if (deviceHostNameLowerCase.contains('tasmota')) {
-      TasmotaMqttConnectorConjector().addNewDeviceByHostInfo(
+      TasmotaIpConnectorConjector().addNewDeviceByHostInfo(
         activeHost: activeHost,
-        hostName: internetAddress.host,
       );
     } else if (deviceHostNameLowerCase.contains('xiaomi') ||
         deviceHostNameLowerCase.contains('yeelink')) {
