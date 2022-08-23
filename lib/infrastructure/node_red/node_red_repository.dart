@@ -21,6 +21,10 @@ class NodeRedRepository extends INodeRedRepository {
       final bool result = await InternetConnectionChecker().hasConnection;
       if (result) {
         break;
+      } else {
+        logger.w(
+          'Node-Red will not get connected until device is connected to www',
+        );
       }
       await Future.delayed(const Duration(milliseconds: 300));
     }
@@ -29,6 +33,9 @@ class NodeRedRepository extends INodeRedRepository {
 
   /// Here to fix a bug where device crash if trying to send network requests
   /// before there is network.
+  /// TODO: check if this can be removed in case we used 127.0.0.1 instead of
+  /// localhost and not get this issue again
+  /// https://github.com/CyBear-Jinni/cbj_hub/issues/150
   late Future<bool> _deviceIsReadyToSendInternetRequests;
 
   static NodeRedAPI nodeRedAPI = NodeRedAPI();
