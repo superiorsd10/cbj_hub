@@ -36,14 +36,14 @@ class SonoffDiyConnectorConjector implements AbstractCompanyConnectorConjector {
         tempCoreUniqueId = device.uniqueId;
         break;
       } else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
-        logger.e(
+        logger.w(
           'Sonoff device type supported but implementation is missing here',
         );
         return;
       }
     }
 
-    final List<DeviceEntityAbstract> espDevice =
+    final List<DeviceEntityAbstract> sonoffDevices =
         SonoffDiyHelpers.addDiscoverdDevice(
       mDnsName: mDnsName,
       ip: ip,
@@ -51,11 +51,11 @@ class SonoffDiyConnectorConjector implements AbstractCompanyConnectorConjector {
       uniqueDeviceId: tempCoreUniqueId,
     );
 
-    if (espDevice.isEmpty) {
+    if (sonoffDevices.isEmpty) {
       return;
     }
 
-    for (final DeviceEntityAbstract entityAsDevice in espDevice) {
+    for (final DeviceEntityAbstract entityAsDevice in sonoffDevices) {
       final DeviceEntityAbstract deviceToAdd =
           CompaniesConnectorConjector.addDiscoverdDeviceToHub(entityAsDevice);
 
@@ -64,7 +64,7 @@ class SonoffDiyConnectorConjector implements AbstractCompanyConnectorConjector {
 
       companyDevices.addEntries([deviceAsEntry]);
     }
-    logger.v('New sonoff diy devices name:$mDnsName');
+    logger.v('New Sonoff diy devices name:$mDnsName');
   }
 
   Future<void> manageHubRequestsForDevice(

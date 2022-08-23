@@ -44,7 +44,7 @@ class YeelightConnectorConjector implements AbstractCompanyConnectorConjector {
               break;
             } else if (yeelightDevice.id.toString() ==
                 savedDevice.vendorUniqueId.getOrCrash()) {
-              logger.e(
+              logger.w(
                 'Yeelight Mqtt device type supported but implementation is missing here',
               );
               break;

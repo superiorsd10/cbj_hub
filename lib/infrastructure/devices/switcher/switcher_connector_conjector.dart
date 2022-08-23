@@ -53,14 +53,17 @@ class SwitcherConnectorConjector implements AbstractCompanyConnectorConjector {
         break;
       } else if (switcherApiObject.deviceId ==
           savedDevice.vendorUniqueId.getOrCrash()) {
-        logger.e(
+        logger.w(
           'Switcher device type supported but implementation is missing here',
         );
+        break;
       }
     }
 
     final DeviceEntityAbstract? addDevice = SwitcherHelpers.addDiscoverdDevice(
-        switcherDevice: switcherApiObject, uniqueDeviceId: tempCoreUniqueId);
+      switcherDevice: switcherApiObject,
+      uniqueDeviceId: tempCoreUniqueId,
+    );
     if (addDevice == null) {
       return;
     }

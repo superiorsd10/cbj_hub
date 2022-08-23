@@ -1,15 +1,16 @@
+import 'dart:convert';
+
 import 'package:cbj_hub/domain/generic_devices/abstract_device/core_failures.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_core.dart';
 import 'package:cbj_hub/domain/generic_devices/device_type_enums.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_entity.dart';
-import 'package:cbj_hub/domain/generic_devices/generic_light_device/generic_light_value_objects.dart';
-import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_entity.dart';
+import 'package:cbj_hub/domain/generic_devices/generic_switch_device/generic_switch_value_objects.dart';
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_device_value_objects.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
-import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
+import 'package:http/http.dart';
 
 // TODO: Make the commends work, currently this object does not work
 // Toggle device on/off, the o is the number of output to toggle o=2 is the second
@@ -23,8 +24,8 @@ import 'package:dartz/dartz.dart';
 // Change color strength
 //    http://ip/?m=1&n0=87
 
-class TasmotaIpLedEntity extends GenericLightDE {
-  TasmotaIpLedEntity({
+class TasmotaIpSwitchEntity extends GenericSwitchDE {
+  TasmotaIpSwitchEntity({
     required CoreUniqueId uniqueId,
     required VendorUniqueId vendorUniqueId,
     required DeviceDefaultName defaultName,
@@ -35,14 +36,14 @@ class TasmotaIpLedEntity extends GenericLightDE {
     required DeviceSenderId senderId,
     required DeviceCompUuid compUuid,
     required DevicePowerConsumption powerConsumption,
-    required GenericLightSwitchState lightSwitchState,
+    required GenericSwitchSwitchState switchState,
     required this.tasmotaIpDeviceHostName,
     required this.tasmotaIpLastIp,
   }) : super(
           uniqueId: uniqueId,
           vendorUniqueId: vendorUniqueId,
           defaultName: defaultName,
-          lightSwitchState: lightSwitchState,
+          switchState: switchState,
           deviceStateGRPC: deviceStateGRPC,
           stateMassage: stateMassage,
           senderDeviceOs: senderDeviceOs,
@@ -61,7 +62,7 @@ class TasmotaIpLedEntity extends GenericLightDE {
   Future<Either<CoreFailure, Unit>> executeDeviceAction({
     required DeviceEntityAbstract newEntity,
   }) async {
-    if (newEntity is! GenericLightDE) {
+    if (newEntity is! GenericSwitchDE) {
       return left(
         const CoreFailure.actionExcecuter(
           failedValue: 'Not the correct type',
@@ -70,36 +71,35 @@ class TasmotaIpLedEntity extends GenericLightDE {
     }
 
     try {
-      if (newEntity.lightSwitchState!.getOrCrash() !=
-              lightSwitchState!.getOrCrash() ||
+      if (newEntity.switchState!.getOrCrash() != switchState!.getOrCrash() ||
           deviceStateGRPC.getOrCrash() != DeviceStateGRPC.ack.toString()) {
         final DeviceActions? actionToPreform =
             EnumHelperCbj.stringToDeviceAction(
-          newEntity.lightSwitchState!.getOrCrash(),
+          newEntity.switchState!.getOrCrash(),
         );
 
         if (actionToPreform == DeviceActions.on) {
-          (await turnOnLight()).fold(
+          (await turnOnSwitch()).fold(
             (l) {
-              logger.e('Error turning TasmotaIp light on');
+              logger.e('Error turning TasmotaIp switch on');
               throw l;
             },
             (r) {
-              logger.i('TasmotaIp light turn on success');
+              logger.i('TasmotaIp switch turn on success');
             },
           );
         } else if (actionToPreform == DeviceActions.off) {
-          (await turnOffLight()).fold(
+          (await turnOffSwitch()).fold(
             (l) {
-              logger.e('Error turning TasmotaIp light off');
+              logger.e('Error turning TasmotaIp switch off');
               throw l;
             },
             (r) {
-              logger.i('TasmotaIp light turn off success');
+              logger.i('TasmotaIp switch turn off success');
             },
           );
         } else {
-          logger.e('actionToPreform is not set correctly on TasmotaIp Led');
+          logger.e('actionToPreform is not set correctly on TasmotaIp Switch');
         }
       }
       deviceStateGRPC = DeviceState(DeviceStateGRPC.ack.toString());
@@ -111,32 +111,44 @@ class TasmotaIpLedEntity extends GenericLightDE {
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOnLight() async {
-    lightSwitchState = GenericLightSwitchState(DeviceActions.on.toString());
+  Future<Either<CoreFailure, Unit>> turnOnSwitch() async {
+    switchState = GenericSwitchSwitchState(DeviceActions.on.toString());
+
+    final String deviceIp = tasmotaIpLastIp.getOrCrash();
+    const String getComponentsCommand = 'cm?cmnd=Power%20ON';
+
+    Map<String, String>? responseJson;
 
     try {
-      getIt<IMqttServerRepository>().publishMessage(
-        'cmnd/${tasmotaIpDeviceHostName.getOrCrash()}/Power',
-        'ON',
-      );
-      return right(unit);
+      final Response response =
+          await get(Uri.parse('http://$deviceIp/$getComponentsCommand'));
+      responseJson = (json.decode(response.body) as Map<String, dynamic>)
+          .map((key, value) => MapEntry(key, value.toString()));
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
+
+    return right(unit);
   }
 
   @override
-  Future<Either<CoreFailure, Unit>> turnOffLight() async {
-    lightSwitchState = GenericLightSwitchState(DeviceActions.off.toString());
+  Future<Either<CoreFailure, Unit>> turnOffSwitch() async {
+    switchState = GenericSwitchSwitchState(DeviceActions.off.toString());
+
+    final String deviceIp = tasmotaIpLastIp.getOrCrash();
+    const String getComponentsCommand = 'cm?cmnd=Power%20OFF';
+
+    Map<String, String>? responseJson;
 
     try {
-      getIt<IMqttServerRepository>().publishMessage(
-        'cmnd/${tasmotaIpDeviceHostName.getOrCrash()}/Power',
-        'OFF',
-      );
-      return right(unit);
+      final Response response =
+          await get(Uri.parse('http://$deviceIp/$getComponentsCommand'));
+      responseJson = (json.decode(response.body) as Map<String, dynamic>)
+          .map((key, value) => MapEntry(key, value.toString()));
     } catch (e) {
       return left(const CoreFailure.unexpected());
     }
+
+    return right(unit);
   }
 }

@@ -44,7 +44,7 @@ class LgConnectorConjector implements AbstractCompanyConnectorConjector {
       //   return;
       // }
       else if (mDnsName == device.vendorUniqueId.getOrCrash()) {
-        logger.e(
+        logger.w(
           'LG device type supported but implementation is missing here',
         );
         return;

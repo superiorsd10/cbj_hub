@@ -8,6 +8,7 @@ Either<CoreFailure<String>, String> validateSonoffDiySwitchKeyNotEmpty(
 }
 
 Either<CoreFailure<String>, String> validateSonoffDiyPortNotEmpty(
-    String input) {
+  String input,
+) {
   return right(input);
 }
