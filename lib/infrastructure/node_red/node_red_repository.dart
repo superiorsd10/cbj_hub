@@ -6,10 +6,31 @@ import 'package:cbj_hub/infrastructure/node_red/node_red_api/node_red_api.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:http/src/response.dart';
 import 'package:injectable/injectable.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 /// Control Node-RED, create scenes and more
 @LazySingleton(as: INodeRedRepository)
 class NodeRedRepository extends INodeRedRepository {
+  NodeRedRepository() {
+    _deviceIsReadyToSendInternetRequests = isThereInternetConnection();
+  }
+
+  /// Set _deviceIsReadyToSendInternetRequests to true when there is an internet
+  Future<bool> isThereInternetConnection() async {
+    while (true) {
+      final bool result = await InternetConnectionChecker().hasConnection;
+      if (result) {
+        break;
+      }
+      await Future.delayed(const Duration(milliseconds: 300));
+    }
+    return true;
+  }
+
+  /// Here to fix a bug where device crash if trying to send network requests
+  /// before there is network.
+  late Future<bool> _deviceIsReadyToSendInternetRequests;
+
   static NodeRedAPI nodeRedAPI = NodeRedAPI();
 
   /// List of all the scenes JSONs in Node-RED
@@ -23,6 +44,7 @@ class NodeRedRepository extends INodeRedRepository {
 
   @override
   Future<bool> createNewNodeRedScene(SceneCbjEntity sceneCbj) async {
+    await _deviceIsReadyToSendInternetRequests;
     // TODO: Check if sceneCbj unique Id exist, if so don't try to add it again
     final Response response = await nodeRedAPI.postFlow(
       label: sceneCbj.name.getOrCrash(),
@@ -37,6 +59,8 @@ class NodeRedRepository extends INodeRedRepository {
 
   @override
   Future<bool> createNewNodeRedRoutine(RoutineCbjEntity routineCbj) async {
+    await _deviceIsReadyToSendInternetRequests;
+
     // TODO: Check if routineCbj unique Id exist, if so don't try to add it again
     final Response response = await nodeRedAPI.postFlow(
       label: routineCbj.name.getOrCrash(),
@@ -51,6 +75,8 @@ class NodeRedRepository extends INodeRedRepository {
 
   @override
   Future<bool> createNewNodeRedBinding(BindingCbjEntity bindingCbj) async {
+    await _deviceIsReadyToSendInternetRequests;
+
     // TODO: Check if routineCbj unique Id exist, if so don't try to add it again
     final Response response = await nodeRedAPI.postFlow(
       label: bindingCbj.name.getOrCrash(),

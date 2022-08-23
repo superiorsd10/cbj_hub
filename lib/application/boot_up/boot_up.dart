@@ -32,10 +32,9 @@ class BootUp {
 
     CompaniesConnectorConjector.searchAllMdnsDevicesAndSetThemUp();
 
-    // TODO: ping command does not have the permission under snap.
-    // Bring back from comment after cbj-hub snap get the permission out of the box
-    // https://forum.snapcraft.io/t/request-auto-connect-firewall-control-or-network-control-or-network-observe-for-cbj-hub/31222
-    CompaniesConnectorConjector.searchPingableDevicesAndSetThemUpByHostName();
+    // TODO: ping command does not work under snap.
+    // https://github.com/CyBear-Jinni-user/CBJ_Hub_Snap/issues/2
+    // CompaniesConnectorConjector.searchPingableDevicesAndSetThemUpByHostName();
 
     getIt<IMqttServerRepository>();
 
