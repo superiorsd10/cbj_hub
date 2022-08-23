@@ -8,7 +8,7 @@ class NodeRedAPI {
   /// Creates the request url for Nod-RED, use default connection values
   /// if not specified otherwise
   NodeRedAPI({
-    this.address = 'localhost',
+    this.address = '127.0.0.1',
     this.port = 1880,
   }) {
     requestsUrl = 'http://$address:$port';

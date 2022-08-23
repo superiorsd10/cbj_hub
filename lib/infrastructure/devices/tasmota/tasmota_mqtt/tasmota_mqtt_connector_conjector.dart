@@ -13,7 +13,6 @@ import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:network_tools/network_tools.dart';
 
 @singleton
 class TasmotaMqttConnectorConjector
@@ -22,22 +21,21 @@ class TasmotaMqttConnectorConjector
     discoverNewDevices();
   }
 
-  Future<void> addNewDeviceByHostInfo({
-    required ActiveHost activeHost,
-    required String hostName,
-  }) async {
-    String tempMqttTopic = hostName.replaceAll('-', '_');
-    if (tempMqttTopic.lastIndexOf('_') != -1) {
-      tempMqttTopic =
-          tempMqttTopic.substring(0, tempMqttTopic.lastIndexOf('_'));
-    }
-    final String tasmotaMqttTopic = tempMqttTopic;
-
-    /// Make all tasmotaMqtt devices repost themselves under topic discovery
-    /// in the MQTT broker
-    getIt<IMqttServerRepository>()
-        .publishMessage('cmnd/$tasmotaMqttTopic/SetOption19', '0');
-  }
+  // Future<void> addNewDeviceByHostInfo({
+  //   required ActiveHost activeHost,
+  // }) async {
+  //   String tempMqttTopic = (await activeHost.hostName)!.replaceAll('-', '_');
+  //   if (tempMqttTopic.lastIndexOf('_') != -1) {
+  //     tempMqttTopic =
+  //         tempMqttTopic.substring(0, tempMqttTopic.lastIndexOf('_'));
+  //   }
+  //   final String tasmotaMqttTopic = tempMqttTopic;
+  //
+  //   /// Make all tasmotaMqtt devices repost themselves under topic discovery
+  //   /// in the MQTT broker
+  //   getIt<IMqttServerRepository>()
+  //       .publishMessage('cmnd/$tasmotaMqttTopic/SetOption19', '0');
+  // }
 
   static Map<String, DeviceEntityAbstract> companyDevices = {};
 

@@ -3,16 +3,30 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/value_objects_cor
 import 'package:cbj_hub/infrastructure/devices/tasmota/tasmota_ip/tasmota_ip_device_validators.dart';
 import 'package:dartz/dartz.dart';
 
-/// TasmotaIp device unique address that came withe the device
-class TasmotaIpDeviceTopicName extends ValueObjectCore<String> {
-  factory TasmotaIpDeviceTopicName(String? input) {
+/// TasmotaIp device host name
+class TasmotaIpHostName extends ValueObjectCore<String> {
+  factory TasmotaIpHostName(String? input) {
     assert(input != null);
-    return TasmotaIpDeviceTopicName._(
-      validateTasmotaIpDeviceTopicNameNotEmpty(input!),
+    return TasmotaIpHostName._(
+      validateTasmotaIpHostNameNotEmpty(input!),
     );
   }
 
-  const TasmotaIpDeviceTopicName._(this.value);
+  const TasmotaIpHostName._(this.value);
+
+  @override
+  final Either<CoreFailure<String>, String> value;
+}
+
+class TasmotaIpLastIp extends ValueObjectCore<String> {
+  factory TasmotaIpLastIp(String? input) {
+    assert(input != null);
+    return TasmotaIpLastIp._(
+      validateTasmotaIpLastIpNotEmpty(input!),
+    );
+  }
+
+  const TasmotaIpLastIp._(this.value);
 
   @override
   final Either<CoreFailure<String>, String> value;

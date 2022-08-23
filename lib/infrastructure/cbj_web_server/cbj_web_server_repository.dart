@@ -21,7 +21,7 @@ class CbjWebServerRepository extends ICbjWebServerRepository {
 
   @override
   Future<void> startWebServer() async {
-    HttpServer.bind('localhost', portNumber).then((HttpServer server) {
+    HttpServer.bind('127.0.0.1', portNumber).then((HttpServer server) {
       server.listen((HttpRequest request) async {
         final List<String> pathArgs = request.uri.pathSegments;
         if (pathArgs.length >= 3) {
