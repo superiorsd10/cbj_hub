@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 abstract class SonoffApiDeviceAbstract {
-  SonoffApiDeviceAbstract(
-      {required this.ipAddress, required this.port, required this.hostName}) {
+  SonoffApiDeviceAbstract({
+    required this.ipAddress,
+    required this.port,
+    required this.hostName,
+  }) {
     baseUrl = 'http://$ipAddress:$port';
   }
 

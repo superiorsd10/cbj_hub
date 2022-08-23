@@ -19,6 +19,7 @@ import 'package:cbj_hub/infrastructure/devices/yeelight/yeelight_connector_conje
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:cbj_hub/utils.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:network_tools/network_tools.dart';
 
 class CompaniesConnectorConjector {
@@ -141,6 +142,20 @@ class CompaniesConnectorConjector {
 
   static Future<void> searchAllMdnsDevicesAndSetThemUp() async {
     while (true) {
+      while (true) {
+        // TODO: mdns search crash if there is no local internet connection
+        // but crash can't be cached using try catch.
+        // InternetConnectionChecker().hasConnection; check if there is
+        // connection to the www which is not needed for mdns search.
+        // we need to replace this part with check that return true if
+        // there is local internet connection/ device is connected to
+        // local network.
+        final bool result = await InternetConnectionChecker().hasConnection;
+        if (result) {
+          break;
+        }
+        await Future.delayed(const Duration(minutes: 2));
+      }
       for (final ActiveHost activeHost in await MdnsScanner.searchMdnsDevices(
         forceUseOfSavedSrvRecordList: true,
       )) {
