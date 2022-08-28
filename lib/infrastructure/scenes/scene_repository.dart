@@ -1,3 +1,4 @@
+import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/mqtt_server/i_mqtt_server_repository.dart';
@@ -7,9 +8,14 @@ import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
 import 'package:cbj_hub/domain/scene/i_scene_cbj_repository.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_failures.dart';
+import 'package:cbj_hub/domain/scene/value_objects_scene_cbj.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
+import 'package:cbj_hub/infrastructure/node_red/node_red_converter.dart';
 import 'package:cbj_hub/injection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:kt_dart/kt.dart';
+import 'package:rxdart/rxdart.dart';
 
 @LazySingleton(as: ISceneCbjRepository)
 class SceneCbjRepository implements ISceneCbjRepository {
@@ -102,4 +108,66 @@ class SceneCbjRepository implements ISceneCbjRepository {
   ) {
     return _allScenes[sceneEntity.uniqueId.getOrCrash()];
   }
+
+  @override
+  Future<Either<SceneCbjFailure, SceneCbjEntity>> addOrUpdateNewSceneInHub(
+    SceneCbjEntity sceneCbjEntity,
+  ) async {
+    addNewScene(sceneCbjEntity);
+
+    return right(sceneCbjEntity);
+  }
+
+  @override
+  Future<Either<SceneCbjFailure, SceneCbjEntity>>
+      addOrUpdateNewSceneInHubFromDevicesPropertyActionList(
+    String sceneName,
+    List<MapEntry<DeviceEntityAbstract, MapEntry<String?, String?>>>
+        smartDevicesWithActionToAdd,
+  ) async {
+    final SceneCbjEntity newCbjScene = NodeRedConverter.convertToSceneNodes(
+      nodeName: sceneName,
+      devicesPropertyAction: smartDevicesWithActionToAdd,
+    );
+    return addOrUpdateNewSceneInHub(newCbjScene);
+  }
+
+  @override
+  Future<Either<SceneCbjFailure, Unit>> activateScenes(
+    KtList<SceneCbjEntity> scenesList,
+  ) async {
+    for (final SceneCbjEntity sceneCbjEntity in scenesList.asList()) {
+      addOrUpdateNewSceneInHub(
+        sceneCbjEntity.copyWith(
+          deviceStateGRPC: SceneCbjDeviceStateGRPC(
+            DeviceStateGRPC.waitingInFirebase.toString(),
+          ),
+        ),
+      );
+    }
+    return right(unit);
+  }
+
+  @override
+  void addOrUpdateNewSceneInApp(SceneCbjEntity sceneCbj) {
+    _allScenes[sceneCbj.uniqueId.getOrCrash()] = sceneCbj;
+
+    scenesResponseFromTheHubStreamController.sink
+        .add(_allScenes.values.toImmutableList());
+  }
+
+  @override
+  Future<void> initiateHubConnection() async {}
+
+  @override
+  Stream<Either<SceneCbjFailure, KtList<SceneCbjEntity>>>
+      watchAllScenes() async* {
+    yield* scenesResponseFromTheHubStreamController.stream
+        .map((event) => right(event));
+  }
+
+  @override
+  BehaviorSubject<KtList<SceneCbjEntity>>
+      scenesResponseFromTheHubStreamController =
+      BehaviorSubject<KtList<SceneCbjEntity>>();
 }

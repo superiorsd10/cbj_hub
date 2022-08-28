@@ -52,15 +52,24 @@ class NodeRedRepository extends INodeRedRepository {
   @override
   Future<bool> createNewNodeRedScene(SceneCbjEntity sceneCbj) async {
     await _deviceIsReadyToSendInternetRequests;
-    // TODO: Check if sceneCbj unique Id exist, if so don't try to add it again
-    final Response response = await nodeRedAPI.postFlow(
-      label: sceneCbj.name.getOrCrash(),
-      nodes: sceneCbj.automationString.getOrCrash()!,
-    );
-    if (response.statusCode == 200) {
-      return true;
+    try {
+      // TODO: Check if sceneCbj unique Id exist, if so don't try to add it again
+      final Response response = await nodeRedAPI.postFlow(
+        label: sceneCbj.name.getOrCrash(),
+        nodes: sceneCbj.automationString.getOrCrash()!,
+      );
+      if (response.statusCode == 200) {
+        return true;
+      }
+      logger.i('Response\n${response.statusCode}');
+    } catch (e) {
+      if (e.toString() ==
+          'The remote computer refused the network connection.\r\n') {
+        logger.e('Node-RED is not installed');
+      } else {
+        logger.e('Node-RED create new scene error:\n$e');
+      }
     }
-    logger.i('Response\n${response.statusCode}');
     return false;
   }
 
@@ -68,31 +77,48 @@ class NodeRedRepository extends INodeRedRepository {
   Future<bool> createNewNodeRedRoutine(RoutineCbjEntity routineCbj) async {
     await _deviceIsReadyToSendInternetRequests;
 
-    // TODO: Check if routineCbj unique Id exist, if so don't try to add it again
-    final Response response = await nodeRedAPI.postFlow(
-      label: routineCbj.name.getOrCrash(),
-      nodes: routineCbj.automationString.getOrCrash()!,
-    );
-    if (response.statusCode == 200) {
-      return true;
+    try {
+      // TODO: Check if routineCbj unique Id exist, if so don't try to add it again
+      final Response response = await nodeRedAPI.postFlow(
+        label: routineCbj.name.getOrCrash(),
+        nodes: routineCbj.automationString.getOrCrash()!,
+      );
+      if (response.statusCode == 200) {
+        return true;
+      }
+      logger.i('Response\n${response.statusCode}');
+    } catch (e) {
+      if (e.toString() ==
+          'The remote computer refused the network connection.\r\n') {
+        logger.e('Node-RED is not installed');
+      } else {
+        logger.e('Node-RED create new routine error:\n$e');
+      }
     }
-    logger.i('Response\n${response.statusCode}');
     return false;
   }
 
   @override
   Future<bool> createNewNodeRedBinding(BindingCbjEntity bindingCbj) async {
     await _deviceIsReadyToSendInternetRequests;
-
-    // TODO: Check if routineCbj unique Id exist, if so don't try to add it again
-    final Response response = await nodeRedAPI.postFlow(
-      label: bindingCbj.name.getOrCrash(),
-      nodes: bindingCbj.automationString.getOrCrash()!,
-    );
-    if (response.statusCode == 200) {
-      return true;
+    try {
+      // TODO: Check if routineCbj unique Id exist, if so don't try to add it again
+      final Response response = await nodeRedAPI.postFlow(
+        label: bindingCbj.name.getOrCrash(),
+        nodes: bindingCbj.automationString.getOrCrash()!,
+      );
+      if (response.statusCode == 200) {
+        return true;
+      }
+      logger.i('Response\n${response.statusCode}');
+    } catch (e) {
+      if (e.toString() ==
+          'The remote computer refused the network connection.\r\n') {
+        logger.e('Node-RED is not installed');
+      } else {
+        logger.e('Node-RED create new Binding error:\n$e');
+      }
     }
-    logger.i('Response\n${response.statusCode}');
     return false;
   }
 }

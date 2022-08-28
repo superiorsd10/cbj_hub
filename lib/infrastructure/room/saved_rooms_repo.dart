@@ -9,8 +9,12 @@ import 'package:cbj_hub/domain/room/value_objects_room.dart';
 import 'package:cbj_hub/domain/rooms/i_saved_rooms_repo.dart';
 import 'package:cbj_hub/domain/routine/routine_cbj_entity.dart';
 import 'package:cbj_hub/domain/saved_devices/i_saved_devices_repo.dart';
+import 'package:cbj_hub/domain/scene/i_scene_cbj_repository.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
+import 'package:cbj_hub/domain/scene/scene_cbj_failures.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/injection.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
@@ -115,7 +119,8 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
       tempAddScenesList.addAll(allScenesInNewRoom);
       tempAddScenesList.addAll(allScenesInExistingRoom);
       newRoomEntity = newRoomEntity.copyWith(
-          roomScenesId: RoomScenesId(List.from(tempAddScenesList)));
+        roomScenesId: RoomScenesId(List.from(tempAddScenesList)),
+      );
 
       /// For Routines in the room
       final List<String> allRoutinesInNewRoom =
@@ -235,9 +240,60 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
       _allRooms[roomId] = roomEntityCombinedDevices;
     }
     await getIt<ISavedDevicesRepo>().saveAndActivateSmartDevicesToDb();
+
+    await createScenesForAllSelectedRoomTypes(roomEntity: roomEntity);
+
     return getIt<ILocalDbRepository>().saveRoomsToDb(
       roomsList: List<RoomEntity>.from(_allRooms.values),
     );
+  }
+
+  @override
+  Future<Either<LocalDbFailures, RoomEntity>>
+      createScenesForAllSelectedRoomTypes({
+    required RoomEntity roomEntity,
+  }) async {
+    try {
+      final RoomEntity roomEntityTemp = roomEntity.copyWith(
+        roomTypes: RoomTypes(roomEntity.roomTypes.getOrCrash().toList()),
+        roomDevicesId:
+            RoomDevicesId(roomEntity.roomDevicesId.getOrCrash().toList()),
+        roomScenesId:
+            RoomScenesId(roomEntity.roomScenesId.getOrCrash().toList()),
+        roomRoutinesId:
+            RoomRoutinesId(roomEntity.roomRoutinesId.getOrCrash().toList()),
+        roomBindingsId:
+            RoomBindingsId(roomEntity.roomBindingsId.getOrCrash().toList()),
+        roomMostUsedBy:
+            RoomMostUsedBy(roomEntity.roomMostUsedBy.getOrCrash().toList()),
+        roomPermissions:
+            RoomPermissions(roomEntity.roomPermissions.getOrCrash().toList()),
+      );
+
+      for (final String roomTypeNumber
+          in roomEntityTemp.roomTypes.getOrCrash()) {
+        final AreaPurposesTypes roomType =
+            AreaPurposesTypes.values[int.parse(roomTypeNumber)];
+        final Either<SceneCbjFailure, SceneCbjEntity> sceneOrFailure =
+            await getIt<ISceneCbjRepository>()
+                .addOrUpdateNewSceneInHubFromDevicesPropertyActionList(
+          roomType.name,
+          [],
+        );
+        sceneOrFailure.fold(
+          (l) => logger.e('Error creating scene from room type'),
+          (r) {
+            //Add scene id to room
+            roomEntityTemp.addSceneId(r.uniqueId.getOrCrash());
+          },
+        );
+        _allRooms[roomEntityTemp.uniqueId.getOrCrash()] = roomEntityTemp;
+      }
+      return right(roomEntityTemp);
+    } catch (e) {
+      logger.e('Error setting new scene from room type');
+      return left(const LocalDbFailures.unexpected());
+    }
   }
 
   /// Remove all devices in our room from all the rooms to prevent duplicate
