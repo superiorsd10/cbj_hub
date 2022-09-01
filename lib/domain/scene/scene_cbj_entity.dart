@@ -8,7 +8,7 @@ part 'scene_cbj_entity.freezed.dart';
 @freezed
 class SceneCbjEntity with _$SceneCbjEntity {
   const factory SceneCbjEntity({
-    /// The unique id of the scene, will alsow be used as the path id of the.
+    /// The unique id of the scene, will alsow be used as the flow/tab id.
     required UniqueId uniqueId,
 
     /// Name of the automation, will be shown to the user.

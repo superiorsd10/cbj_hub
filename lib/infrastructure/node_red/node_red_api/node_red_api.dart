@@ -125,15 +125,15 @@ class NodeRedAPI {
 
     /// Should start as list of jsons [{},{}]
     required String nodes,
-    String? id,
+    String? flowId,
     List<dynamic>? configs,
   }) async {
-    final String flowId = id ?? const Uuid().v1();
+    final String idOfTheFlow = flowId ?? const Uuid().v1();
     final List<dynamic> configsList = configs ?? [];
 
     final String jsonStringWithFields = '''
       {
-        "id": "$flowId",
+        "id": "$idOfTheFlow",
         "label": "$label",
         "nodes": $nodes,
         "configs": $configsList
@@ -153,37 +153,39 @@ class NodeRedAPI {
 
   /// Update an individual flow configuration
   Future<Response> putFlowById({
-    required String id,
-    required List<dynamic> configs,
-    required List<dynamic> nodes,
+    required String flowId,
+    required String nodes,
+    List<dynamic>? configs,
     bool normalFlow = true,
     String? label,
     List<dynamic>? subFlows,
   }) async {
+    final List<dynamic> configsList = configs ?? [];
+
     logger.e('Not tested yet');
     final String jsonStringWithFields;
 
     if (normalFlow) {
       jsonStringWithFields = '''
         {
-          "id": "$id",
+          "id": "$flowId",
           "label": "$label",
           "nodes": $nodes,
-          "configs": $configs,
+          "configs": $configsList,
         }
         ''';
     } else {
       jsonStringWithFields = '''
         {
-          "id": "$id",
-          "configs": $configs,
+          "id": "$flowId",
+          "configs": $configsList,
           "subflows": $subFlows,
         }
         ''';
     }
 
     return put(
-      Uri.parse('$requestsUrl/flow/$id'),
+      Uri.parse('$requestsUrl/flow/$flowId'),
       headers: {'Content-Type': 'application/json'},
       body: jsonStringWithFields,
     );

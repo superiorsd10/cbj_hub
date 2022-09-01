@@ -2,6 +2,7 @@ import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abs
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_entity.dart';
 import 'package:cbj_hub/domain/scene/scene_cbj_failures.dart';
+import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:kt_dart/collection.dart';
 import 'package:rxdart/rxdart.dart';
@@ -16,7 +17,7 @@ abstract class ISceneCbjRepository {
     SceneCbjEntity sceneCbj,
   );
 
-  Future<Either<LocalDbFailures, Unit>> saveAndActivateSceneToDb();
+  Future<Either<LocalDbFailures, Unit>> saveAndActivateScenesToDb();
 
   Future<bool> activateScene(
     SceneCbjEntity sceneCbj,
@@ -44,6 +45,24 @@ abstract class ISceneCbjRepository {
     List<MapEntry<DeviceEntityAbstract, MapEntry<String?, String?>>>
         smartDevicesWithActionToAdd,
   );
+
+  /// Will add all the devices to area scene, for each device will use the preselected
+  /// actions for that area type
+  Future<Either<SceneCbjFailure, Unit>>
+      addDevicesToMultipleScenesAreaTypeWithPreSetActions({
+    required List<String> devicesId,
+    required List<String> scenesId,
+    required List<String> areaTypes,
+  });
+
+  /// Will add all the devices to area scene, for each device will use the preselected
+  /// actions for that area type
+  Future<Either<SceneCbjFailure, SceneCbjEntity>>
+      addDevicesToSceneAreaTypeWithPreSetActions({
+    required List<String> devicesId,
+    required String sceneId,
+    required AreaPurposesTypes areaType,
+  });
 
   /// Sending the new scene from the hub to the app scene list
   void addOrUpdateNewSceneInApp(

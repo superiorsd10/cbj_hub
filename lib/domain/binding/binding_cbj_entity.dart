@@ -8,7 +8,7 @@ part 'binding_cbj_entity.freezed.dart';
 @freezed
 class BindingCbjEntity with _$BindingCbjEntity {
   const factory BindingCbjEntity({
-    /// The unique id of the binding, will alsow be used as the path id of the.
+    /// The unique id of the binding, will alsow be used as the flow/tab id.
     required UniqueId uniqueId,
 
     /// Name of the automation, will be shown to the user.

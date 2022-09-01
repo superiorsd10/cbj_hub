@@ -7,6 +7,9 @@ abstract class INodeRedRepository {
   /// Function to create new scene in Node-RED
   Future<bool> createNewNodeRedScene(SceneCbjEntity sceneCbj);
 
+  // /// Replace existing scene with new one
+  // Future<bool> replaceSceneWithNewNodeRedScene(SceneCbjEntity sceneCbj);
+
   /// Function to create new routine in Node-RED
   Future<bool> createNewNodeRedRoutine(RoutineCbjEntity routineCbj);
 

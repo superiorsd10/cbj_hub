@@ -52,16 +52,31 @@ class NodeRedRepository extends INodeRedRepository {
   @override
   Future<bool> createNewNodeRedScene(SceneCbjEntity sceneCbj) async {
     await _deviceIsReadyToSendInternetRequests;
+    final String flowId = sceneCbj.uniqueId.getOrCrash();
+
     try {
-      // TODO: Check if sceneCbj unique Id exist, if so don't try to add it again
+      if (scenesList.contains(sceneCbj.uniqueId.getOrCrash())) {
+        await nodeRedAPI.deleteFlowById(id: flowId);
+        scenesList.remove(flowId);
+      }
       final Response response = await nodeRedAPI.postFlow(
         label: sceneCbj.name.getOrCrash(),
         nodes: sceneCbj.automationString.getOrCrash()!,
+        flowId: flowId,
       );
       if (response.statusCode == 200) {
+        scenesList.add(flowId);
         return true;
+      } else if (response.statusCode == 400) {
+        logger.w(
+          'Scene probably already exist in node red status code\n${response.statusCode}',
+        );
+        scenesList.add(flowId);
+      } else {
+        logger.e(
+          'Error setting scene in node red status code\n${response.statusCode}',
+        );
       }
-      logger.i('Response\n${response.statusCode}');
     } catch (e) {
       if (e.toString() ==
           'The remote computer refused the network connection.\r\n') {
@@ -76,17 +91,30 @@ class NodeRedRepository extends INodeRedRepository {
   @override
   Future<bool> createNewNodeRedRoutine(RoutineCbjEntity routineCbj) async {
     await _deviceIsReadyToSendInternetRequests;
+    final String flowId = routineCbj.uniqueId.getOrCrash();
 
     try {
-      // TODO: Check if routineCbj unique Id exist, if so don't try to add it again
+      if (routinesList.contains(routineCbj.uniqueId.getOrCrash())) {
+        await nodeRedAPI.deleteFlowById(id: flowId);
+      }
       final Response response = await nodeRedAPI.postFlow(
         label: routineCbj.name.getOrCrash(),
         nodes: routineCbj.automationString.getOrCrash()!,
+        flowId: flowId,
       );
       if (response.statusCode == 200) {
+        routinesList.add(flowId);
         return true;
+      } else if (response.statusCode == 400) {
+        logger.w(
+          'Routine probably already exist in node red status code\n${response.statusCode}',
+        );
+        routinesList.add(flowId);
+      } else {
+        logger.e(
+          'Error setting routine in node red status code\n${response.statusCode}',
+        );
       }
-      logger.i('Response\n${response.statusCode}');
     } catch (e) {
       if (e.toString() ==
           'The remote computer refused the network connection.\r\n') {
@@ -101,16 +129,31 @@ class NodeRedRepository extends INodeRedRepository {
   @override
   Future<bool> createNewNodeRedBinding(BindingCbjEntity bindingCbj) async {
     await _deviceIsReadyToSendInternetRequests;
+
+    final String flowId = bindingCbj.uniqueId.getOrCrash();
+
     try {
-      // TODO: Check if routineCbj unique Id exist, if so don't try to add it again
+      if (bindingsList.contains(bindingCbj.uniqueId.getOrCrash())) {
+        await nodeRedAPI.deleteFlowById(id: flowId);
+      }
       final Response response = await nodeRedAPI.postFlow(
         label: bindingCbj.name.getOrCrash(),
         nodes: bindingCbj.automationString.getOrCrash()!,
+        flowId: flowId,
       );
       if (response.statusCode == 200) {
+        bindingsList.add(flowId);
         return true;
+      } else if (response.statusCode == 400) {
+        logger.w(
+          'Binding probably already exist in node red status code\n${response.statusCode}',
+        );
+        bindingsList.add(flowId);
+      } else {
+        logger.e(
+          'Error setting binding in node red status code\n${response.statusCode}',
+        );
       }
-      logger.i('Response\n${response.statusCode}');
     } catch (e) {
       if (e.toString() ==
           'The remote computer refused the network connection.\r\n') {

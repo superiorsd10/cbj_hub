@@ -8,7 +8,7 @@ part 'routine_cbj_entity.freezed.dart';
 @freezed
 class RoutineCbjEntity with _$RoutineCbjEntity {
   const factory RoutineCbjEntity({
-    /// The unique id of the routine, will alsow be used as the path id of the.
+    /// The unique id of the routine, will alsow be used as the flow/tab id.
     required UniqueId uniqueId,
 
     /// Name of the automation, will be shown to the user.

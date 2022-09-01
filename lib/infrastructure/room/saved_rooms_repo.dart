@@ -107,7 +107,8 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
       tempAddDevicesList.addAll(allDevicesInNewRoom);
       tempAddDevicesList.addAll(allDevicesInExistingRoom);
       newRoomEntity = newRoomEntity.copyWith(
-          roomDevicesId: RoomDevicesId(List.from(tempAddDevicesList)));
+        roomDevicesId: RoomDevicesId(List.from(tempAddDevicesList)),
+      );
 
       /// For scenes in the room
       final List<String> allScenesInNewRoom =
@@ -144,12 +145,15 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
       tempAddBindingsList.addAll(allBindingsInNewRoom);
       tempAddBindingsList.addAll(allBindingsInExistingRoom);
       newRoomEntity = newRoomEntity.copyWith(
-          roomBindingsId: RoomBindingsId(List.from(tempAddBindingsList)));
+        roomBindingsId: RoomBindingsId(List.from(tempAddBindingsList)),
+      );
     }
 
     _allRooms.addEntries([
       MapEntry<String, RoomEntity>(
-          newRoomEntity.uniqueId.getOrCrash(), newRoomEntity)
+        newRoomEntity.uniqueId.getOrCrash(),
+        newRoomEntity,
+      )
     ]);
     return newRoomEntity;
   }
@@ -226,9 +230,18 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
 
     await removeSameDevicesFromOtherRooms(roomEntity);
 
+    List<String> newDevicesList = roomEntity.roomDevicesId.getOrCrash();
+
+    bool newRoom = false;
     if (_allRooms[roomId] == null) {
       _allRooms.addEntries([MapEntry(roomId, roomEntity)]);
+      newRoom = true;
     } else {
+      newDevicesList = getOnlyWhatOnlyExistInFirsList(
+        roomEntity.roomDevicesId.getOrCrash(),
+        _allRooms[roomId]!.roomDevicesId.getOrCrash(),
+      );
+
       final RoomEntity roomEntityCombinedDevices = roomEntity.copyWith(
         roomDevicesId: RoomDevicesId(
           combineNoDuplicateListOfString(
@@ -236,12 +249,33 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
             roomEntity.roomDevicesId.getOrCrash(),
           ),
         ),
+        roomTypes: RoomTypes(
+          // Getting handled in createScenesForAllSelectedRoomTypes
+          _allRooms[roomId]!.roomTypes.getOrCrash(),
+        ),
+        roomScenesId: RoomScenesId(
+          combineNoDuplicateListOfString(
+            _allRooms[roomId]!.roomScenesId.getOrCrash(),
+            roomEntity.roomScenesId.getOrCrash(),
+          ),
+        ),
       );
       _allRooms[roomId] = roomEntityCombinedDevices;
     }
+    // TODO: check if this line is not redundant
     await getIt<ISavedDevicesRepo>().saveAndActivateSmartDevicesToDb();
 
-    await createScenesForAllSelectedRoomTypes(roomEntity: roomEntity);
+    await createScenesForAllSelectedRoomTypes(
+      roomEntity: roomEntity,
+      newRoom: newRoom,
+    );
+
+    await getIt<ISceneCbjRepository>()
+        .addDevicesToMultipleScenesAreaTypeWithPreSetActions(
+      devicesId: newDevicesList,
+      scenesId: _allRooms[roomId]!.roomScenesId.getOrCrash(),
+      areaTypes: _allRooms[roomId]!.roomTypes.getOrCrash(),
+    );
 
     return getIt<ILocalDbRepository>().saveRoomsToDb(
       roomsList: List<RoomEntity>.from(_allRooms.values),
@@ -252,8 +286,10 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
   Future<Either<LocalDbFailures, RoomEntity>>
       createScenesForAllSelectedRoomTypes({
     required RoomEntity roomEntity,
+    bool newRoom = false,
   }) async {
     try {
+      // To make lists mutable
       final RoomEntity roomEntityTemp = roomEntity.copyWith(
         roomTypes: RoomTypes(roomEntity.roomTypes.getOrCrash().toList()),
         roomDevicesId:
@@ -270,14 +306,32 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
             RoomPermissions(roomEntity.roomPermissions.getOrCrash().toList()),
       );
 
-      for (final String roomTypeNumber
-          in roomEntityTemp.roomTypes.getOrCrash()) {
-        final AreaPurposesTypes roomType =
+      final List<String> tempList =
+          _allRooms[roomEntityTemp.uniqueId.getOrCrash()]
+                  ?.roomTypes
+                  .getOrCrash() ??
+              [];
+      final List<String> roomTypesToAdd;
+
+      if (newRoom) {
+        roomTypesToAdd = roomEntity.roomTypes.getOrCrash();
+      } else {
+        roomTypesToAdd = getOnlyWhatOnlyExistInFirsList(
+          roomEntity.roomTypes.getOrCrash(),
+          tempList,
+        );
+      }
+
+      for (final String roomTypeNumber in roomTypesToAdd) {
+        final AreaPurposesTypes areaPurposeType =
             AreaPurposesTypes.values[int.parse(roomTypeNumber)];
+
+        final String areaNameEdited = areaNameCapsWithSpces(areaPurposeType);
+
         final Either<SceneCbjFailure, SceneCbjEntity> sceneOrFailure =
             await getIt<ISceneCbjRepository>()
                 .addOrUpdateNewSceneInHubFromDevicesPropertyActionList(
-          roomType.name,
+          areaNameEdited,
           [],
         );
         sceneOrFailure.fold(
@@ -289,9 +343,9 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
         );
         _allRooms[roomEntityTemp.uniqueId.getOrCrash()] = roomEntityTemp;
       }
-      return right(roomEntityTemp);
+      return right(_allRooms[roomEntityTemp.uniqueId.getOrCrash()]!);
     } catch (e) {
-      logger.e('Error setting new scene from room type');
+      logger.e('Error setting new scene from room type\n$e');
       return left(const LocalDbFailures.unexpected());
     }
   }
@@ -334,5 +388,50 @@ class SavedRoomsRepo extends ISavedRoomsRepo {
     hashSetDevicesId.addAll(devicesId);
     hashSetDevicesId.addAll(newDevicesId);
     return List.from(hashSetDevicesId);
+  }
+
+  List<String> getOnlyWhatOnlyExistInFirsList(
+    List<String> firstList,
+    List<String> secondList,
+  ) {
+    final List<String> tempList = [];
+
+    for (final String stringText in firstList) {
+      if (!secondList.contains(stringText)) {
+        tempList.add(stringText);
+      }
+    }
+
+    return tempList;
+  }
+
+  static String areaNameCapsWithSpces(AreaPurposesTypes areaPurposeType) {
+    final String tempAreaName =
+        areaPurposeType.name.substring(1, areaPurposeType.name.length);
+    String areaNameEdited = areaPurposeType.name.substring(0, 1).toUpperCase();
+    for (int tempNum = 0; tempNum < tempAreaName.length; tempNum++) {
+      final String charFromAreaType = tempAreaName[tempNum];
+      if (charFromAreaType[0] == charFromAreaType[0].toUpperCase()) {
+        areaNameEdited += ' ';
+      }
+      areaNameEdited += charFromAreaType;
+    }
+    return areaNameEdited;
+  }
+
+  static AreaPurposesTypes? getAreaTypeFromNameCapsWithSpcaes(
+    String areaNameCapsAndSpaces,
+  ) {
+    String tempString = areaNameCapsAndSpaces.replaceAll(' ', '');
+
+    tempString =
+        tempString.substring(0, 1).toLowerCase() + tempString.substring(1);
+
+    final AreaPurposesTypes areaPTemp = AreaPurposesTypes.values
+        .firstWhere((element) => element.name == tempString);
+    if (areaPTemp != null) {
+      return areaPTemp;
+    }
+    return null;
   }
 }

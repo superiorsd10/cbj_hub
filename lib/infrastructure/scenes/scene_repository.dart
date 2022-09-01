@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
 import 'package:cbj_hub/domain/local_db/i_local_db_repository.dart';
 import 'package:cbj_hub/domain/local_db/local_db_failures.dart';
@@ -11,7 +13,10 @@ import 'package:cbj_hub/domain/scene/scene_cbj_failures.dart';
 import 'package:cbj_hub/domain/scene/value_objects_scene_cbj.dart';
 import 'package:cbj_hub/infrastructure/gen/cbj_hub_server/protoc_as_dart/cbj_hub_server.pbgrpc.dart';
 import 'package:cbj_hub/infrastructure/node_red/node_red_converter.dart';
+import 'package:cbj_hub/infrastructure/room/saved_rooms_repo.dart';
+import 'package:cbj_hub/infrastructure/scenes/area_types_scientific_presets/area_type_with_device_type_preset.dart';
 import 'package:cbj_hub/injection.dart';
+import 'package:cbj_hub/utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:kt_dart/kt.dart';
@@ -52,7 +57,7 @@ class SceneCbjRepository implements ISceneCbjRepository {
   }
 
   @override
-  Future<Either<LocalDbFailures, Unit>> saveAndActivateSceneToDb() {
+  Future<Either<LocalDbFailures, Unit>> saveAndActivateScenesToDb() {
     return getIt<ILocalDbRepository>().saveScenes(
       sceneList: List<SceneCbjEntity>.from(_allScenes.values),
     );
@@ -72,7 +77,7 @@ class SceneCbjRepository implements ISceneCbjRepository {
       /// If it is new scene
       _allScenes[entityId] = sceneCbj;
 
-      await saveAndActivateSceneToDb();
+      await saveAndActivateScenesToDb();
       await getIt<ISavedDevicesRepo>().saveAndActivateSmartDevicesToDb();
       getIt<ISavedRoomsRepo>().addSceneToRoomDiscoveredIfNotExist(sceneCbj);
       await getIt<INodeRedRepository>().createNewNodeRedScene(sceneCbj);
@@ -170,4 +175,138 @@ class SceneCbjRepository implements ISceneCbjRepository {
   BehaviorSubject<KtList<SceneCbjEntity>>
       scenesResponseFromTheHubStreamController =
       BehaviorSubject<KtList<SceneCbjEntity>>();
+
+  @override
+  Future<Either<SceneCbjFailure, Unit>>
+      addDevicesToMultipleScenesAreaTypeWithPreSetActions({
+    required List<String> devicesId,
+    required List<String> scenesId,
+    required List<String> areaTypes,
+  }) async {
+    final List<MapEntry<String, AreaPurposesTypes>> areaTypeWithSceneIdList =
+        [];
+
+    for (final String sceneId in scenesId) {
+      if (_allScenes[sceneId] == null) {
+        logger.w('Scene ID does not exist in saved scenes list\n $sceneId');
+        continue;
+      }
+      final SceneCbjEntity sceneCbjEntity = _allScenes[sceneId]!;
+
+      final AreaPurposesTypes? areaTypeForScene =
+          SavedRoomsRepo.getAreaTypeFromNameCapsWithSpcaes(
+        sceneCbjEntity.name.getOrCrash(),
+      );
+
+      if (areaTypeForScene != null) {
+        areaTypeWithSceneIdList.add(MapEntry(sceneId, areaTypeForScene));
+      }
+    }
+
+    for (final MapEntry<String, AreaPurposesTypes> areaTypeWithSceneId
+        in areaTypeWithSceneIdList) {
+      addDevicesToSceneAreaTypeWithPreSetActions(
+        devicesId: devicesId,
+        sceneId: areaTypeWithSceneId.key,
+        areaType: areaTypeWithSceneId.value,
+      );
+    }
+
+    return right(unit);
+  }
+
+  @override
+  Future<Either<SceneCbjFailure, SceneCbjEntity>>
+      addDevicesToSceneAreaTypeWithPreSetActions({
+    required List<String> devicesId,
+    required String sceneId,
+    required AreaPurposesTypes areaType,
+  }) async {
+    SceneCbjEntity? scene = _allScenes[sceneId];
+
+    if (scene == null || scene.automationString.getOrCrash() == null) {
+      return left(const SceneCbjFailure.unexpected());
+    }
+
+    final String sceneAutomationString = scene.automationString.getOrCrash()!;
+    late String brokerNodeId;
+    try {
+      final String? tempValue = getPropertyValueFromAutomation(
+        sceneAutomationString,
+        'mqtt-broker',
+        'id',
+      );
+      if (tempValue == null) {
+        return left(const SceneCbjFailure.unexpected());
+      }
+      brokerNodeId = tempValue;
+    } catch (e) {
+      logger.e('Error decoding automation string\n$sceneAutomationString');
+    }
+    final Map<String, String> nodeActionsMap = {};
+
+    for (final String deviceId in devicesId) {
+      if (!scene.automationString.getOrCrash()!.contains(deviceId)) {
+        final Either<SceneCbjFailure, Map<String, String>>
+            actionForDevicesInArea = await AreaTypeWithDeviceTypePreset
+                .getPreDefineActionForDeviceInArea(
+          deviceId: deviceId,
+          areaPurposeType: areaType,
+          brokerNodeId: brokerNodeId,
+        );
+        if (actionForDevicesInArea.isRight()) {
+          actionForDevicesInArea.fold(
+            (l) => null,
+            (r) {
+              nodeActionsMap.addAll(r);
+            },
+          );
+        }
+      }
+    }
+
+    // Removing start and end curly braces of the map object
+    final String mapAutomationFixed = nodeActionsMap.values
+        .toString()
+        .substring(1, nodeActionsMap.values.toString().length - 1);
+    String tempNewAutomation;
+    if (mapAutomationFixed.isEmpty) {
+      tempNewAutomation = '[ ${sceneAutomationString.substring(1)}';
+    } else {
+      tempNewAutomation =
+          '[ $mapAutomationFixed, ${sceneAutomationString.substring(1)}';
+    }
+    scene = scene.copyWith(
+      automationString: SceneCbjAutomationString(tempNewAutomation),
+    );
+    _allScenes[sceneId] = scene;
+
+    saveAndActivateScenesToDb();
+    await getIt<INodeRedRepository>().createNewNodeRedScene(scene);
+
+    //TODO: add to the automationString part the new automation for devices String from actionForDevicesInArea and connect all to first node id
+    return right(scene);
+  }
+
+  static String? getPropertyValueFromAutomation(
+    String sceneAutomationString,
+    String nodeType,
+    String keyToGetFromNode,
+  ) {
+    try {
+      String brokerNodeId;
+      final List<Map<String, dynamic>> sceneAutomationJson =
+          (jsonDecode(sceneAutomationString) as List)
+              .map((e) => e as Map<String, dynamic>)
+              .toList();
+      for (final Map<String, dynamic> fullNode in sceneAutomationJson) {
+        if (fullNode['type'] == nodeType) {
+          return fullNode[keyToGetFromNode].toString();
+        }
+      }
+    } catch (e) {
+      logger.e('Error decoding automation string\n$sceneAutomationString');
+    }
+    return null;
+  }
 }
