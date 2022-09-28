@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cbj_hub/domain/binding/binding_cbj_entity.dart';
 import 'package:cbj_hub/domain/node_red/i_node_red_repository.dart';
 import 'package:cbj_hub/domain/routine/routine_cbj_entity.dart';
@@ -38,40 +40,43 @@ class NodeRedRepository extends INodeRedRepository {
   /// https://github.com/CyBear-Jinni/cbj_hub/issues/150
   late Future<bool> _deviceIsReadyToSendInternetRequests;
 
-  static NodeRedAPI nodeRedAPI = NodeRedAPI();
+  static NodeRedAPI nodeRedApi = NodeRedAPI();
 
-  /// List of all the scenes JSONs in Node-RED
-  List<String> scenesList = [];
-
-  /// List of all the routines JSONs in Node-RED
-  List<String> routinesList = [];
-
-  /// List of all the bindings JSONs in Node-RED
-  List<String> bindingsList = [];
+  // /// List of all the scenes JSONs in Node-RED
+  // List<String> scenesList = [];
+  //
+  // /// List of all the routines JSONs in Node-RED
+  // List<String> routinesList = [];
+  //
+  // /// List of all the bindings JSONs in Node-RED
+  // List<String> bindingsList = [];
 
   @override
-  Future<bool> createNewNodeRedScene(SceneCbjEntity sceneCbj) async {
+  Future<String> createNewNodeRedScene(SceneCbjEntity sceneCbj) async {
     await _deviceIsReadyToSendInternetRequests;
-    final String flowId = sceneCbj.uniqueId.getOrCrash();
+
+    // final String flowId = sceneCbj.uniqueId.getOrCrash();
 
     try {
-      if (scenesList.contains(sceneCbj.uniqueId.getOrCrash())) {
-        await nodeRedAPI.deleteFlowById(id: flowId);
-        scenesList.remove(flowId);
+      if (sceneCbj.nodeRedFlowId.getOrCrash() != null) {
+        await nodeRedApi.deleteFlowById(
+          id: sceneCbj.nodeRedFlowId.getOrCrash()!,
+        );
       }
-      final Response response = await nodeRedAPI.postFlow(
+      final Response response = await nodeRedApi.postFlow(
         label: sceneCbj.name.getOrCrash(),
         nodes: sceneCbj.automationString.getOrCrash()!,
-        flowId: flowId,
+        flowId: sceneCbj.uniqueId.getOrCrash(),
       );
       if (response.statusCode == 200) {
-        scenesList.add(flowId);
-        return true;
+        final Map<String, dynamic> responseBodyJson =
+            json.decode(response.body) as Map<String, dynamic>;
+        final String flowId = responseBodyJson["id"] as String;
+        return flowId;
       } else if (response.statusCode == 400) {
         logger.w(
           'Scene probably already exist in node red status code\n${response.statusCode}',
         );
-        scenesList.add(flowId);
       } else {
         logger.e(
           'Error setting scene in node red status code\n${response.statusCode}',
@@ -85,31 +90,32 @@ class NodeRedRepository extends INodeRedRepository {
         logger.e('Node-RED create new scene error:\n$e');
       }
     }
-    return false;
+    return "";
   }
 
   @override
-  Future<bool> createNewNodeRedRoutine(RoutineCbjEntity routineCbj) async {
+  Future<String> createNewNodeRedRoutine(RoutineCbjEntity routineCbj) async {
     await _deviceIsReadyToSendInternetRequests;
-    final String flowId = routineCbj.uniqueId.getOrCrash();
+    // final String flowId = routineCbj.uniqueId.getOrCrash();
 
     try {
-      if (routinesList.contains(routineCbj.uniqueId.getOrCrash())) {
-        await nodeRedAPI.deleteFlowById(id: flowId);
-      }
-      final Response response = await nodeRedAPI.postFlow(
+      // if (routinesList.contains(routineCbj.uniqueId.getOrCrash())) {
+      //   await nodeRedApi.deleteFlowById(id: flowId);
+      // }
+      final Response response = await nodeRedApi.postFlow(
         label: routineCbj.name.getOrCrash(),
         nodes: routineCbj.automationString.getOrCrash()!,
-        flowId: flowId,
+        flowId: routineCbj.uniqueId.getOrCrash(),
       );
       if (response.statusCode == 200) {
-        routinesList.add(flowId);
-        return true;
+        final Map<String, dynamic> responseBodyJson =
+            json.decode(response.body) as Map<String, dynamic>;
+        final String flowId = responseBodyJson["id"] as String;
+        return flowId;
       } else if (response.statusCode == 400) {
         logger.w(
           'Routine probably already exist in node red status code\n${response.statusCode}',
         );
-        routinesList.add(flowId);
       } else {
         logger.e(
           'Error setting routine in node red status code\n${response.statusCode}',
@@ -123,32 +129,31 @@ class NodeRedRepository extends INodeRedRepository {
         logger.e('Node-RED create new routine error:\n$e');
       }
     }
-    return false;
+    return "";
   }
 
   @override
-  Future<bool> createNewNodeRedBinding(BindingCbjEntity bindingCbj) async {
+  Future<String> createNewNodeRedBinding(BindingCbjEntity bindingCbj) async {
     await _deviceIsReadyToSendInternetRequests;
 
-    final String flowId = bindingCbj.uniqueId.getOrCrash();
-
     try {
-      if (bindingsList.contains(bindingCbj.uniqueId.getOrCrash())) {
-        await nodeRedAPI.deleteFlowById(id: flowId);
-      }
-      final Response response = await nodeRedAPI.postFlow(
+      // if (bindingsList.contains(bindingCbj.uniqueId.getOrCrash())) {
+      //   await nodeRedApi.deleteFlowById(id: flowId);
+      // }
+      final Response response = await nodeRedApi.postFlow(
         label: bindingCbj.name.getOrCrash(),
         nodes: bindingCbj.automationString.getOrCrash()!,
-        flowId: flowId,
+        flowId: bindingCbj.uniqueId.getOrCrash(),
       );
       if (response.statusCode == 200) {
-        bindingsList.add(flowId);
-        return true;
+        final Map<String, dynamic> responseBodyJson =
+            json.decode(response.body) as Map<String, dynamic>;
+        final String flowId = responseBodyJson["id"] as String;
+        return flowId;
       } else if (response.statusCode == 400) {
         logger.w(
           'Binding probably already exist in node red status code\n${response.statusCode}',
         );
-        bindingsList.add(flowId);
       } else {
         logger.e(
           'Error setting binding in node red status code\n${response.statusCode}',
@@ -162,6 +167,6 @@ class NodeRedRepository extends INodeRedRepository {
         logger.e('Node-RED create new Binding error:\n$e');
       }
     }
-    return false;
+    return "";
   }
 }

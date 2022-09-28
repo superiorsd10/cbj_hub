@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:cbj_hub/domain/generic_devices/abstract_device/device_entity_abstract.dart';
@@ -27,7 +28,7 @@ class SceneCbjRepository implements ISceneCbjRepository {
   SceneCbjRepository() {
     setUpAllFromDb();
   }
-  final Map<String, SceneCbjEntity> _allScenes = {};
+  final HashMap<String, SceneCbjEntity> _allScenes = HashMap();
 
   Future<void> setUpAllFromDb() async {
     /// Delay inorder for the Hive boxes to initialize
@@ -64,25 +65,44 @@ class SceneCbjRepository implements ISceneCbjRepository {
   }
 
   @override
-  Future<Either<SceneCbjFailure, Unit>> addNewScene(
+  Future<Either<SceneCbjFailure, String>> addNewScene(
     SceneCbjEntity sceneCbj,
   ) async {
+    SceneCbjEntity tempSceneCbj = sceneCbj;
+
+    final SceneCbjEntity? existingScene =
+        findSceneIfAlreadyBeenAdded(tempSceneCbj);
+
     /// Check if scene already exist
-    if (findSceneIfAlreadyBeenAdded(sceneCbj) == null) {
-      _allScenes
-          .addEntries([MapEntry(sceneCbj.uniqueId.getOrCrash(), sceneCbj)]);
-
-      final String entityId = sceneCbj.uniqueId.getOrCrash();
-
-      /// If it is new scene
-      _allScenes[entityId] = sceneCbj;
-
-      await saveAndActivateScenesToDb();
-      await getIt<ISavedDevicesRepo>().saveAndActivateSmartDevicesToDb();
-      getIt<ISavedRoomsRepo>().addSceneToRoomDiscoveredIfNotExist(sceneCbj);
-      await getIt<INodeRedRepository>().createNewNodeRedScene(sceneCbj);
+    if (existingScene != null) {
+      tempSceneCbj =
+          tempSceneCbj.copyWith(nodeRedFlowId: existingScene.nodeRedFlowId);
     }
-    return right(unit);
+    _allScenes.addEntries(
+      [MapEntry(tempSceneCbj.uniqueId.getOrCrash(), tempSceneCbj)],
+    );
+
+    final String entityId = tempSceneCbj.uniqueId.getOrCrash();
+
+    /// If it is new scene
+    _allScenes[entityId] = tempSceneCbj;
+
+    await getIt<ISavedDevicesRepo>().saveAndActivateSmartDevicesToDb();
+    final String sceneNodeRedFlowId =
+        await getIt<INodeRedRepository>().createNewNodeRedScene(tempSceneCbj);
+    if (sceneNodeRedFlowId.isNotEmpty) {
+      tempSceneCbj = tempSceneCbj.copyWith(
+        nodeRedFlowId: SceneCbjNodeRedFlowId(sceneNodeRedFlowId),
+      );
+    }
+    getIt<ISavedRoomsRepo>().addSceneToRoomDiscoveredIfNotExist(tempSceneCbj);
+    _allScenes[tempSceneCbj.uniqueId.getOrCrash()] = tempSceneCbj;
+
+    await saveAndActivateScenesToDb();
+    return right(sceneNodeRedFlowId);
+
+    /// Scene already got added
+    return left(const SceneCbjFailure.unexpected());
   }
 
   @override
@@ -118,9 +138,37 @@ class SceneCbjRepository implements ISceneCbjRepository {
   Future<Either<SceneCbjFailure, SceneCbjEntity>> addOrUpdateNewSceneInHub(
     SceneCbjEntity sceneCbjEntity,
   ) async {
-    addNewScene(sceneCbjEntity);
+    SceneCbjEntity sceneCbjEntityTemp = sceneCbjEntity;
+    final String sceneId = sceneCbjEntityTemp.uniqueId.getOrCrash();
+    String nodeRedFlowId = '';
 
-    return right(sceneCbjEntity);
+    (await addNewScene(sceneCbjEntityTemp)).fold((l) {}, (r) {
+      nodeRedFlowId = r;
+    });
+
+    if (nodeRedFlowId.isNotEmpty) {
+      sceneCbjEntityTemp = sceneCbjEntityTemp.copyWith(
+          nodeRedFlowId: SceneCbjNodeRedFlowId(nodeRedFlowId));
+    } else {
+      final SceneCbjEntity? tempScene =
+          findSceneIfAlreadyBeenAdded(sceneCbjEntityTemp);
+      if (tempScene != null) {
+        sceneCbjEntityTemp =
+            sceneCbjEntityTemp.copyWith(nodeRedFlowId: tempScene.nodeRedFlowId);
+
+        nodeRedFlowId = await getIt<INodeRedRepository>()
+            .createNewNodeRedScene(sceneCbjEntityTemp);
+
+        sceneCbjEntityTemp = sceneCbjEntityTemp.copyWith(
+            nodeRedFlowId: SceneCbjNodeRedFlowId(nodeRedFlowId));
+      }
+    }
+
+    _allScenes[sceneId] = sceneCbjEntityTemp;
+
+    saveAndActivateScenesToDb();
+
+    return right(sceneCbjEntityTemp);
   }
 
   @override
@@ -244,6 +292,7 @@ class SceneCbjRepository implements ISceneCbjRepository {
       logger.e('Error decoding automation string\n$sceneAutomationString');
     }
     final Map<String, String> nodeActionsMap = {};
+    final List<String> nodeRedFuncNodesIds = [];
 
     for (final String deviceId in devicesId) {
       if (!scene.automationString.getOrCrash()!.contains(deviceId)) {
@@ -259,30 +308,68 @@ class SceneCbjRepository implements ISceneCbjRepository {
             (l) => null,
             (r) {
               nodeActionsMap.addAll(r);
+              nodeRedFuncNodesIds.addAll(r.keys);
             },
           );
         }
       }
     }
 
+    final String sceneAutomationStringNoBrackets =
+        sceneAutomationString.substring(1, sceneAutomationString.length - 1);
     // Removing start and end curly braces of the map object
     final String mapAutomationFixed = nodeActionsMap.values
         .toString()
         .substring(1, nodeActionsMap.values.toString().length - 1);
     String tempNewAutomation;
     if (mapAutomationFixed.isEmpty) {
-      tempNewAutomation = '[ ${sceneAutomationString.substring(1)}';
+      tempNewAutomation = '[\n$sceneAutomationStringNoBrackets\n]';
     } else {
+      /// Add all automations id (functions) to mqttIn wires
+      String nodeIdsToAddToMqttIn = nodeRedFuncNodesIds
+          .toString()
+          .substring(1, nodeRedFuncNodesIds.toString().length - 1);
+      nodeIdsToAddToMqttIn =
+          '"${nodeIdsToAddToMqttIn.replaceAll(',', '", "')}"';
+      final String mapAutomationFixedWithNewWires =
+          changePropertyValueInAutomation(
+        sceneAutomationStringNoBrackets,
+        'mqtt in',
+        'wires',
+        '[[$nodeIdsToAddToMqttIn]]',
+      );
       tempNewAutomation =
-          '[ $mapAutomationFixed, ${sceneAutomationString.substring(1)}';
+          '[\n$mapAutomationFixedWithNewWires, $mapAutomationFixed\n]';
     }
     scene = scene.copyWith(
       automationString: SceneCbjAutomationString(tempNewAutomation),
     );
+
+    String nodeRedFlowId = '';
+
+    (await addNewScene(scene)).fold((l) {}, (r) {
+      nodeRedFlowId = r;
+    });
+
+    if (nodeRedFlowId.isNotEmpty) {
+      scene =
+          scene.copyWith(nodeRedFlowId: SceneCbjNodeRedFlowId(nodeRedFlowId));
+    } else {
+      final SceneCbjEntity? tempScene = findSceneIfAlreadyBeenAdded(scene);
+      if (tempScene != null) {
+        scene = scene.copyWith(nodeRedFlowId: tempScene.nodeRedFlowId);
+
+        nodeRedFlowId =
+            await getIt<INodeRedRepository>().createNewNodeRedScene(scene);
+
+        scene =
+            scene.copyWith(nodeRedFlowId: SceneCbjNodeRedFlowId(nodeRedFlowId));
+      }
+    }
+
     _allScenes[sceneId] = scene;
 
     saveAndActivateScenesToDb();
-    await getIt<INodeRedRepository>().createNewNodeRedScene(scene);
 
     //TODO: add to the automationString part the new automation for devices String from actionForDevicesInArea and connect all to first node id
     return right(scene);
@@ -308,5 +395,39 @@ class SceneCbjRepository implements ISceneCbjRepository {
       logger.e('Error decoding automation string\n$sceneAutomationString');
     }
     return null;
+  }
+
+  static String changePropertyValueInAutomation(
+    String sceneAutomationString,
+    String nodeType,
+    String keyToChange,
+    String valueToInsert,
+  ) {
+    try {
+      final int locationOfNodeType =
+          sceneAutomationString.indexOf('"type": "$nodeType",');
+      final String sceneAutomationStringBeforeType =
+          sceneAutomationString.substring(0, locationOfNodeType);
+      final String sceneAutomationStringAfterType =
+          sceneAutomationString.substring(locationOfNodeType);
+
+      final int locationOfKeyToChange =
+          sceneAutomationStringAfterType.indexOf('"$keyToChange"');
+      final String sceneAutomationStringBeforeKey =
+          sceneAutomationStringAfterType.substring(0, locationOfKeyToChange);
+      String sceneAutomationStringAfterKey =
+          sceneAutomationStringAfterType.substring(locationOfKeyToChange);
+      sceneAutomationStringAfterKey = sceneAutomationStringAfterKey
+          .substring(sceneAutomationStringAfterKey.indexOf('},'));
+
+      final String finalString =
+          '$sceneAutomationStringBeforeType$sceneAutomationStringBeforeKey"$keyToChange":  $valueToInsert\n$sceneAutomationStringAfterKey';
+      return finalString;
+    } catch (e) {
+      logger.e(
+        'Wrong node or key in node $sceneAutomationString $nodeType $keyToChange $valueToInsert\n $e',
+      );
+    }
+    return sceneAutomationString;
   }
 }

@@ -326,10 +326,11 @@ class AppCommunicationRepository extends IAppCommunicationRepository {
         uniqueId: UniqueId(),
         name: SceneCbjName('Empty'),
         backgroundColor: SceneCbjBackgroundColor(000.toString()),
-        firstNodeId: SceneCbjFirstNodeId(null),
         image: SceneCbjBackgroundImage(null),
         iconCodePoint: SceneCbjIconCodePoint(null),
         automationString: SceneCbjAutomationString(null),
+        nodeRedFlowId: SceneCbjNodeRedFlowId(null),
+        firstNodeId: SceneCbjFirstNodeId(null),
         lastDateOfExecute: SceneCbjLastDateOfExecute(null),
         deviceStateGRPC:
             SceneCbjDeviceStateGRPC(DeviceStateGRPC.ack.toString()),

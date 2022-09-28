@@ -20,7 +20,7 @@ class CommonDevicesScenesPresetsForDevices {
     );
   }
 
-  static MapEntry<String, String> rgbLightOffPreset(
+  static MapEntry<String, String> rgbwLightOffPreset(
     DeviceEntityAbstract deviceEntity,
     String brokerNodeId,
   ) {

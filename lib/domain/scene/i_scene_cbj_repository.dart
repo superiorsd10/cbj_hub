@@ -13,7 +13,7 @@ abstract class ISceneCbjRepository {
   Future<Map<String, SceneCbjEntity>> getAllScenesAsMap();
 
   /// Sending the new scene to the hub to get added
-  Future<Either<SceneCbjFailure, Unit>> addNewScene(
+  Future<Either<SceneCbjFailure, String>> addNewScene(
     SceneCbjEntity sceneCbj,
   );
 

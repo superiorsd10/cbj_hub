@@ -18,6 +18,9 @@ class BindingCbjEntity with _$BindingCbjEntity {
     /// All the automation as string.
     required BindingCbjAutomationString automationString,
 
+    /// Node-Red flow id of the scene
+    required BindingCbjNodeRedFlowId nodeRedFlowId,
+
     /// The actual id of the first node, most of the time will be the same as
     /// uniqueId variable.
     required BindingCbjFirstNodeId firstNodeId,
@@ -42,9 +45,9 @@ class BindingCbjEntity with _$BindingCbjEntity {
       name: name.getOrCrash(),
       backgroundColor: backgroundColor.getOrCrash(),
       automationString: automationString.getOrCrash(),
+      nodeRedFlowId: nodeRedFlowId.getOrCrash(),
       firstNodeId: firstNodeId.getOrCrash(),
       iconCodePoint: iconCodePoint.getOrCrash(),
-
       image: image.getOrCrash(),
       lastDateOfExecute: lastDateOfExecute.getOrCrash(),
       deviceStateGRPC: deviceStateGRPC.getOrCrash(),

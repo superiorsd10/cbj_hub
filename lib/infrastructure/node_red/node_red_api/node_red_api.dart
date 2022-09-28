@@ -36,7 +36,7 @@ class NodeRedAPI {
     required String password,
     String clientId = 'node-red-editor',
   }) async {
-    logger.e('Not tested yet');
+    logger.e('postAuthToken Not tested yet');
     final String jsonStringWithFields = '''
     {
       "client_id": "$clientId",
@@ -55,7 +55,7 @@ class NodeRedAPI {
 
   /// Revoke an access token
   Future<Response> postAuthRevoke(String token) async {
-    logger.e('Not tested yet');
+    logger.e('postAuthRevoke Not tested yet');
     return post(
       Uri.parse('$requestsUrl/auth/revoke'),
       headers: {'Content-Type': 'application/json'},
@@ -81,7 +81,7 @@ class NodeRedAPI {
     int vType = 1,
     String? rev,
   }) async {
-    logger.e('Not tested yet');
+    logger.e('postFlows Not tested yet');
 
     final String jsonStringWithFields;
 
@@ -125,6 +125,9 @@ class NodeRedAPI {
 
     /// Should start as list of jsons [{},{}]
     required String nodes,
+
+    /// Flow id will get ignored when creating new flow as mentioned in the doc
+    /// TODO: check if flow id stopped getting ignored https://discourse.nodered.org/t/make-setting-an-id-in-post-flow-work/67815
     String? flowId,
     List<dynamic>? configs,
   }) async {
@@ -162,7 +165,7 @@ class NodeRedAPI {
   }) async {
     final List<dynamic> configsList = configs ?? [];
 
-    logger.e('Not tested yet');
+    logger.e('putFlowById Not tested yet');
     final String jsonStringWithFields;
 
     if (normalFlow) {
@@ -195,7 +198,6 @@ class NodeRedAPI {
   Future<Response> deleteFlowById({
     required String id,
   }) async {
-    logger.e('Not tested yet');
     return delete(
       Uri.parse('$requestsUrl/flow/$id'),
     );
@@ -210,7 +212,7 @@ class NodeRedAPI {
   Future<Response> postNodes({
     required String module,
   }) async {
-    logger.e('Not tested yet');
+    logger.e('postNodes Not tested yet');
     final String jsonStringWithFields = '''
     {
       "module": "$module",
@@ -233,7 +235,7 @@ class NodeRedAPI {
     required String module,
     required bool enableTheModule,
   }) async {
-    logger.e('Not tested yet');
+    logger.e('putNodesByModule Not tested yet');
     final String jsonStringWithFields = '''
         {
           "enabled": $enableTheModule
@@ -251,7 +253,7 @@ class NodeRedAPI {
   Future<Response> deleteNodesByModule({
     required String module,
   }) async {
-    logger.e('Not tested yet');
+    logger.e('deleteNodesByModule Not tested yet');
     return delete(
       Uri.parse('$requestsUrl/nodes/$module'),
     );
@@ -271,7 +273,7 @@ class NodeRedAPI {
     required String setName,
     required String enableTheModule,
   }) async {
-    logger.e('Not tested yet');
+    logger.e('putNodesModuleSetInformation Not tested yet');
     final String jsonStringWithFields = '''
         {
           "enabled": $enableTheModule
